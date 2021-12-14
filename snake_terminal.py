@@ -31,7 +31,7 @@ if __name__ == "__main__":
     snake: SnakeAgent = SnakeAgent(reward_data, board_data)
 
     all_rewards: int = 0
-    while True:
+    while not snake.done:
         print(chr(27) + "[2J")
         print(snake.board_data.board)
 
@@ -40,6 +40,3 @@ if __name__ == "__main__":
         this_reward: float = snake.move_snake(player_input)
         all_rewards += this_reward
         print(all_rewards)
-
-        if (snake.done):
-            break

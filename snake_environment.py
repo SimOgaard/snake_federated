@@ -52,7 +52,7 @@ class Board():
 class Snake():
     ''' Dataclass holding snake values '''
     snake_body: list = field(default_factory=list) # You need to input snake body as coordinates
-
+    snake_move_count: int = 2
     # data placeholders (gets assigned a value in code)
     snake_direction: array = None # y direction, x direction
 
@@ -224,16 +224,21 @@ class SnakeAgent(SnakeEnv):
         if ((snake_direction != -self.snake_data.snake_direction).all()):
             self.snake_data.snake_direction = snake_direction
 
-        moved_head_point: array = self.snake_data.snake_body[0] + self.snake_data.snake_direction
+        reward_sum: float = 0
 
-        # move tail
-        tail_point: array = self.remove_snake_tail()
-        
-        # check for snake head collision
-        reward: float = float(self.board_data.board[moved_head_point[0]][moved_head_point[1]])
-        collision_method: function = self.board_data.board_on_hit[moved_head_point[0]][moved_head_point[1]]
+        for i in range(self.snake_data.snake_move_count):
+            moved_head_point: array = self.snake_data.snake_body[0] + self.snake_data.snake_direction
 
-        self.place_new_snake_head(moved_head_point)
-        collision_method(this_tile_pos = moved_head_point, old_snake_tail_pos = tail_point)
-        
-        return reward
+            # move tail
+            tail_point: array = self.remove_snake_tail()
+            
+            # check for snake head collision
+            reward_sum += float(self.board_data.board[moved_head_point[0]][moved_head_point[1]])
+            collision_method: function = self.board_data.board_on_hit[moved_head_point[0]][moved_head_point[1]]
+
+            self.place_new_snake_head(moved_head_point)
+            collision_method(this_tile_pos = moved_head_point, old_snake_tail_pos = tail_point)
+            
+            if (self.done):
+                break
+        return reward_sum
