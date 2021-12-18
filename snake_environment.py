@@ -8,216 +8,270 @@
 ###     stack board tensor when epoch % 1000 == 0 and save it
 
 # dataclass (c# struct like equivalent)
-from dataclasses import dataclass
-from dataclasses import field
+from dataclasses import dataclass, field
 
 # pytorch tensors
 from torch import empty as torch_empty
+from torch import FloatTensor, clone
 
 # math functions
 from numpy.random import rand
-from numpy import True_, array, empty
+from numpy import array, empty
 from math import floor
-from random import randrange
-from random import choice
+from random import randrange, shuffle
 
-# dataclasses
-@dataclass
-class Rewards():
-    ''' Dataclass holding all rewards '''
-    snake: float = -999
-    edge: float = -100
-    mine: float = -25
-    food: float = 555
-    air: float = -1
+class Tiles():
+    '''
+    Tile functions
+    '''
 
-@dataclass
-class Board():
-    ''' Dataclass holding structure for game board '''
-    max_board_shape: array = array([10, 10])
-    min_board_shape: array = array([10, 10])
+    # dataclass for rewards
+    @dataclass
+    class TileRewards():
+        '''
+        Dataclass holding all rewards
+        '''
+        snake: float = -1111
+        edge: float = -1000
+        mine: float = -25
+        food: float = 1000
+        air: float = -10
 
-    salt_and_pepper_chance: float = 0.1
-    food_amount: int = 1 # how many foods that should be placed
+    # dataclass for visual
+    @dataclass
+    class TileVisual():
+        '''
+        Dataclass holding all rewards
+        '''
+        snake_head: float = 5.
+        snake: float = 4.
+        edge: float = 3.
+        mine: float = 2.
+        food: float = 1.
+        air: float = 0.
 
-    # data placeholders (gets assigned a value in code)
-    board_shape: array = None # 19 rows with 9 columns
-    board = None # torch.FloatTensor
-    board_on_hit: array = None
+    # tiles init
+    def __init__(self) -> None:
+        super(Tiles, self).__init__()
 
-    board_shape_no_border: array = None
-    open_board_positions: dict = field(default_factory=dict)
+    # tiles restart
+    def __restart__(self) -> None:
+        # super(Tiles, self).__restart__()
+        pass
 
-@dataclass
-class Snake():
-    ''' Dataclass holding snake values '''
-    snake_body: list = field(default_factory=list) # You need to input snake body as coordinates
-    snake_move_count: int = 2
-    # data placeholders (gets assigned a value in code)
-    snake_direction: array = None # y direction, x direction
-
-class SnakeEnv():
-    ''' Environment that agent should act in to get a reward '''
-
-    # tile functions
-    def snake_tile(self, **kwargs) -> float:
-        self.done = True
-        return self.rewards_data.snake
-
-    def edge_tile(self, **kwargs) -> float:
-        self.done = True
-        return self.rewards_data.edge
-
-    def mine_tile(self, **kwargs) -> float:
-        self.remove_snake_tail()
-        if len(self.snake_data.snake_body) == 0:
-            self.done = True
-        return self.rewards_data.mine
-        
-    def food_tile(self, **kwargs) -> float:
+    # returns random tilecord that is not occupied
+    def random_open_tile_coord(self) -> array:
         def get_nth_key(n=0):
             if n < 0:
                 n += len(self.board_data.open_board_positions)
             for i, key in enumerate(self.board_data.open_board_positions.keys()):
-                if i == n:
+                if (i == n):
                     return key
             raise IndexError("dictionary index out of range")
+        
+        random_index: int = floor(randrange(len(self.board_data.open_board_positions)))
+        return get_nth_key(random_index)
 
+    # places given tile at given position on board
+    def place_tile(self, coord:array, tile_function:object, tile_visual:int, occupy:bool) -> None:
+        self.board_data.board[coord[0]][coord[1]] = tile_visual
+        self.board_data.board_on_hit[coord[0]][coord[1]] = tile_function
+        
+        if (occupy):
+            if (tuple(coord) in self.board_data.open_board_positions):
+                del self.board_data.open_board_positions[tuple(coord)]
+        else:
+            self.board_data.open_board_positions[tuple(coord)] = coord
+
+    def air_tile(self, **kwargs) -> float:
+        return (Tiles.TileRewards.air, Tiles.TileVisual.air)
+
+    def edge_tile(self, **kwargs) -> tuple:
+        self.done = True
+        return (Tiles.TileRewards.edge, Tiles.TileVisual.edge)
+
+    def snake_tile(self, **kwargs) -> tuple:
+        self.done = True
+        return (Tiles.TileRewards.snake, Tiles.TileVisual.snake)
+
+    def mine_tile(self, **kwargs) -> tuple:
+        self.remove_snake_tail()
+        if (len(self.snake_body) == 0):
+            self.done = True
+        return (Tiles.TileRewards.mine, Tiles.TileVisual.mine)
+        
+    def food_tile(self, **kwargs) -> tuple:
         # add snake part
         if ("old_snake_tail_pos" in kwargs):
             self.place_new_snake_tail(kwargs["old_snake_tail_pos"])
 
-        # place it on board
-        if (self.food_index >= len(self.rand_food_array)):
-            self.food_index += 1
-            if (self.food_index - self.board_data.food_amount >= len(self.rand_food_array)):
-                self.done = True
-            return
+        # place new food on board
+        if (len(self.board_data.open_board_positions) != 0):
+            # get random coord viable for food placement
+            random_coord: array = self.random_open_tile_coord()
+            self.place_tile(random_coord, self.food_tile, Tiles.TileVisual.food, True)
+        return (Tiles.TileRewards.food, Tiles.TileVisual.food)
 
-        # get random coord viable for food placement
-        random_food_index: int = floor(self.rand_food_array[self.food_index] * len(self.board_data.open_board_positions))
-        random_coord: array = get_nth_key(random_food_index)
+class Board(Tiles):
+    '''
+    Environment that agent should act in to get a reward
+    '''
 
-        # remove random_coord from open_board_positions dictionary
-        del self.board_data.open_board_positions[tuple(random_coord)]
+    @dataclass
+    class BoardData():
+        '''
+        Dataclass holding structure for game board
+        '''
+        min_board_shape: array
+        max_board_shape: array
 
-        self.board_data.board[random_coord[0]][random_coord[1]] = self.rewards_data.food
-        self.board_data.board_on_hit[random_coord[0]][random_coord[1]] = self.food_tile
+        salt_and_pepper_chance: float
+        food_amount: int
 
-        # # add this_tile_pos too open_board_positions dictionary
-        # if ("this_tile_pos" in kwargs):
-        #     self.board_data.open_board_positions[tuple(kwargs["this_tile_pos"])] = kwargs["this_tile_pos"]
+        replay_interval: int
 
-        self.food_index += 1
+        # data placeholders (gets assigned a value in code)
+        bounding_box: array = None
+        board: FloatTensor = None
+        board_on_hit: array = None
+        board_replay: list = None
 
-        return self.rewards_data.food
+        open_board_positions: dict = field(default_factory=dict)
 
-    def air_tile(self, **kwargs) -> float:
-        return self.rewards_data.air
+    # board init
+    def __init__(self, board_data) -> None:
+        # init tiles
+        super(Board, self).__init__()
 
-    def __init__(self, rewards_data: Rewards, board_data: Board) -> None:
-        ### init rewards data
-        self.rewards_data = rewards_data
-
-        ### init board
+        # init board data
         self.board_data = board_data
 
-        width: int = randrange(self.board_data.min_board_shape[0], self.board_data.max_board_shape[0]) if self.board_data.min_board_shape[0] != self.board_data.max_board_shape[0] else self.board_data.min_board_shape[0]
-        height: int = randrange(self.board_data.min_board_shape[1], self.board_data.max_board_shape[1]) if self.board_data.min_board_shape[1] != self.board_data.max_board_shape[1] else self.board_data.min_board_shape[1]
+        self.board_data.board = torch_empty(tuple(self.board_data.max_board_shape + array([2, 2])))
+        self.board_data.board_on_hit = empty(tuple(self.board_data.max_board_shape + array([2, 2])), dtype=object)
+
+        # 3d cube of runs
+        self.board_data.board_replay = []
+
+        # needs to run restart but you do it in agent
+        # self.__restart__()
+    
+    # board restart
+    def __restart__(self) -> None:
+
+        def better_rand(x:int, y:int):
+            if (x != y):
+                return randrange(x, y)
+            return x
+
+        # restart tiles
+        super(Board, self).__restart__()
+
+        self.board_data.open_board_positions = {}
+
+        assert self.board_data.min_board_shape[0] <= self.board_data.max_board_shape[0]
+        assert self.board_data.min_board_shape[1] <= self.board_data.max_board_shape[1]
+
+        true_board_width: int = self.board_data.max_board_shape[0] + 2
+        true_board_height: int = self.board_data.max_board_shape[1] + 2
+
+        width: int = better_rand(self.board_data.min_board_shape[0], self.board_data.max_board_shape[0])
+        height: int = better_rand(self.board_data.min_board_shape[1], self.board_data.max_board_shape[1])
+        start_row: int = better_rand(0, self.board_data.max_board_shape[0] - width) + 1
+        start_col: int = better_rand(0, self.board_data.max_board_shape[1] - height) + 1
+
+        self.board_data.bounding_box = array([start_row, start_col, start_row + width, start_col + height])
         
-        self.board_data.board_shape = array([width, height])
+        rand_salt_and_pepper: array = rand(true_board_width * true_board_height)
 
-        self.board_data.board_shape_no_border = self.board_data.board_shape - array([2, 2])
-        self.board_data.board = torch_empty(tuple(self.board_data.board_shape))
-        self.board_data.board_on_hit = empty(tuple(self.board_data.board_shape), dtype=object)
+        for row in range(true_board_width):
+            for col in range(true_board_height):
+                is_side: bool = row < self.board_data.bounding_box[0] or row > self.board_data.bounding_box[2]
+                is_top: bool = col < self.board_data.bounding_box[1] or col > self.board_data.bounding_box[3]
 
-        # place values on board that represent the reward and method that should be given if snake head goes on it
-        rand_salt_and_pepper: array = rand(self.board_data.board_shape[0] * self.board_data.board_shape[1])
-
-        for row in range(self.board_data.board_shape[0]):
-            for col in range(self.board_data.board_shape[1]):
-                is_side: bool = row == 0 or row == self.board_data.board_shape[0] - 1
-                is_top: bool = col == 0 or col == self.board_data.board_shape[1] - 1
-
-                salt_and_pepper: bool = rand_salt_and_pepper[row * self.board_data.board_shape[1] + col] < self.board_data.salt_and_pepper_chance
+                salt_and_pepper: bool = rand_salt_and_pepper[row * true_board_height + col] < self.board_data.salt_and_pepper_chance
 
                 if (is_side or is_top):
-                    self.board_data.board[row][col] = self.rewards_data.edge
+                    self.board_data.board[row][col] = Tiles.TileVisual.edge
                     self.board_data.board_on_hit[row][col] = self.edge_tile
                 elif salt_and_pepper:
-                    self.board_data.board[row][col] = self.rewards_data.mine
+                    self.board_data.board[row][col] = Tiles.TileVisual.mine
                     self.board_data.board_on_hit[row][col] = self.mine_tile
                 else:
-                    self.board_data.board[row][col] = self.rewards_data.air
-                    self.board_data.board_on_hit[row][col] = self.air_tile
+                    self.place_tile(array([row, col]), self.air_tile, Tiles.TileVisual.air, False)
 
-                    self.board_data.open_board_positions[(row, col)] = array([row, col])
-    
-class SnakeAgent(SnakeEnv):
-    ''' Our agent '''
-    def create_snake(self) -> None:
-        # choose random point inside board_shape
-        start_coord: array
-        tail_coord: array
+class Snake(Board):
+    '''
+    Our snake agent
+    '''
 
-        while True:
-            start_coord = array([randrange(1, self.board_data.board_shape[0] - 2), randrange(1, self.board_data.board_shape[1] - 2)])
-            if self.board_data.board[start_coord[0]][start_coord[1]] == self.rewards_data.air:
-                for _try in range(10):
-                    tail_offset: array = array([0, 0])
-                    array_index: int = randrange(1)
-                    tail_offset[array_index] = choice([-1, 1])
+    @dataclass
+    class SnakeData():
+        '''
+        Dataclass holding snake values
+        '''
 
-                    tail_coord = start_coord - tail_offset
-                    if self.board_data.board[tail_coord[0]][tail_coord[1]] == self.rewards_data.air:
-                        break
-                
-                return Snake([start_coord, tail_coord])
-
-    def remove_snake_tail(self) -> array:
-        tail_point: array = self.snake_data.snake_body.pop()
-        self.board_data.board[tail_point[0]][tail_point[1]] = self.rewards_data.air
-        self.board_data.open_board_positions[(tail_point[0], tail_point[1])] = tail_point
-        self.board_data.board_on_hit[tail_point[0]][tail_point[1]] = self.air_tile
-        return tail_point
-
-    def place_new_snake_head(self, snake_part: array) -> None:
-        self.snake_data.snake_body.insert(0, snake_part)
-        self.place_snake_tile(snake_part)
-
-    def place_new_snake_tail(self, snake_part: array) -> None:
-        self.snake_data.snake_body.append(snake_part)
-        self.place_snake_tile(snake_part)
-
-    def place_snake_tile(self, snake_part: array) -> None:
-        # place snake reward on board
-        self.board_data.board[snake_part[0]][snake_part[1]] = self.rewards_data.snake
-        # place snake method on board
-        self.board_data.board_on_hit[snake_part[0]][snake_part[1]] = self.snake_tile
-        # remove point from dictionary so nothing can be placed there
-        if (tuple(snake_part) in self.board_data.open_board_positions):
-            del self.board_data.open_board_positions[tuple(snake_part)]
-
-    def __init__(self, rewards_data: Rewards, board_data: Board) -> None:
-        ### init env
-        super().__init__(rewards_data, board_data)
+        snake_body: list = field(default_factory=list) # You need to input snake body as coordinates
+        snake_move_count: int = 1
         
-        ### init snake
+        # data placeholders (gets assigned a value in code)
+        snake_direction: array = None # y direction, x direction
+
+    # snake init
+    def __init__(self, board_data: Board.BoardData) -> None:
+        ### init board
+        super(Snake, self).__init__(board_data)
+        self.run = 0
+
+        # needs to run restart but you do it in agent
+        # self.__restart__()
+
+    # snake restart
+    def __restart__(self) -> None:
+        # restart board
+        super(Snake, self).__restart__()
+
         self.done: bool = False
         self.snake_data = self.create_snake()
         # get direction of snake
         self.snake_data.snake_direction = -(self.snake_data.snake_body[-1] - self.snake_data.snake_body[-2])
-
         # set snake body
-        for snake_part in self.snake_data.snake_body:
-            self.place_snake_tile(snake_part)        
-
-        ### food
-        self.food_index = 0
-        self.rand_food_array = rand(len(self.board_data.open_board_positions))
+        self.place_tile(self.snake_data.snake_body[0], self.snake_tile, Tiles.TileVisual.snake_head, True)
+        for snake_part in self.snake_data.snake_body[1:]:
+            self.place_tile(snake_part, self.snake_tile, Tiles.TileVisual.snake, True)
 
         for _ in range(self.board_data.food_amount):
             self.food_tile()
+
+    def create_snake(self) -> None:
+        # choose random point inside board_shape
+        start_coord: array
+        tail_coord: array
+        offset_sequence: list = [array([1, 0]), array([-1, 0]), array([0, 1]), array([0, -1])]
+
+        while True:
+            start_coord = array([randrange(self.board_data.bounding_box[0], self.board_data.bounding_box[2]), randrange(self.board_data.bounding_box[1], self.board_data.bounding_box[3])])
+            if self.board_data.board[start_coord[0]][start_coord[1]] == Tiles.TileVisual.air:
+                shuffle(offset_sequence)
+                for tail_offset in offset_sequence:
+                    tail_coord = start_coord - tail_offset
+                    if self.board_data.board[tail_coord[0]][tail_coord[1]] == Tiles.TileVisual.air:
+                        break
+                
+                return Snake.SnakeData([start_coord, tail_coord])
+
+    def remove_snake_tail(self) -> array:
+        tail_point: array = self.snake_data.snake_body.pop()
+        self.place_tile(tail_point, self.air_tile, Tiles.TileVisual.air, False)
+        return tail_point
+
+    def place_new_snake_head(self, snake_coord: array) -> None:
+        self.place_tile(self.snake_data.snake_body[0], self.snake_tile, Tiles.TileVisual.snake, True)
+        self.snake_data.snake_body.insert(0, snake_coord)
+        self.place_tile(snake_coord, self.snake_tile, Tiles.TileVisual.snake_head, True)
+        
+    def place_new_snake_tail(self, snake_coord: array) -> None:
+        self.snake_data.snake_body.append(snake_coord)
+        self.place_tile(snake_coord, self.snake_tile, Tiles.TileVisual.snake, True)
 
     def move_snake(self, snake_direction: array) -> float:
         # set direction if dot product is not negative
@@ -226,6 +280,9 @@ class SnakeAgent(SnakeEnv):
 
         reward_sum: float = 0
 
+        if (self.run % self.board_data.replay_interval == 0):
+            self.board_data.board_replay.append(clone(self.board_data.board))
+
         for i in range(self.snake_data.snake_move_count):
             moved_head_point: array = self.snake_data.snake_body[0] + self.snake_data.snake_direction
 
@@ -233,12 +290,19 @@ class SnakeAgent(SnakeEnv):
             tail_point: array = self.remove_snake_tail()
             
             # check for snake head collision
-            reward_sum += float(self.board_data.board[moved_head_point[0]][moved_head_point[1]])
             collision_method: function = self.board_data.board_on_hit[moved_head_point[0]][moved_head_point[1]]
 
             self.place_new_snake_head(moved_head_point)
-            collision_method(this_tile_pos = moved_head_point, old_snake_tail_pos = tail_point)
+            reward_sum += collision_method(this_tile_pos = moved_head_point, old_snake_tail_pos = tail_point)[0]
             
             if (self.done):
+                if (self.run % self.board_data.replay_interval == 0):
+                    self.board_data.board_replay.append(clone(self.board_data.board))
+
+                self.run += 1
                 break
+
         return reward_sum
+
+class Agent(Snake):
+    pass
