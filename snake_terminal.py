@@ -1,51 +1,20 @@
-from snake_environment import *
-from msvcrt import getch
-
-def KeyCheck() -> array:
-    global Break_KeyCheck
-    Break_KeyCheck = False
-    
-    base = getch()
-    if base == b'\x00':
-        sub = getch()
-        
-        if sub == b'H':
-            return array([-1, 0])
-
-        elif sub == b'M':
-            return array([0, 1])
-
-        elif sub == b'P':
-            return array([1, 0])
-
-        elif sub == b'K':
-            return array([0, -1])
+from snake_env.snake_environment import *
+from snake_env.snake_agents.agents import *
 
 if __name__ == "__main__":
+    player_snake: ControllableAgent = ControllableAgent()
+    random_snake: RandomAgent = RandomAgent()
 
-
-    snake: Snake = Snake(
-        Board.BoardData(
-            array([3, 3]),
-            array([5, 5]),
-            0.0,
-            1,
-            10
-        )
+    board: Board = Board(
+        min_board_shape         = array([3, 3]),
+        max_board_shape         = array([5, 5]),
+        salt_and_pepper_chance  = 0.0,
+        food_amount             = 1,
+        replay_interval         = 10,
+        snakes                  = [player_snake, random_snake]
     )
 
-    all_rewards: int = 0
     while True:
-        snake.__restart__()
-        while not snake.done:
-            #print(chr(27) + "[2J")
-            print(snake.board_data.board)
-
-            player_input: array = KeyCheck()
-
-            this_reward: float = snake.move_snake(player_input)
-            all_rewards += this_reward
-            print(all_rewards)
-
-        print(snake.board_data.board_replay)
-        KeyCheck()
+        for step in board:
+            action, observation, reward, done = player_snake.get_step()
+        print("Every snake died, restarting environment...")
