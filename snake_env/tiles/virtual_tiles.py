@@ -14,7 +14,7 @@ class Tiles():
         self.reward = reward
         self.occupy = occupy
 
-    def on_hit(self, snake, **kwargs) -> None:
+    def on_hit(self, snake, **kwargs: dict) -> None:
         '''
         Tile on_hit function
         (currently only virtual placeholder, implement ovveride when needed)

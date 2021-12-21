@@ -35,11 +35,12 @@ class Snake():
             start_coord: array
             tail_coord: array
 
+            shuffled_actions: list = self.all_actions.copy()
             while True:
                 start_coord = array([randrange(self.board.bounding_box[0], self.board.bounding_box[2]), randrange(self.board.bounding_box[1], self.board.bounding_box[3])])
                 if type(self.board.board_tiles[start_coord[0]][start_coord[1]]) == AirTile:
-                    shuffle(self.all_actions)
-                    for tail_offset in self.all_actions:
+                    shuffle(shuffled_actions)
+                    for tail_offset in shuffled_actions:
                         tail_coord = start_coord - tail_offset
                         if type(self.board.board_tiles[tail_coord[0]][tail_coord[1]]) == AirTile:
                             break
@@ -51,20 +52,33 @@ class Snake():
         self.snake_body, self.snake_direction = create_snake()
 
     def remove_snake_tail(self) -> array:
+        '''
+        Removes tail bodypart from snake
+        '''
         tail_point: array = self.snake_body.pop()
         self.board.place_tile(AirTile(), tail_point)
         return tail_point
 
     def place_new_snake_head(self, snake_coord: array) -> None:
+        '''
+        Adds new head to snake
+        '''
         self.board.place_tile(SnakeTile(), self.snake_body[0])
         self.snake_body.insert(0, snake_coord)
         self.board.place_tile(SnakeHeadTile(), snake_coord)
         
     def place_new_snake_tail(self, snake_coord: array) -> None:
+        '''
+        Adds new bodypart to snake
+        '''
         self.snake_body.append(snake_coord)
         self.board.place_tile(SnakeTile(), snake_coord)
 
     def move(self, direction_index: int) -> float:
+        '''
+        Moves snake in direction and returns reward
+        '''
+
         # set direction if dot product is not negative
         if ((self.all_actions[direction_index] != -self.snake_direction).all()):
             self.snake_direction = self.all_actions[direction_index]
@@ -84,7 +98,9 @@ class Snake():
             self.place_new_snake_head(moved_head_point)
             
             # react to what tile you hit
-            tile.on_hit(self, old_snake_tail_pos=tail_point)
-            reward_sum += tile.reward
+            reward_sum += tile.on_hit(self, old_snake_tail_pos=tail_point)
+
+            if (self.done):
+                break
 
         return reward_sum

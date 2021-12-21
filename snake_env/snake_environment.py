@@ -1,12 +1,4 @@
-### TODO:
-###     Allow for multiple snakes to be on the same board (random or ai or human)
-###     Fruit that splits snake into two
-###     Fruit that inverts snake on itself
-###     Fruit that detatches one bit of the tail
-###     Super fruit that gives more reward but gives you longer body and more reward
-###     Random board structure
-
-# Pytorch tensors
+# Torch imports
 from torch import empty as torch_empty
 
 # Math modules
@@ -21,9 +13,9 @@ class Board():
     '''
     Snake game board
     '''
-    def __init__(self, min_board_shape: array, max_board_shape: array, salt_and_pepper_chance: float, food_amount: int, replay_interval: int, snakes: list) -> None:
+    def __init__(self, min_board_shape: array, max_board_shape: array, salt_and_pepper_chance: float, food_amount: array, replay_interval: int, snakes: list) -> None:
         '''
-        Initilizes board 
+        Initilizes a Board object 
         '''
         super(Board, self).__init__()
 
@@ -32,7 +24,7 @@ class Board():
         self.max_board_shape: array = max_board_shape
 
         self.salt_and_pepper_chance: float = salt_and_pepper_chance
-        self.food_amount: int = food_amount
+        self.food_amount: array = food_amount
 
         self.replay_interval: int = replay_interval
 
@@ -48,14 +40,14 @@ class Board():
         for snake in self.snakes:
             snake.board = self
 
-        # needs to run __iter__ for board to start working, is done externally
-        # self.__iter__()
+        # needs to run __restart__ for board to start working, is done externally
+        # self.__restart__()
     
-    def __iter__(self) -> None:
+    def __restart__(self) -> None:
         '''
         Restarts board for new run (need to be executed before each new run including the first)
         '''
-        def better_rand(x:int, y:int):
+        def better_rand(x: int, y: int):
             '''
             Workaround this stupid fucking code snippet: assert x != y in random.randrange
             '''
@@ -109,7 +101,7 @@ class Board():
             if rand_salt_and_pepper[index] < self.salt_and_pepper_chance:
                 self.place_tile(MineTile(), coord)
 
-        for _ in range(self.food_amount):
+        for _ in range(better_rand(self.food_amount[0], self.food_amount[1])):
             if (len(self.open_board_positions) == 0):
                 break
             # get random coord viable for food placement
@@ -118,24 +110,20 @@ class Board():
 
         return self
 
-    def __next__(self) -> None:
-        if (self.run % self.replay_interval == 0):
+    def is_alive(self) -> bool:
+        '''
+        Are all snakes alive?
+        '''
+
+        if (self.replay_interval != 0 and self.run % self.replay_interval == 0):
             self.board_replay.append(self.board.detach().clone())
 
-        # store observation for each snake
-        for snake in self.snakes:
-            snake.observate()
-
-        # move all snakes
         snakes_alive: int = 0
         for snake in self.snakes:
             if (not snake.done):
-                next(snake)
                 snakes_alive += 1
 
-        # stop itteration if all snakes are done
-        if snakes_alive == 0:
-            raise StopIteration
+        return snakes_alive != 0
 
     def random_open_tile_coord(self) -> array:
         '''

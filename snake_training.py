@@ -1,38 +1,86 @@
-from numpy.core.arrayprint import printoptions
+# Repo imports
 from snake_env.snake_environment import *
 from snake_env.snake_agents.agents import *
 
+# Math modules
+from numpy import mean as numpy_mean
+
+# Torch imports
+from torch import tensor, save, load
+
+# Generic imports
+from os import path
+
 if __name__ == "__main__":
+    '''
+    Trains a DQN-agent
+    '''
+
+    episode_amount: int = 100_000
+    save_every: int = 5_000
+    board_dim: int = 5
+    model_id: str = "{}x{}".format(board_dim + 2, board_dim + 2)
+    model_path: str = 'models/checkpoint{}.pth'.format(model_id)
+
     dqn_snake: DQNAgent = DQNAgent(
-        policy_net = DQNLin(5, 4).to(device),
-        target_net = DQNLin(5, 4).to(device)
+        state_size    = (board_dim + 2)**2,
+        action_size   = 4,
+        seed          = 1337,
+        batch_size    = 128,
+        gamma         = 0.999,
+        epsilon_start = 1.,
+        epsilon_end   = 0.,
+        epsilon_decay = 5000,
+        learning_rate = 5e-4,
+        tau           = 1e-3,
+        update_every  = 32,
+        buffer_size   = 500_000
     )
 
     board: Board = Board(
-        min_board_shape         = array([5, 5]),
-        max_board_shape         = array([5, 5]),
+        min_board_shape         = array([board_dim, board_dim]),
+        max_board_shape         = array([board_dim, board_dim]),
         salt_and_pepper_chance  = 0.0,
-        food_amount             = 10,
-        replay_interval         = 1000,
+        food_amount             = array([5, 10]),
+        replay_interval         = 0,
         snakes                  = [dqn_snake]
     )
 
-    sum_length = 0
+    scores_window = deque(maxlen=100) # last 100 scores
 
-    while True:
-        for step in board:
-            action, observation, reward, done = dqn_snake.get_step()
-            reward = tensor([reward], device=device)
-            action = tensor([action], device=device)
-            dqn_snake.memory.push(observation, action, dqn_snake.observate(), reward)
-            dqn_snake.optimize_model()
+    if (path.exists(model_path)): # load model
+        checkpoint = load(model_path)
+        dqn_snake.qnetwork_local.load_state_dict(checkpoint['network_local'])
+        dqn_snake.qnetwork_target.load_state_dict(checkpoint['network_target'])
 
-            #print(observation)
+    while board.run < episode_amount:
+        
+        board.__restart__() # restart board
+        state: FloatTensor = observation_full(board = board) # save init state
 
-            if board.run % dqn_snake.target_update == 0:
-                dqn_snake.target_net.load_state_dict(dqn_snake.policy_net.state_dict())
+        while board.is_alive(): # check if snakes are alive
 
-        sum_length += len(dqn_snake.snake_body)
+            action: int = dqn_snake.act(state) # choose an action for given snake
+            reward: float = dqn_snake.move(action)
 
-        if board.run % 100 == 0:
-            print(sum_length / (board.run + 1))
+            action = tensor([action], device=device) # take the agents action that leed to that reward and state
+            reward = tensor([reward], device=device) # take the reward that the agent stored
+
+            next_state: FloatTensor = observation_full(board = board) # observe what steps taken lead to
+
+            dqn_snake.step(state, action, reward, next_state, dqn_snake.done) # signal step to snake
+
+            state = next_state # set old state to the next state
+
+        scores_window.append(len(dqn_snake.snake_body)) # save the most recent score
+        print('\rEpisode {}\tAverage Score {:.3f}\tRandom act chance {:.6f}'.format(board.run, numpy_mean(scores_window), dqn_snake.calculate_epsilon()), end="")
+        
+        if board.run != 0:
+            if board.run % 100 == 0:
+                print('\rEpisode {}\tAverage Score {:.3f}\tRandom act chance {:.6f}'.format(board.run, numpy_mean(scores_window), dqn_snake.calculate_epsilon()))
+            if board.run % save_every == 0:
+                state: dict = {
+                    'network_local': dqn_snake.qnetwork_local.state_dict(),
+                    'network_target': dqn_snake.qnetwork_target.state_dict()
+                }
+                save(state, model_path)

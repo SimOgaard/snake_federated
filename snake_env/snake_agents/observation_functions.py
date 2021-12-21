@@ -1,62 +1,58 @@
-# Pytorch tensors
+# Math modules
+from numpy import array
+
+# Torch imports
 from torch import FloatTensor, flatten
-import torch
 
-class ObservationNone():
-    '''
-    Default observation state: None
-    '''
-    def observate(self) -> None:
-        self.observation = None
-        return self.observation
+# Repo imports
+from snake_env.snake_agents.virtual_snake import Snake
+from snake_env.snake_environment import Board
 
-class ObservationNear():
-    '''
-    Returns dumbed down state around head and food position
-    '''
-    def observate(self) -> tuple:
-        head = self.snake_body[0]
-
-        point_u = head + self.all_actions[1]
-        point_r = head + self.all_actions[2]
-        point_d = head + self.all_actions[0]
-        point_l = head + self.all_actions[3]
-
-        try:
-
-            state = [
-                # What is up
-                self.board.board[point_u[0]][point_u[1]] == 0. or self.board.board[point_u[0]][point_u[1]] == 3.,
-                
-                # What is right
-                self.board.board[point_r[0]][point_r[1]] == 0. or self.board.board[point_r[0]][point_r[1]] == 3.,
-
-                # What is down
-                self.board.board[point_d[0]][point_d[1]] == 0. or self.board.board[point_d[0]][point_d[1]] == 3.,
-
-                # What is left
-                self.board.board[point_l[0]][point_l[1]] == 0. or self.board.board[point_l[0]][point_l[1]] == 3.,
-                
-                # Food location 
-                # game.food.x < game.head.x,  # food up
-                # game.food.x > game.head.x,  # food right
-                # game.food.y < game.head.y,  # food down
-                # game.food.y > game.head.y,  # food left
-
-                # Current_direction
-                self.action
-            ]
-
-            self.observation = FloatTensor(state)
-            return self.observation
-        except:
-            self.observation = FloatTensor([5,5,5,5,self.action])
-            return self.observation
-
-class ObservationFull():
+def observation_full(board: Board) -> FloatTensor:
     '''
     Returns the whole board
     '''
-    def observate(self) -> FloatTensor:
-        self.observation = flatten(self.board.board.detach().clone())
-        return self.observation
+    return flatten(board.board.detach().clone())
+
+def observation_near(board: Board, snake: Snake, snake_head: array, kernel: array) -> FloatTensor:
+    '''
+    Returns kernel sized state around head
+    '''
+    point_u = snake_head + snake.all_actions[1]
+    point_r = snake_head + snake.all_actions[2]
+    point_d = snake_head + snake.all_actions[0]
+    point_l = snake_head + snake.all_actions[3]
+
+    try:
+
+        state = [
+            # What is up
+            board.board[point_u[0]][point_u[1]],
+            
+            # What is right
+            board.board[point_r[0]][point_r[1]],
+
+            # What is down
+            board.board[point_d[0]][point_d[1]],
+
+            # What is left
+            board.board[point_l[0]][point_l[1]],
+
+            # Current_direction
+            snake.action
+        ]
+        return FloatTensor(state)
+    except:
+        return FloatTensor([5, 5, 5, 5, snake.action])
+
+def observation_to_bool(tensor: FloatTensor) -> FloatTensor:
+    '''
+    Returns bool tensor of input tensor
+    '''
+    return tensor.where(tensor == 0 or tensor == 0, 1, 0.)
+
+def observation_food(snake_head: array, board: Board) -> FloatTensor:
+    '''
+    Returns bool tensor where nearest food is [up, right, down, left]
+    '''
+    return FloatTensor([1, 0, 0, 0])

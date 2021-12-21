@@ -1,4 +1,2 @@
-numpy   # 
-random  # 
-torch   # 
-msvcrt  # inputs for controllable snake
+numpy==1.18.0
+torch==1.10.0
