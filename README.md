@@ -16,9 +16,7 @@ python3 snake_training.py
 ```
 
 ### TODO:
-###     Allow for multiple snakes to be on the same board (random or ai or human)
 ###     Fruit that splits snake into two
-###     Fruit that inverts snake on itself
 ###     Fruit that detatches one bit of the tail
-###     Super fruit that gives more reward but gives you longer body and more reward
+###     Super fruit that gives more reward but gives you longer body
 ###     Random board structure

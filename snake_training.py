@@ -43,7 +43,7 @@ if __name__ == "__main__":
         salt_and_pepper_chance  = 0.0,
         food_amount             = array([5, 10]),
         replay_interval         = 0,
-        snakes                  = [dqn_snake]
+        snakes                  = [dqn_snake],
     )
 
     scores_window = deque(maxlen=100) # last 100 scores

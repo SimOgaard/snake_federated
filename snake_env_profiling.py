@@ -17,7 +17,7 @@ if __name__ == "__main__":
         salt_and_pepper_chance  = 0.0,
         food_amount             = array([10, 100]),
         replay_interval         = 0,
-        snakes                  = [random_snake]
+        snakes                  = [random_snake],
     )
 
     step_count: int = 0 

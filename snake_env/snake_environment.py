@@ -76,7 +76,7 @@ class Board():
                 is_top: bool = col < self.bounding_box[1] or col > self.bounding_box[3]
 
                 if (is_side or is_top):
-                    self.board_tiles[row][col] = EdgeTile()
+                    self.board_tiles[row][col] = WallTile()
                 else:
                     coord: array =([row, col])
                     self.open_board_positions[tuple(coord)] = coord
@@ -85,6 +85,8 @@ class Board():
                 self.board[row][col] = self.board_tiles[row][col].visual
         
         self.run += 1
+
+        self.temporary_snakes: list = []
 
         # place snake
         for snake in self.snakes:
@@ -117,6 +119,12 @@ class Board():
 
         if (self.replay_interval != 0 and self.run % self.replay_interval == 0):
             self.board_replay.append(self.board.detach().clone())
+
+        # make all temporary snakes act and move
+        for snake in self.temporary_snakes:
+            if (not snake.done):
+                action: int = snake.act()
+                snake.move(action)
 
         snakes_alive: int = 0
         for snake in self.snakes:

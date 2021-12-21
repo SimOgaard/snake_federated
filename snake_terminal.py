@@ -22,7 +22,7 @@ def display(state: FloatTensor) -> None:
 
 if __name__ == "__main__":
     '''
-    Creates a large environment and counts achived apm of random agent
+    Creates a environment with controllable agent and a random agent, is playable
     '''
     board_dim: int = 9
 
@@ -35,7 +35,7 @@ if __name__ == "__main__":
         salt_and_pepper_chance  = 0.0,
         food_amount             = array([1, 1]),
         replay_interval         = 0,
-        snakes                  = [player_snake, random_snake]
+        snakes                  = [player_snake, random_snake],
     )
 
     while True:
