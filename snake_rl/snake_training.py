@@ -20,7 +20,7 @@ if __name__ == "__main__":
     save_every: int = 5_000
     board_dim: int = 5
     model_id: str = "{}x{}".format(board_dim + 2, board_dim + 2)
-    model_path: str = 'models/checkpoint{}.pth'.format(model_id)
+    model_path: str = 'snake_rl/models/checkpoint{}.pth'.format(model_id)
 
     dqn_snake: DQNAgent = DQNAgent(
         state_size    = (board_dim + 2)**2,
