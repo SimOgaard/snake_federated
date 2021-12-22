@@ -8,7 +8,7 @@ class AirTile(Tiles):
     '''
     Tile that does nothing
     '''
-    def __init__(self, visual: int = 0, reward: int = 0., occupy: bool = False) -> None:
+    def __init__(self, visual: int = 0, reward: int = -0.01, occupy: bool = False) -> None:
         '''
         Initialize a air tile object.
         '''

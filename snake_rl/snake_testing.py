@@ -1,6 +1,7 @@
 # Repo imports
 from snake_env.snake_environment import *
 from snake_env.snake_agents.agents import *
+from snake_terminal import display, pretty_print
 
 # Math modules
 from numpy import mean as numpy_mean
@@ -17,7 +18,6 @@ if __name__ == "__main__":
     '''
 
     episode_amount: int = 100_000
-    save_every: int = 5_000
     board_dim: int = 5
     model_id: str = "{}x{}".format(board_dim + 2, board_dim + 2)
     model_path: str = 'snake_rl/models/checkpoint{}.pth'.format(model_id)
@@ -26,15 +26,15 @@ if __name__ == "__main__":
         state_size    = (board_dim + 2)**2,
         action_size   = 4,
         seed          = 1337,
-        batch_size    = 64,
+        batch_size    = 128,
         gamma         = 0.999,
-        epsilon_start = 1.,
+        epsilon_start = 0.,
         epsilon_end   = 0.,
-        epsilon_decay = 10_000,
+        epsilon_decay = 5000,
         learning_rate = 5e-4,
         tau           = 1e-3,
         update_every  = 32,
-        buffer_size   = 1_000_000
+        buffer_size   = 500_000
     )
 
     board: Board = Board(
@@ -45,8 +45,6 @@ if __name__ == "__main__":
         replay_interval         = 0,
         snakes                  = [dqn_snake],
     )
-
-    scores_window = deque(maxlen=100) # last 100 scores
 
     if (path.exists(model_path)): # load model
         checkpoint = load(model_path)
@@ -60,27 +58,13 @@ if __name__ == "__main__":
 
         while board.is_alive(): # check if snakes are alive
 
+            pretty_print(state.detach().clone(), board_dim)
+            input()
+
             action: int = dqn_snake.act(state) # choose an action for given snake
             reward: float = dqn_snake.move(action)
 
             action = tensor([action], device=device) # take the agents action that leed to that reward and state
             reward = tensor([reward], device=device) # take the reward that the agent stored
 
-            next_state: FloatTensor = observation_full(board = board) # observe what steps taken lead to
-
-            dqn_snake.step(state, action, reward, next_state, dqn_snake.done) # signal step to snake
-
-            state = next_state # set old state to the next state
-
-        scores_window.append(len(dqn_snake.snake_body)) # save the most recent score
-        print('\rEpisode {}\tAverage Score {:.3f}\tRandom act chance {:.6f}'.format(board.run, numpy_mean(scores_window), dqn_snake.calculate_epsilon()), end="")
-        
-        if board.run != 0:
-            if board.run % 100 == 0:
-                print('\rEpisode {}\tAverage Score {:.3f}\tRandom act chance {:.6f}'.format(board.run, numpy_mean(scores_window), dqn_snake.calculate_epsilon()))
-            if board.run % save_every == 0:
-                state: dict = {
-                    'network_local': dqn_snake.qnetwork_local.state_dict(),
-                    'network_target': dqn_snake.qnetwork_target.state_dict()
-                }
-                save(state, model_path)
+            state: FloatTensor = observation_full(board = board) # observe what steps taken lead to

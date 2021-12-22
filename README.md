@@ -20,3 +20,6 @@ python3 snake_training.py
 ###     Fruit that detatches one bit of the tail
 ###     Super fruit that gives more reward but gives you longer body
 ###     Random board structure
+###
+###     print if it died from random choise or nah
+###     be able to start from any size not just 2 length
