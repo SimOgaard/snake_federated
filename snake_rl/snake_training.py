@@ -25,7 +25,7 @@ if __name__ == "__main__":
     dqn_snake: DQNAgent = DQNAgent(
         state_size          = (board_dim + 2)**2,
         action_size         = 4,
-        init_snake_lengths  = array([2, 10]),
+        init_snake_lengths  = array([2, 2]),
         seed                = 1337,
         batch_size          = 64,
         gamma               = 0.999,
