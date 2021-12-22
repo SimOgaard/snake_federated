@@ -20,30 +20,29 @@ if __name__ == "__main__":
     save_every: int = 5_000000
     board_dim: int = 5
     model_id: str = "{}x{}".format(board_dim + 2, board_dim + 2)
-    model_path: str = 'models/checkpoint{}.pth'.format(model_id)
+    model_path: str = 'snake_rl/models/checkpoint{}.pth'.format(model_id)
 
     print(device)
 
     dqn_snake: DQNAgent = DQNAgent(
-        state_size    = (board_dim + 2)**2,
-        action_size   = 4,
-        seed          = 1337,
-        batch_size    = 128,
-        gamma         = 0.999,
-        epsilon_start = 1.,
-        epsilon_end   = 0.,
-        epsilon_decay = 5000,
-        learning_rate = 5e-4,
-        tau           = 1e-3,
-        update_every  = 32,
-        buffer_size   = 500_000
+        state_size          = (board_dim + 2)**2,
+        action_size         = 4,
+        init_snake_lengths  = array([2, 10]),
+        seed                = 1337,
+        batch_size          = 64,
+        gamma               = 0.999,
+        epsilon_start       = 1.,
+        epsilon_end         = 0.,
+        epsilon_decay       = 10_000,
+        learning_rate       = 5e-4,
+        tau                 = 1e-3,
+        update_every        = 32,
+        buffer_size         = 1_000_000
     )
 
     board: Board = Board(
         min_board_shape         = array([board_dim, board_dim]),
         max_board_shape         = array([board_dim, board_dim]),
-        salt_and_pepper_chance  = 0.0,
-        food_amount             = array([1, 1]),
         replay_interval         = 0,
         snakes                  = [dqn_snake],
     )

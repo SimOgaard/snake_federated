@@ -17,6 +17,9 @@ python3 snake_training.py
 
 ### TODO:
 ###     Fruit that splits snake into two
-###     Fruit that detatches one bit of the tail
+###     Fruit that detatches one bit of the tail and leaves it on board
 ###     Super fruit that gives more reward but gives you longer body
 ###     Random board structure
+###
+###     print if it died from random choise or nah
+###     Om vi vill ha större modeller fråga efter dgx ag100 kort gpu (jocke och victor vet?)

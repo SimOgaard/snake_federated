@@ -3,13 +3,14 @@ from random import randrange, shuffle
 
 # Repo imports
 from snake_env.tiles.tiles import *
+from generic import *
 
 class Snake():
     '''
     Snake (self explanatory i guess)
     '''
 
-    def __init__(self) -> None:
+    def __init__(self, init_snake_lengths: array) -> None:
         '''
         Initilizes our snake at given board
         '''
@@ -18,6 +19,7 @@ class Snake():
         self.snake_move_count: int = 1
         self.all_actions: list = [array([1, 0]), array([-1, 0]), array([0, 1]), array([0, -1])]
         self.board = None
+        self.init_snake_lengths: array = init_snake_lengths - array([1, 1])
         
         # needs to run restart but you do it in externally
         # self.__restart__()
@@ -29,24 +31,38 @@ class Snake():
 
         def create_snake() -> tuple:
             '''
-            Chooses random point inside board_shape and places snake at that point in random direction
+            Chooses random point inside board_shape and places snake at that point in random directions of random length given self.init_snake_lengths
             Returns snake body list and direction
             '''
-            start_coord: array
-            tail_coord: array
-
+            # choose random max length that snake should be init as
+            rand_max_length: int = better_rand(self.init_snake_lengths[0], self.init_snake_lengths[1])
+            # copy action list so we can shuffle them
             shuffled_actions: list = self.all_actions.copy()
-            while True:
-                start_coord = array([randrange(self.board.bounding_box[0], self.board.bounding_box[2]), randrange(self.board.bounding_box[1], self.board.bounding_box[3])])
-                if type(self.board.board_tiles[start_coord[0]][start_coord[1]]) == AirTile:
-                    shuffle(shuffled_actions)
-                    for tail_offset in shuffled_actions:
-                        tail_coord = start_coord - tail_offset
-                        if type(self.board.board_tiles[tail_coord[0]][tail_coord[1]]) == AirTile:
-                            break
-                    else:
-                        continue
-                    return [start_coord, tail_coord], tail_offset
+            # init snake body list
+            snake_body: list = []
+
+            # choose valid position for head
+            if len(self.board.open_board_positions) == 0:
+                # if there are none kill snake
+                self.done = True
+                return
+            snake_body.append(self.board.random_open_tile_coord())
+
+            # go through each snake body
+            for body_count in range(rand_max_length):
+                # pick one open position around snake
+                shuffle(shuffled_actions)
+                for tail_offset in shuffled_actions:
+                    tail_coord: array = snake_body[body_count] - tail_offset
+                    if not self.board.board_tiles[tail_coord[0]][tail_coord[1]].occupy:
+                        # append open position to snake
+                        snake_body.append(tail_coord)
+                        break
+                else:
+                    # break if no positions around snake are open
+                    break
+
+            return snake_body, tail_offset
 
         self.done: bool = False
         self.snake_body, self.snake_direction = create_snake()

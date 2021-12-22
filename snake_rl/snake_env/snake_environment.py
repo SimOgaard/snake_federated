@@ -8,12 +8,14 @@ from random import randrange
 
 # Repo imports
 from snake_env.tiles.tiles import *
+from snake_env.tiles.tiles_spawn import *
+from generic import *
 
-class Board():
+class Board(TilesSpawn):
     '''
     Snake game board
     '''
-    def __init__(self, min_board_shape: array, max_board_shape: array, salt_and_pepper_chance: float, food_amount: array, replay_interval: int, snakes: list) -> None:
+    def __init__(self, min_board_shape: array, max_board_shape: array, replay_interval: int, snakes: list) -> None:
         '''
         Initilizes a Board object 
         '''
@@ -22,9 +24,6 @@ class Board():
         # init board data
         self.min_board_shape: array = min_board_shape
         self.max_board_shape: array = max_board_shape
-
-        self.salt_and_pepper_chance: float = salt_and_pepper_chance
-        self.food_amount: array = food_amount
 
         self.replay_interval: int = replay_interval
 
@@ -47,13 +46,7 @@ class Board():
         '''
         Restarts board for new run (need to be executed before each new run including the first)
         '''
-        def better_rand(x: int, y: int):
-            '''
-            Workaround this stupid fucking code snippet: assert x != y in random.randrange
-            '''
-            if (x != y):
-                return randrange(x, y)
-            return x
+        super(TilesSpawn, self).__init__()
 
         self.open_board_positions = {}
 
@@ -97,18 +90,11 @@ class Board():
             for snake_part in snake.snake_body[1:]:
                 self.place_tile(SnakeTile(), snake_part)
 
-        # for every open position on board
-        rand_salt_and_pepper: array = rand(len(self.open_board_positions))
-        for index, coord in enumerate(self.open_board_positions.values()):
-            if rand_salt_and_pepper[index] < self.salt_and_pepper_chance:
-                self.place_tile(MineTile(), coord)
+        # place specified number of foods
+        self.spawn_tile(FoodTile)
 
-        for _ in range(better_rand(self.food_amount[0], self.food_amount[1])):
-            if (len(self.open_board_positions) == 0):
-                break
-            # get random coord viable for food placement
-            random_coord: array = self.random_open_tile_coord()
-            self.place_tile(FoodTile(), random_coord)
+        # place random amount of mines
+        self.spawn_tile(MineTile)
 
         
         '''
