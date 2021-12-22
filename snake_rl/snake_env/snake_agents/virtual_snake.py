@@ -47,6 +47,7 @@ class Snake():
                 self.done = True
                 return
             snake_body.append(self.board.random_open_tile_coord())
+            self.board.place_tile(SnakeHeadTile(), snake_body[0])
 
             # go through each snake body
             for body_count in range(rand_max_length):
@@ -57,6 +58,7 @@ class Snake():
                     if not self.board.board_tiles[tail_coord[0]][tail_coord[1]].occupy:
                         # append open position to snake
                         snake_body.append(tail_coord)
+                        self.board.place_tile(SnakeTile(), tail_coord)
                         break
                 else:
                     # break if no positions around snake are open
