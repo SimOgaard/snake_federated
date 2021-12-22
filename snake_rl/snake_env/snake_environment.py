@@ -85,10 +85,6 @@ class Board(TilesSpawn):
         for snake in self.snakes:
             # init snake
             snake.__restart__()
-            # Places snake body on board
-            self.place_tile(SnakeHeadTile(), snake.snake_body[0])
-            for snake_part in snake.snake_body[1:]:
-                self.place_tile(SnakeTile(), snake_part)
 
         # place specified number of foods
         self.spawn_tile(FoodTile)
