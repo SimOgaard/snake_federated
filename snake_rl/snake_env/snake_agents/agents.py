@@ -20,11 +20,11 @@ class Agent(Snake):
     '''
     Placeholders that all agents should inherrent from.
     '''
-    def __init__(self) -> None:
+    def __init__(self, init_snake_lengths: array) -> None:
         '''
         Initialize a Agent object.
         '''
-        super(Agent, self).__init__()
+        super(Agent, self).__init__(init_snake_lengths)
         self.action = 0
         self.observation = None
         self.reward = None
@@ -41,6 +41,12 @@ class RandomAgent(Agent):
     Default observation function is ObservationNone
     Ovveride it by doing RandomAgent.observate = ObservationRaycast.observate to test different observation functions
     '''
+    def __init__(self, init_snake_lengths: array = array([2, 2])) -> None:
+        '''
+        Initialize a RandomAgent object.
+        '''
+        super(RandomAgent, self).__init__(init_snake_lengths)
+
     def act(self) -> int:
         '''
         Returns random action
@@ -51,6 +57,12 @@ class ControllableAgent(Agent):
     '''
     Waits for player input to act in the environemnt
     '''
+    def __init__(self, init_snake_lengths: array = array([2, 2])) -> None:
+        '''
+        Initialize a ControllableAgent object.
+        '''
+        super(ControllableAgent, self).__init__(init_snake_lengths)
+
     def act(self) -> int:
         '''
         Returns action given key presses
@@ -77,11 +89,11 @@ class DQNAgent(Agent):
     '''
     Implements DQN (deep q learning) to act in given enviroment
     '''
-    def __init__(self, state_size: int, action_size: int, seed: int = 1337, batch_size: int = 64, gamma: float = 0.999, epsilon_start: float = 1, epsilon_end: float = 0.0, epsilon_decay: int = 2500, learning_rate: float = 5e-4, tau: float = 1e-3, update_every: int = 10, buffer_size: int = 500_000) -> None:
+    def __init__(self, state_size: int, action_size: int, init_snake_lengths: array = array([2, 2]), seed: int = 1337, batch_size: int = 64, gamma: float = 0.999, epsilon_start: float = 1, epsilon_end: float = 0.0, epsilon_decay: int = 2500, learning_rate: float = 5e-4, tau: float = 1e-3, update_every: int = 10, buffer_size: int = 500_000) -> None:
         '''
         Initialize an Agent object.
         '''
-        super(DQNAgent, self).__init__()
+        super(DQNAgent, self).__init__(init_snake_lengths)
 
         self.batch_size: int = batch_size
         self.gamma: float = gamma

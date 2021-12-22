@@ -1,18 +1,18 @@
-# math functions
+# Math Modules
 from numpy import array
 
-# this repo imports
+# Repo imports
 from snake_env.tiles.virtual_tiles import *
 
 class AirTile(Tiles):
     '''
     Tile that does nothing
     '''
-    def __init__(self, visual: int = 0, reward: int = -0.01, occupy: bool = False) -> None:
+    def __init__(self, visual: int = 0, reward: float = -0.01, occupy: bool = False, salt_pepper_chance: float = 0., spawn_amount: array = array([0, 0])) -> None:
         '''
         Initialize a air tile object.
         '''
-        super(AirTile, self).__init__(visual, reward, occupy)
+        super(AirTile, self).__init__(visual, reward, occupy, salt_pepper_chance, spawn_amount)
 
     def on_hit(self, snake, **kwargs: dict) -> float:
         '''
@@ -24,11 +24,11 @@ class WallTile(Tiles):
     '''
     Tile that represents an wall
     '''
-    def __init__(self, visual: int = 1, reward: int = -1., occupy: bool = True) -> None:
+    def __init__(self, visual: int = 1, reward: float = -1., occupy: bool = True, salt_pepper_chance: float = 0., spawn_amount: array = array([0, 0])) -> None:
         '''
         Initialize a edge tile object.
         '''
-        super(WallTile, self).__init__(visual, reward, occupy)
+        super(WallTile, self).__init__(visual, reward, occupy, salt_pepper_chance, spawn_amount)
 
     def on_hit(self, snake, **kwargs: dict) -> float:
         '''
@@ -41,11 +41,11 @@ class MineTile(Tiles):
     '''
     A mine that removes a bodypart from snake
     '''
-    def __init__(self, visual: int = 2, reward: int = -0.25, occupy: bool = True) -> None:
+    def __init__(self, visual: int = 2, reward: float = -0.25, occupy: bool = True, salt_pepper_chance: float = 0., spawn_amount: array = array([0, 0])) -> None:
         '''
         Initialize a mine tile object.
         '''
-        super(MineTile, self).__init__(visual, reward, occupy)
+        super(MineTile, self).__init__(visual, reward, occupy, salt_pepper_chance, spawn_amount)
 
     def on_hit(self, snake, **kwargs: dict) -> float:
         '''
@@ -62,11 +62,11 @@ class FoodTile(Tiles):
     '''
     Adds new bodypart to snake
     '''
-    def __init__(self, visual: int = 3, reward: int = 1, occupy: bool = True) -> None:
+    def __init__(self, visual: int = 3, reward: float = 1, occupy: bool = True, salt_pepper_chance: float = 0., spawn_amount: array = array([1, 5])) -> None:
         '''
         Initialize a food tile object.
         '''
-        super(FoodTile, self).__init__(visual, reward, occupy)
+        super(FoodTile, self).__init__(visual, reward, occupy, salt_pepper_chance, spawn_amount)
 
     def on_hit(self, snake, **kwargs: dict) -> float:
         '''
@@ -87,11 +87,11 @@ class SnakeTile(Tiles):
     '''
     Tile representing a snake bodypart
     '''
-    def __init__(self, visual: int = 4, reward: int = -1., occupy: bool = True) -> None:
+    def __init__(self, visual: int = 4, reward: float = -1., occupy: bool = True, salt_pepper_chance: float = 0., spawn_amount: array = array([0, 0])) -> None:
         '''
         Initialize a snake body tile object.
         '''
-        super(SnakeTile, self).__init__(visual, reward, occupy)
+        super(SnakeTile, self).__init__(visual, reward, occupy, salt_pepper_chance, spawn_amount)
 
     def on_hit(self, snake, **kwargs: dict) -> float:
         '''
@@ -114,11 +114,11 @@ class InvertTile(Tiles):
     '''
     Tile that inverts the direction of the snake
     '''
-    def __init__(self, visual: int = 6, reward: int = 0., occupy: bool = True) -> None:
+    def __init__(self, visual: int = 6, reward: float = 0., occupy: bool = True, salt_pepper_chance: float = 0., spawn_amount: array = array([0, 0])) -> None:
         '''
         Initialize a snake head tile object.
         '''
-        super(InvertTile, self).__init__(visual, reward, occupy)
+        super(InvertTile, self).__init__(visual, reward, occupy, salt_pepper_chance, spawn_amount)
 
     def on_hit(self, snake, **kwargs: dict) -> float:
         '''
@@ -141,11 +141,11 @@ class InvertTile(Tiles):
 #     '''
 #     Tile that splits the snake in two and creates a new snake from lost bodypart
 #     '''
-#     def __init__(self, visual: int = 7, reward: int = -1., occupy: bool = True) -> None:
+#     def __init__(self, visual: int = 7, reward: float = -1., occupy: bool = True, salt_pepper_chance: float = 0., spawn_amount: array = array([0, 0])) -> None:
 #         '''
 #         Initialize a split tile object.
 #         '''
-#         super(SplitTile, self).__init__(visual, reward, occupy)
+#         super(SplitTile, self).__init__(visual, reward, occupy, salt_pepper_chance, spawn_amount)
 
 #     def on_hit(self, snake, **kwargs: dict) -> float:
 #         '''

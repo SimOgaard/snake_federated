@@ -9,13 +9,11 @@ if __name__ == "__main__":
     '''
     Creates a large environment and counts achived apm of random agent
     '''
-    random_snake: RandomAgent = RandomAgent()
+    random_snake: RandomAgent = RandomAgent(init_snake_lengths=array([2, 10]))
 
     board: Board = Board(
         min_board_shape         = array([100, 100]),
         max_board_shape         = array([100, 100]),
-        salt_and_pepper_chance  = 0.0,
-        food_amount             = array([10, 100]),
         replay_interval         = 0,
         snakes                  = [random_snake],
     )
