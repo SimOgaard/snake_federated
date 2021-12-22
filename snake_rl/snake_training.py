@@ -17,17 +17,15 @@ if __name__ == "__main__":
     '''
 
     episode_amount: int = 100_000
-    save_every: int = 5_000000
+    save_every: int = 5_000
     board_dim: int = 5
     model_id: str = "{}x{}".format(board_dim + 2, board_dim + 2)
     model_path: str = 'snake_rl/models/checkpoint{}.pth'.format(model_id)
 
-    print(device)
-
     dqn_snake: DQNAgent = DQNAgent(
         state_size          = (board_dim + 2)**2,
         action_size         = 4,
-        init_snake_lengths  = array([2, 10]),
+        init_snake_lengths  = array([2, 2]),
         seed                = 1337,
         batch_size          = 64,
         gamma               = 0.999,

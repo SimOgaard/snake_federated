@@ -93,10 +93,12 @@ class Board(TilesSpawn):
         # place specified number of foods
         self.spawn_tile(FoodTile)
 
+        # place random amount of teleports
+        self.spawn_tele_tiles(TeleTile)
+
         # place random amount of mines
         self.spawn_tile(MineTile)
 
-        
         '''
         random_coord_1: array = self.random_open_tile_coord()
         random_coord_2: array = self.random_open_tile_coord()
@@ -129,30 +131,3 @@ class Board(TilesSpawn):
 
         return snakes_alive != 0
 
-    def random_open_tile_coord(self) -> array:
-        '''
-        Returns random tilecord that is not occupied by tiles marked with occupy
-        '''
-        def get_nth_key(n=0):
-            if n < 0:
-                n += len()
-            for i, key in enumerate(self.open_board_positions.keys()):
-                if (i == n):
-                    return key
-            raise IndexError("dictionary index out of range")
-        
-        random_index: int = randrange(len(self.open_board_positions))
-        return get_nth_key(random_index)
-
-    def place_tile(self, tile: Tiles, coord: array) -> None:
-        '''
-        Places tile at given position on board
-        '''
-        self.board_tiles[coord[0]][coord[1]] = tile
-        self.board[coord[0]][coord[1]] = tile.visual
-        
-        if (tile.occupy):
-            if (tuple(coord) in self.open_board_positions):
-                del self.open_board_positions[tuple(coord)]
-        else:
-            self.open_board_positions[tuple(coord)] = coord

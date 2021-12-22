@@ -20,6 +20,10 @@ class AirTile(Tiles):
         '''
         return self.reward
 
+    def place(self) -> None:
+
+        pass
+
 class WallTile(Tiles):
     '''
     Tile that represents an wall
@@ -62,7 +66,7 @@ class FoodTile(Tiles):
     '''
     Adds new bodypart to snake
     '''
-    def __init__(self, visual: int = 3, reward: float = 1, occupy: bool = True, salt_pepper_chance: float = 0., spawn_amount: array = array([1, 5])) -> None:
+    def __init__(self, visual: int = 3, reward: float = 1, occupy: bool = True, salt_pepper_chance: float = 0., spawn_amount: array = array([1, 1])) -> None:
         '''
         Initialize a food tile object.
         '''
@@ -114,7 +118,7 @@ class InvertTile(Tiles):
     '''
     Tile that inverts the direction of the snake
     '''
-    def __init__(self, visual: int = 6, reward: float = 0., occupy: bool = True, salt_pepper_chance: float = 0., spawn_amount: array = array([0, 0])) -> None:
+    def __init__(self, visual: int = 6, reward: float = 0., occupy: bool = True, salt_pepper_chance: float = 0., spawn_amount: array = array([1, 1])) -> None:
         '''
         Initialize a snake head tile object.
         '''
