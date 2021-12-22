@@ -110,6 +110,16 @@ class Board():
             random_coord: array = self.random_open_tile_coord()
             self.place_tile(FoodTile(), random_coord)
 
+        
+        '''
+        random_coord_1: array = self.random_open_tile_coord()
+        random_coord_2: array = self.random_open_tile_coord()
+        while random_coord_2 == random_coord_1:
+            random_coord_2 = self.random_open_tile_coord()
+        self.place_tile(TeleTile(random_coord_2), random_coord_1)
+        self.place_tile(TeleTile(random_coord_1), random_coord_2)
+        '''
+
         return self
 
     def is_alive(self) -> bool:

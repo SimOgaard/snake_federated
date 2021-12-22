@@ -59,6 +59,14 @@ class Snake():
         self.board.place_tile(AirTile(), tail_point)
         return tail_point
 
+    def remove_snake_head(self) -> array:
+        '''
+        Removes head bodypart from snake
+        '''
+        head_point: array = self.snake_body.pop(0)
+        self.board.place_tile(AirTile(), head_point)
+        return head_point
+
     def place_new_snake_head(self, snake_coord: array) -> None:
         '''
         Adds new head to snake

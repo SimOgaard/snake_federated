@@ -16,6 +16,7 @@ def display(state: FloatTensor) -> None:
     '''
     Plots given state
     '''
+
     plt.imshow(state.resize_(board_dim + 2, board_dim + 2))
     plt.show(block=False)
     plt.pause(1/30)
@@ -43,6 +44,7 @@ if __name__ == "__main__":
 
         while board.is_alive():
             state = observation_full(board = board)
+            pretty_print(state)
             display(state)
             if (not player_snake.done):
                 action: int = player_snake.act()

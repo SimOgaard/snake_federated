@@ -8,7 +8,7 @@ class AirTile(Tiles):
     '''
     Tile that does nothing
     '''
-    def __init__(self, visual: int = 0, reward: int = 0., occupy: bool = False) -> None:
+    def __init__(self, visual: int = 0, reward: float = 0., occupy: bool = False) -> None:
         '''
         Initialize a air tile object.
         '''
@@ -24,7 +24,7 @@ class WallTile(Tiles):
     '''
     Tile that represents an wall
     '''
-    def __init__(self, visual: int = 1, reward: int = -1., occupy: bool = True) -> None:
+    def __init__(self, visual: int = 1, reward: float = -1., occupy: bool = True) -> None:
         '''
         Initialize a edge tile object.
         '''
@@ -41,7 +41,7 @@ class MineTile(Tiles):
     '''
     A mine that removes a bodypart from snake
     '''
-    def __init__(self, visual: int = 2, reward: int = -0.25, occupy: bool = True) -> None:
+    def __init__(self, visual: int = 2, reward: float = -0.25, occupy: bool = True) -> None:
         '''
         Initialize a mine tile object.
         '''
@@ -62,7 +62,7 @@ class FoodTile(Tiles):
     '''
     Adds new bodypart to snake
     '''
-    def __init__(self, visual: int = 3, reward: int = 1, occupy: bool = True) -> None:
+    def __init__(self, visual: int = 3, reward: float = 1, occupy: bool = True) -> None:
         '''
         Initialize a food tile object.
         '''
@@ -87,7 +87,7 @@ class SnakeTile(Tiles):
     '''
     Tile representing a snake bodypart
     '''
-    def __init__(self, visual: int = 4, reward: int = -1., occupy: bool = True) -> None:
+    def __init__(self, visual: int = 4, reward: float = -1., occupy: bool = True) -> None:
         '''
         Initialize a snake body tile object.
         '''
@@ -114,7 +114,7 @@ class InvertTile(Tiles):
     '''
     Tile that inverts the direction of the snake
     '''
-    def __init__(self, visual: int = 6, reward: int = 0., occupy: bool = True) -> None:
+    def __init__(self, visual: int = 6, reward: float = 0., occupy: bool = True) -> None:
         '''
         Initialize a snake head tile object.
         '''
@@ -141,7 +141,7 @@ class InvertTile(Tiles):
 #     '''
 #     Tile that splits the snake in two and creates a new snake from lost bodypart
 #     '''
-#     def __init__(self, visual: int = 7, reward: int = -1., occupy: bool = True) -> None:
+#     def __init__(self, visual: int = 7, reward: float = -1., occupy: bool = True) -> None:
 #         '''
 #         Initialize a split tile object.
 #         '''
@@ -170,3 +170,22 @@ class InvertTile(Tiles):
 
 #         return self.reward
 
+class TeleTile(Tiles):
+    '''
+    Tile that teleports the head of the snake
+    '''
+    def __init__(self, ptnr_coord: array, visual: int = 8, reward: float = 0, occupy: bool = True) -> None:
+        '''
+        Initialize a teleport tile object
+        '''
+        self.ptnr_coord = ptnr_coord
+        super(TeleTile, self).__init__(visual, reward, occupy)
+    
+    def on_hit(self, snake, **kwargs: dict) -> None:
+        '''
+        Teleports snake head
+        '''
+        snake.remove_snake_head()
+        snake.snake_body.insert(0, self.ptnr_coord)
+        snake.board.place_tile(SnakeHeadTile(), self.ptnr_coord)
+        return self.reward
