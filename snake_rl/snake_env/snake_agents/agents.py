@@ -207,13 +207,10 @@ class DQNAgent(Agent):
     def agregate(self, forreignParameters, beta=0.5):
         ##Beta says how big of an influence the forreignModel should have in the agregation.
         ##It goes between 0 and 1 where 0.5 gives the average between the models.
-        self.parameters_dict = dict(self.CurrentModel.named_parameters())
+        self.parameters_dict = dict(self.qnetwork_local.named_parameters())
 
         for name, parameter in forreignParameters:
             if name in self.parameters_dict:
                 self.parameters_dict[name].data.copy_(beta*parameter.data + (1-beta)*self.parameters_dict[name].data)
 
-        self.CurrentModel.load_state_dict(self.parameters_dict)
-
-        print(self.id + " agregated weights from " + id)
-
+        self.qnetwork_local.load_state_dict(self.parameters_dict)
