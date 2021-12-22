@@ -22,6 +22,8 @@ if __name__ == "__main__":
     model_id: str = "{}x{}".format(board_dim + 2, board_dim + 2)
     model_path: str = 'models/checkpoint{}.pth'.format(model_id)
 
+    print(device)
+
     dqn_snake: DQNAgent = DQNAgent(
         state_size    = (board_dim + 2)**2,
         action_size   = 4,
@@ -41,7 +43,7 @@ if __name__ == "__main__":
         min_board_shape         = array([board_dim, board_dim]),
         max_board_shape         = array([board_dim, board_dim]),
         salt_and_pepper_chance  = 0.0,
-        food_amount             = array([5, 10]),
+        food_amount             = array([1, 1]),
         replay_interval         = 0,
         snakes                  = [dqn_snake],
     )
