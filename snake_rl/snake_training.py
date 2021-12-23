@@ -62,8 +62,8 @@ if __name__ == "__main__":
             action: int = dqn_snake.act(state) # choose an action for given snake
             reward: float = dqn_snake.move(action)
 
-            action = LongTensor([action], device=device) # take the agents action that leed to that reward and state
-            reward = tensor([reward], device=device) # take the reward that the agent stored
+            action = LongTensor([action]) # take the agents action that leed to that reward and state
+            reward = FloatTensor([reward]) # take the reward that the agent stored
 
             next_state: FloatTensor = observation_full(board = board) # observe what steps taken lead to
 
