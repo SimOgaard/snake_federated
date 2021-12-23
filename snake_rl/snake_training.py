@@ -32,7 +32,7 @@ if __name__ == "__main__":
         epsilon_start       = 1.,
         epsilon_end         = 0.,
         epsilon_decay       = 10_000,
-        learning_rate       = 5e-4,
+        learning_rate       = 1e-4,
         tau                 = 1e-3,
         update_every        = 32,
         buffer_size         = 1_000_000
@@ -62,7 +62,7 @@ if __name__ == "__main__":
             action: int = dqn_snake.act(state) # choose an action for given snake
             reward: float = dqn_snake.move(action)
 
-            action = tensor([action], device=device) # take the agents action that leed to that reward and state
+            action = LongTensor([action], device=device) # take the agents action that leed to that reward and state
             reward = tensor([reward], device=device) # take the reward that the agent stored
 
             next_state: FloatTensor = observation_full(board = board) # observe what steps taken lead to

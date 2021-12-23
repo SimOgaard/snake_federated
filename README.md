@@ -16,7 +16,7 @@ python3 snake_training.py
 ```
 
 ### TODO:
-###     Fruit that splits snake into two
+###     Fruit that splits snake into two (currently not workking)
 ###     Fruit that detatches one bit of the tail and leaves it on board
 ###     Super fruit that gives more reward but gives you longer body
 ###     Random board structure

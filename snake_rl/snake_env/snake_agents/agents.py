@@ -5,7 +5,7 @@ from random import random, choice
 from math import exp
 
 # Input
-from msvcrt import getch
+# from msvcrt import getch
 
 # Repo imports
 from snake_env.snake_agents.virtual_snake import *
@@ -13,7 +13,7 @@ from snake_env.snake_agents.observation_functions import *
 from snake_env.snake_agents.neural_nets.deep_q_learning import *
 
 # Torch imports
-from torch import no_grad, argmax
+from torch import no_grad, argmax, LongTensor
 from torch.optim import Adam
 
 class Agent(Snake):
@@ -127,7 +127,7 @@ class DQNAgent(Agent):
         '''
         super(DQNAgent, self).__restart__()
 
-    def step(self, state: FloatTensor, action: FloatTensor, reward: FloatTensor, next_state: FloatTensor, done: bool) -> None:
+    def step(self, state: FloatTensor, action: LongTensor, reward: FloatTensor, next_state: FloatTensor, done: bool) -> None:
         '''
         Trains a step
         '''
