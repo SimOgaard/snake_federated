@@ -5,7 +5,7 @@ from random import random, choice
 from math import exp
 
 # Input
-# from msvcrt import getch
+from pynput import keyboard
 
 # Repo imports
 from snake_env.snake_agents.virtual_snake import *
@@ -68,20 +68,19 @@ class ControllableAgent(Agent):
         Returns action given key presses
         '''
         def KeyCheck() -> array:
-            global Break_KeyCheck
-            Break_KeyCheck = False
-            
-            base = getch()
-            if base == b'\x00':
-                sub = getch()
-                if sub == b'H':
-                    return 1
-                elif sub == b'M':
-                    return 2
-                elif sub == b'P':
-                    return 0
-                elif sub == b'K':
-                    return 3
+            while True:
+                with keyboard.Events() as events:
+                    # Block for as much as possible
+                    key_press = events.get(1e6).key
+
+                    if key_press == keyboard.Key.up:
+                        return 1
+                    elif key_press == keyboard.Key.right:
+                        return 2
+                    elif key_press == keyboard.Key.down:
+                        return 0
+                    elif key_press == keyboard.Key.left:
+                        return 3
 
         return KeyCheck()
 
