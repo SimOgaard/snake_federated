@@ -5,7 +5,7 @@ from random import random, choice
 from math import exp
 
 # Input
-from pynput import keyboard
+# from pynput import keyboard
 
 # Repo imports
 from snake_env.snake_agents.virtual_snake import *
@@ -202,14 +202,3 @@ class DQNAgent(Agent):
         '''
         for target_param, local_param in zip(target_model.parameters(), local_model.parameters()):
             target_param.data.copy_(self.tau*local_param.data + (1-self.tau)*target_param.data)
-
-    def agregate(self, forreignParameters, beta=0.5):
-        ##Beta says how big of an influence the forreignModel should have in the agregation.
-        ##It goes between 0 and 1 where 0.5 gives the average between the models.
-        self.parameters_dict = dict(self.qnetwork_local.named_parameters())
-
-        for name, parameter in forreignParameters:
-            if name in self.parameters_dict:
-                self.parameters_dict[name].data.copy_(beta*parameter.data + (1-beta)*self.parameters_dict[name].data)
-
-        self.qnetwork_local.load_state_dict(self.parameters_dict)
