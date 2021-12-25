@@ -31,10 +31,11 @@ if __name__ == "__main__":
     random_snake: RandomAgent = RandomAgent(init_snake_lengths=array([2, 10]))
 
     board: Board = Board(
-        min_board_shape         = array([9, 9]),
+        min_board_shape         = array([3, 3]),
         max_board_shape         = array([9, 9]),
         replay_interval         = 0,
         snakes                  = [player_snake, random_snake],
+        tiles_populated         = [FoodTile],
     )
 
     # fig = plt.figure()

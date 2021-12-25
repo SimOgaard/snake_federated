@@ -6,7 +6,7 @@ from snake_env.snake_agents.agents import *
 from numpy import mean as numpy_mean
 
 # Torch imports
-from torch import tensor, save, load
+from torch import save, load
 
 # Generic imports
 from os import path
@@ -27,7 +27,7 @@ if __name__ == "__main__":
         action_size         = 4,
         init_snake_lengths  = array([2, 2]),
         seed                = 1337,
-        batch_size          = 64,
+        batch_size          = 128,
         gamma               = 0.999,
         epsilon_start       = 1.,
         epsilon_end         = 0.,
@@ -43,6 +43,7 @@ if __name__ == "__main__":
         max_board_shape         = array([board_dim, board_dim]),
         replay_interval         = 0,
         snakes                  = [dqn_snake],
+        tiles_populated         = [FoodTile],
     )
 
     scores_window = deque(maxlen=100) # last 100 scores

@@ -1,4 +1,5 @@
 # Torch imports
+from numpy.lib.shape_base import tile
 from torch import empty as torch_empty
 
 # Math modules
@@ -15,7 +16,7 @@ class Board(TilesSpawn):
     '''
     Snake game board
     '''
-    def __init__(self, min_board_shape: array, max_board_shape: array, replay_interval: int, snakes: list) -> None:
+    def __init__(self, min_board_shape: array, max_board_shape: array, replay_interval: int, snakes: list, tiles_populated: list) -> None:
         '''
         Initilizes a Board object 
         '''
@@ -39,6 +40,7 @@ class Board(TilesSpawn):
         for snake in self.snakes:
             snake.board = self
 
+        self.tiles_populated = tiles_populated
         # needs to run __restart__ for board to start working, is done externally
         # self.__restart__()
     
@@ -86,11 +88,8 @@ class Board(TilesSpawn):
             # init snake
             snake.__restart__()
 
-        # place specified number of foods
-        self.spawn_tile(FoodTile)
-
-        # place random amount of mines
-        self.spawn_tile(MineTile)
+        for tile in self.tiles_populated:
+            self.spawn_tile(tile)
 
         return self
 
