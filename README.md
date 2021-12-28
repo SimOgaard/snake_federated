@@ -15,6 +15,11 @@ To train a DQN snake agent run:
 python3 snake_training.py
 ```
 
+To train two DQN snake agents on different environments with federated learning run:
+```
+python3 snake_federated.py
+```
+
 ### TODO:
 ###     Fruit that splits snake into two (currently not workking)
 ###     Fruit that detatches one bit of the tail and leaves it on board
@@ -22,4 +27,4 @@ python3 snake_training.py
 ###     Random board structure
 ###
 ###     print if it died from random choise or nah
-###     Om vi vill ha större modeller fråga efter dgx ag100 kort gpu (jocke och victor vet?)
+###     dgx ag100 kort gpu är inte snabb lamao

@@ -93,7 +93,7 @@ if __name__ == "__main__":
     save_every: int = 5_000
     board_dim: int = 5
     model_id: str = "{}x{}".format(board_dim + 2, board_dim + 2)
-    model_path: str = 'snake_rl/models/fed_checkpoint{}.pth'.format(model_id)
+    model_path: str = 'models/fed_checkpoint{}.pth'.format(model_id)
 
     # Snake and its environment with only mines
     dqn_snake_mine: DQNAgent = DQNAgent(
