@@ -41,7 +41,7 @@ class MineTile(Tiles):
     '''
     A mine that removes a bodypart from snake
     '''
-    def __init__(self, visual: int = 2, reward: float = -0.25, occupy: bool = True, salt_pepper_chance: float = 0., spawn_amount: array = array([0, 0])) -> None:
+    def __init__(self, visual: int = 2, reward: float = -0.25, occupy: bool = True, salt_pepper_chance: float = 0.1, spawn_amount: array = array([0, 0])) -> None:
         '''
         Initialize a mine tile object.
         '''
@@ -62,7 +62,7 @@ class FoodTile(Tiles):
     '''
     Adds new bodypart to snake
     '''
-    def __init__(self, visual: int = 3, reward: float = 1, occupy: bool = True, salt_pepper_chance: float = 0., spawn_amount: array = array([1, 2])) -> None:
+    def __init__(self, visual: int = 3, reward: float = 1, occupy: bool = True, salt_pepper_chance: float = 0., spawn_amount: array = array([1, 10])) -> None:
         '''
         Initialize a food tile object.
         '''

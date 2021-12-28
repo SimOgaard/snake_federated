@@ -81,7 +81,8 @@ class Snake():
         '''
         Adds new head to snake
         '''
-        self.board.place_tile(SnakeTile(), self.snake_body[0])
+        if (len(self.snake_body) != 0):
+            self.board.place_tile(SnakeTile(), self.snake_body[0])
         self.snake_body.insert(0, snake_coord)
         self.board.place_tile(SnakeHeadTile(), snake_coord)
         

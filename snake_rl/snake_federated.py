@@ -1,4 +1,5 @@
 # Repo imports
+import torch
 from snake_env.snake_environment import *
 from snake_env.snake_agents.agents import *
 from snake_terminal import pretty_print, display
@@ -13,7 +14,7 @@ from torch import div as torch_div
 
 # Generic imports
 from os import path
-import copy
+from copy import deepcopy
 
 def dqn(board: Board, snake: Snake):
     scores_window = deque(maxlen=100) # last 100 scores
@@ -48,13 +49,17 @@ def agregate(agents: list) -> None:
         '''
         Returns agregated median of all models
         '''
-        print(models)
-        model_average = dict(models[0].named_parameters())
+        with torch.no_grad():
+            model_average = dict(models[0].named_parameters())
 
-        for key in model_average.keys():
-            for i in range(1, len(models)):
-                model_average[key].data += dict(models[i].named_parameters())[key]
-            model_average[key].data = torch_div(model_average[key].data, len(models))
+            for key in model_average.keys():
+                # print(model_average[key].data)
+                for i in range(1, len(models)):
+                    # print(dict(models[i].named_parameters())[key].data)
+                    model_average[key].data += dict(models[i].named_parameters())[key].data#.clone()
+
+                model_average[key].data = torch_div(model_average[key].data, len(models))
+                # print(model_average[key].data)
 
         return model_average
 
@@ -64,8 +69,17 @@ def agregate(agents: list) -> None:
 
     # apply a copied version of the returning agregated model to each agent
     for agent in agents:
-        agent.qnetwork_local = copy.deepcopy(agregated_qnetwork_local)
-        agent.qnetwork_target = copy.deepcopy(agregated_qnetwork_target)
+        agent.qnetwork_local.load_state_dict(agregated_qnetwork_local)
+        agent.qnetwork_target.load_state_dict(agregated_qnetwork_target)
+
+    # ### TESTING
+    # print((agents[0].qnetwork_local.fc1.weight == agents[1].qnetwork_local.fc1.weight).all()) # SHOULD PRINT TRUE
+    # # Manipulate param
+    # with torch.no_grad():
+    #     agents[0].qnetwork_local.fc1.weight.zero_()
+
+    # print((agents[0].qnetwork_local.fc1.weight == agents[1].qnetwork_local.fc1.weight).all()) # SHOULD PRINT FALSE
+    # ### TESTING
 
 if __name__ == "__main__":
     '''
@@ -80,8 +94,8 @@ if __name__ == "__main__":
     model_id: str = "{}x{}".format(board_dim + 2, board_dim + 2)
     model_path: str = 'snake_rl/models/fed_checkpoint{}.pth'.format(model_id)
 
-    # Snake and its environment with nothing
-    dqn_snake_plane: DQNAgent = DQNAgent(
+    # Snake and its environment with only mines
+    dqn_snake_mine: DQNAgent = DQNAgent(
         state_size          = (board_dim + 2)**2,
         action_size         = 4,
         init_snake_lengths  = array([2, 2]),
@@ -96,12 +110,12 @@ if __name__ == "__main__":
         update_every        = 32,
         buffer_size         = 1_000_000
     )
-    board_plane: Board = Board(
+    board_mine: Board = Board(
         min_board_shape         = array([board_dim, board_dim]),
         max_board_shape         = array([board_dim, board_dim]),
         replay_interval         = 0,
-        snakes                  = [dqn_snake_plane],
-        tiles_populated         = [],
+        snakes                  = [dqn_snake_mine],
+        tiles_populated         = [MineTile],
     )
 
     # Snake and its environment with fruit
@@ -109,7 +123,7 @@ if __name__ == "__main__":
         state_size          = (board_dim + 2)**2,
         action_size         = 4,
         init_snake_lengths  = array([2, 2]),
-        seed                = 1337,
+        seed                = 69,
         batch_size          = 128,
         gamma               = 0.999,
         epsilon_start       = 1.,
@@ -130,28 +144,28 @@ if __name__ == "__main__":
 
     if (path.exists(model_path)): # load model
         checkpoint = load(model_path)
-        dqn_snake_plane.qnetwork_local.load_state_dict(checkpoint['network_local'])
-        dqn_snake_plane.qnetwork_target.load_state_dict(checkpoint['network_target'])
+        dqn_snake_mine.qnetwork_local.load_state_dict(checkpoint['network_local'])
+        dqn_snake_mine.qnetwork_target.load_state_dict(checkpoint['network_target'])
 
         dqn_snake_fruit.qnetwork_local.load_state_dict(checkpoint['network_local'])
         dqn_snake_fruit.qnetwork_target.load_state_dict(checkpoint['network_target'])
 
     for i in range(episode_amount):
         # train each snake seperatly for env_episode_amount episodes
-        dqn(board=board_plane, snake=dqn_snake_plane)
+        dqn(board=board_mine, snake=dqn_snake_mine)
         dqn(board=board_fruit, snake=dqn_snake_fruit)
 
         # do a fedaverage between them
-        agregate([dqn_snake_plane, dqn_snake_fruit])
+        agregate([dqn_snake_mine, dqn_snake_fruit])
 
         # Save their model
         if i % save_every == 0:
             state: dict = {
-                'network_local': dqn_snake_plane.qnetwork_local.state_dict(),
-                'network_target': dqn_snake_plane.qnetwork_target.state_dict()
+                'network_local': dqn_snake_mine.qnetwork_local.state_dict(),
+                'network_target': dqn_snake_mine.qnetwork_target.state_dict()
             }
             save(state, model_path)
 
     # test the snake that hadnt seen any fruits on fruit board and see how it reacts
-    board_fruit.snakes = [dqn_snake_plane]
-    display_run(board_fruit, dqn_snake_plane)
+    board_fruit.snakes = [dqn_snake_mine]
+    display_run(board_fruit, dqn_snake_mine)
