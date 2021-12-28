@@ -55,7 +55,7 @@ class MineTile(Tiles):
         snake.remove_snake_tail()
         if (len(snake.snake_body) == 0):
             snake.done = True
-            return -1 # return larger penalty because snake died
+            return -1. # return larger penalty because snake died
         return self.reward
 
 class FoodTile(Tiles):
