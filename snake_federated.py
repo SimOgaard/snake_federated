@@ -4,6 +4,7 @@ from snake_env.snake_environment import *
 from snake_env.snake_agents.agents import *
 from snake_terminal import pretty_print, display
 from snake_testing import display_run
+from snake_training import load_checkpoint
 
 # Math modules
 from numpy import mean as numpy_mean
@@ -144,11 +145,8 @@ if __name__ == "__main__":
 
     if (path.exists(model_path)): # load model
         checkpoint = load(model_path)
-        dqn_snake_mine.qnetwork_local.load_state_dict(checkpoint['network_local'])
-        dqn_snake_mine.qnetwork_target.load_state_dict(checkpoint['network_target'])
-
-        dqn_snake_fruit.qnetwork_local.load_state_dict(checkpoint['network_local'])
-        dqn_snake_fruit.qnetwork_target.load_state_dict(checkpoint['network_target'])
+        load_checkpoint(dqn_snake_mine, checkpoint)
+        load_checkpoint(dqn_snake_fruit, checkpoint)
 
     for i in range(episode_amount):
         # train each snake seperatly for env_episode_amount episodes
@@ -178,4 +176,4 @@ if __name__ == "__main__":
     )
     # display 10 runs
     for _ in range(10):
-        display_run(board_combined, dqn_snake_mine)
+        display_run(board_combined, dqn_snake_mine, board_dim)

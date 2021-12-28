@@ -26,6 +26,11 @@ To get this repo woring on google colab:
 %cd /content/snake_federated
 ```
 
+### WERID:
+###     med air tile reward = -0.01 på environment med endast mines går snake in i mine
+###     med air tile reward = 0.01 på environment med endast mines går snake inte in i mine
+###     detta fungerar ej med federated learning
+
 ### TODO:
 ###     Fruit that splits snake into two (currently not workking)
 ###     Fruit that detatches one bit of the tail and leaves it on board

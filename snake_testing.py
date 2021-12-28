@@ -2,6 +2,7 @@
 from snake_env.snake_environment import *
 from snake_env.snake_agents.agents import *
 from snake_terminal import display, pretty_print
+from snake_training import load_checkpoint
 
 # Math modules
 from numpy import mean as numpy_mean
@@ -12,7 +13,7 @@ from torch import tensor, save, load
 # Generic imports
 from os import path
 
-def display_run(board: Board, snake: Snake):
+def display_run(board: Board, snake: Snake, board_dim: int):
     board.__restart__() # restart board
     state: FloatTensor = observation_full(board = board) # save init state
 
@@ -40,7 +41,7 @@ if __name__ == "__main__":
     dqn_snake: DQNAgent = DQNAgent(
         state_size    = (board_dim + 2)**2,
         action_size   = 4,
-        init_snake_lengths=array([2, 10]),
+        init_snake_lengths=array([2, 2]),
         seed          = 1337,
         batch_size    = 128,
         gamma         = 0.999,
@@ -63,8 +64,7 @@ if __name__ == "__main__":
 
     if (path.exists(model_path)): # load model
         checkpoint = load(model_path)
-        dqn_snake.qnetwork_local.load_state_dict(checkpoint['network_local'])
-        dqn_snake.qnetwork_target.load_state_dict(checkpoint['network_target'])
+        load_checkpoint(dqn_snake)
 
     while board.run < episode_amount:
-        display_run(board, dqn_snake)
+        display_run(board, dqn_snake, board_dim)

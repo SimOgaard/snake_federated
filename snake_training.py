@@ -11,6 +11,10 @@ from torch import save, load
 # Generic imports
 from os import path
 
+def load_checkpoint(snake, checkpoint) -> None:
+    snake.qnetwork_local.load_state_dict(checkpoint['network_local'])
+    snake.qnetwork_target.load_state_dict(checkpoint['network_target'])
+
 if __name__ == "__main__":
     '''
     Trains a DQN-agent
@@ -50,8 +54,7 @@ if __name__ == "__main__":
 
     if (path.exists(model_path)): # load model
         checkpoint = load(model_path)
-        dqn_snake.qnetwork_local.load_state_dict(checkpoint['network_local'])
-        dqn_snake.qnetwork_target.load_state_dict(checkpoint['network_target'])
+        load_checkpoint(dqn_snake, checkpoint)
 
     while board.run < episode_amount:
         
