@@ -43,7 +43,7 @@ if __name__ == "__main__":
         max_board_shape         = array([board_dim, board_dim]),
         replay_interval         = 0,
         snakes                  = [dqn_snake],
-        tiles_populated         = [FoodTile],
+        tiles_populated         = [MineTile],
     )
 
     scores_window = deque(maxlen=100) # last 100 scores
