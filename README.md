@@ -20,6 +20,12 @@ To train two DQN snake agents on different environments with federated learning 
 python3 snake_federated.py
 ```
 
+To get this repo woring on google colab:
+```
+!git clone https://github.com/SimOgaard/snake_federated
+%cd /content/snake_federated
+```
+
 ### TODO:
 ###     Fruit that splits snake into two (currently not workking)
 ###     Fruit that detatches one bit of the tail and leaves it on board
