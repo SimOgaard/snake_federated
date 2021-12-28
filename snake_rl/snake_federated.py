@@ -16,7 +16,7 @@ from torch import div as torch_div
 from os import path
 from copy import deepcopy
 
-def dqn(board: Board, snake: Snake):
+def dqn(board: Board, snake: Snake) -> float:
     scores_window = deque(maxlen=100) # last 100 scores
 
     for i in range (env_episode_amount):
@@ -37,9 +37,10 @@ def dqn(board: Board, snake: Snake):
             state = next_state # set old state to the next state
 
         scores_window.append(len(snake.snake_body)) # save the most recent score
-        print('\rEpisode {}\tAverage Score {:.3f}\tRandom act chance {:.6f}'.format(board.run, numpy_mean(scores_window), snake.calculate_epsilon()), end="")
-        
-    print('\rEpisode {}\tAverage Score {:.3f}\tRandom act chance {:.6f}'.format(board.run, numpy_mean(scores_window), snake.calculate_epsilon()))
+        #print('\rEpisode {}\tAverage Score {:.3f}\tRandom act chance {:.6f}'.format(board.run, numpy_mean(scores_window), snake.calculate_epsilon()), end="")
+
+    return numpy_mean(scores_window)
+    #print('\rEpisode {}\tAverage Score {:.3f}\tRandom act chance {:.6f}'.format(board.run, numpy_mean(scores_window), snake.calculate_epsilon()))
 
 def agregate(agents: list) -> None:
     '''
@@ -152,8 +153,10 @@ if __name__ == "__main__":
 
     for i in range(episode_amount):
         # train each snake seperatly for env_episode_amount episodes
-        dqn(board=board_mine, snake=dqn_snake_mine)
-        dqn(board=board_fruit, snake=dqn_snake_fruit)
+        mine_median: float = dqn(board=board_mine, snake=dqn_snake_mine)
+        fruit_median: float = dqn(board=board_fruit, snake=dqn_snake_fruit)
+
+        print('\rEpisode {}\tAverage Scores ({:.3f}, {:.3f})\tRandom act chance {:.6f}'.format(i * env_episode_amount, mine_median, fruit_median, dqn_snake_fruit.calculate_epsilon()))
 
         # do a fedaverage between them
         agregate([dqn_snake_mine, dqn_snake_fruit])
