@@ -27,15 +27,18 @@ To get this repo woring on google colab:
 ```
 
 ### WERID:
-###     med air tile reward = -0.01 på environment med endast mines går snake in i mine
-###     med air tile reward = 0.01 på environment med endast mines går snake inte in i mine
-###     detta fungerar ej med federated learning
+*       med air tile reward = -0.01 på environment med endast mines går snake in i mine
+*       med air tile reward = 0.01 på environment med endast mines går snake inte in i mine
+*       detta fungerar ej med federated learning
 
 ### TODO:
-###     Fruit that splits snake into two (currently not workking)
-###     Fruit that detatches one bit of the tail and leaves it on board
-###     Super fruit that gives more reward but gives you longer body
-###     Random board structure
-###
-###     print if it died from random choise or nah
-###     dgx ag100 kort gpu är inte snabb lamao
+*       You should be able to have different tiles inits for different boards
+*       Fix snake observation function near
+*       Fix ui for display in snake_terminal
+*       Store if it died from random choise or nah (print % amount after x episodes)
+
+*       Fruit that splits snake into two (currently not workking)
+*       Fruit that detatches one bit of the tail and leaves it on board
+*       Super fruit that gives more reward but gives you longer body
+
+*       Random board structure not just cubic

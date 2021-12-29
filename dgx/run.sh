@@ -13,6 +13,4 @@ docker run -it --rm --runtime nvidia \
 -v $ROOT_DIR:/home/$username \
 $IMAGE_NAME \
 
-bash
-#python3 snake_federated_classic.py
-
+python3 snake_federated_transfer_learning.py
