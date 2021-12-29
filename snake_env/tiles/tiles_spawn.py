@@ -59,5 +59,5 @@ class TilesSpawn():
         instantiated = tile_type() # instanciate new tile
         if (instantiated.salt_pepper_chance > 0):
             for salt_pepper_val, coord in zip(self.get_salt_and_pepper(), list(self.open_board_positions)):
-                if instantiated.salt_pepper_chance < salt_pepper_val:
+                if salt_pepper_val < instantiated.salt_pepper_chance:
                     self.place_tile(tile_type(), coord)

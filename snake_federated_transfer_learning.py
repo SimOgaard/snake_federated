@@ -88,7 +88,7 @@ if __name__ == "__main__":
     Does a fedaverage between the two agents to show that two agents in seperate environments can transfer what they have learned to eachother
     '''
 
-    episode_amount: int = 500
+    episode_amount: int = 10_000
     env_episode_amount: int = 100
     save_every: int = 50
     board_dim: int = 5
@@ -101,11 +101,11 @@ if __name__ == "__main__":
         action_size         = 4,
         init_snake_lengths  = array([2, 2]),
         seed                = 1337,
-        batch_size          = 128,
+        batch_size          = 512,
         gamma               = 0.999,
         epsilon_start       = 1.,
         epsilon_end         = 0.,
-        epsilon_decay       = 10_000,
+        epsilon_decay       = 100_000,
         learning_rate       = 1e-4,
         tau                 = 1e-3,
         update_every        = 32,
@@ -125,11 +125,11 @@ if __name__ == "__main__":
         action_size         = 4,
         init_snake_lengths  = array([2, 2]),
         seed                = 69,
-        batch_size          = 128,
+        batch_size          = 512,
         gamma               = 0.999,
         epsilon_start       = 1.,
         epsilon_end         = 0.,
-        epsilon_decay       = 10_000,
+        epsilon_decay       = 100_000,
         learning_rate       = 1e-4,
         tau                 = 1e-3,
         update_every        = 32,

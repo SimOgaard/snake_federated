@@ -41,7 +41,7 @@ class MineTile(Tiles):
     '''
     A mine that removes a bodypart from snake
     '''
-    def __init__(self, visual: int = 2, reward: float = -0.25, occupy: bool = True, salt_pepper_chance: float = 0.1, spawn_amount: array = array([0, 0])) -> None:
+    def __init__(self, visual: int = 2, reward: float = -0.25, occupy: bool = True, salt_pepper_chance: float = 0.2, spawn_amount: array = array([0, 0])) -> None:
         '''
         Initialize a mine tile object.
         '''
