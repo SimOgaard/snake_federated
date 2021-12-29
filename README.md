@@ -17,7 +17,7 @@ python3 snake_training.py
 
 To train two DQN snake agents on different environments with federated learning run:
 ```
-python3 snake_federated.py
+python3 snake_federated_transfer_learning.py
 ```
 
 To get this repo woring on google colab:

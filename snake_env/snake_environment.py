@@ -36,14 +36,17 @@ class Board(TilesSpawn):
         self.run: int = -1
         self.board_replay: list = []
 
-        self.snakes = snakes
-        for snake in self.snakes:
-            snake.board = self
+        self.set_snakes(snakes)
 
         self.tiles_populated = tiles_populated
         # needs to run __restart__ for board to start working, is done externally
         # self.__restart__()
-    
+
+    def set_snakes(self, snakes: list) -> None:
+        self.snakes = snakes
+        for snake in self.snakes:
+            snake.board = self
+
     def __restart__(self) -> None:
         '''
         Restarts board for new run (need to be executed before each new run including the first)

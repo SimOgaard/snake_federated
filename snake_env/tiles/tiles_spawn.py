@@ -26,6 +26,8 @@ class TilesSpawn():
         '''
         Returns random subset of coords that are not occupied
         '''
+        if amount > len(self.open_board_positions):
+            amount = len(self.open_board_positions)
         return sample(self.open_board_positions.keys(), amount)
 
     def get_salt_and_pepper(self) -> list:
