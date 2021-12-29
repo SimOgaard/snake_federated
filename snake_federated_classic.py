@@ -20,7 +20,7 @@ from os import path
 if __name__ == "__main__":
     '''
     Trains multiple seperated DQN-agents in seperate environments with different rules
-    Does a fedaverage between the agents to show that multiple rules for multiple agents can increase preformance
+    Does a fedaverage between the agents to show that multiple rules for multiple agents can increase preformance/exploration
     '''
 
     episode_amount: int = 500
@@ -54,7 +54,7 @@ if __name__ == "__main__":
     dqn_snake_exploitation: DQNAgent = DQNAgent(
         state_size          = (board_dim + 2)**2,
         action_size         = 4,
-        init_snake_lengths  = array([2, 2]),
+        init_snake_lengths  = array([2, 20]),
         seed                = 69,
         batch_size          = 128,
         gamma               = 0.999,
