@@ -37,6 +37,10 @@ To get this repo woring on google colab:
 *       Fix ui for display in snake_terminal
 *       Store if it died from random choise or nah (print % amount after x episodes)
 
+*       CNN DQN
+*       PPO
+*       AlphaGo route (test multiple actions)
+
 *       Fruit that splits snake into two (currently not workking)
 *       Fruit that detatches one bit of the tail and leaves it on board
 *       Super fruit that gives more reward but gives you longer body
