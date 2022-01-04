@@ -23,11 +23,12 @@ if __name__ == "__main__":
     episode_amount: int = 100_000
     save_every: int = 5_000
     board_dim: int = 5
-    model_id: str = "{}x{}".format(board_dim + 2, board_dim + 2)
+    state_size: int = 5
+    model_id: str = "{}x{}".format(state_size, state_size)
     model_path: str = 'models/checkpoint{}.pth'.format(model_id)
 
     dqn_snake: DQNAgent = DQNAgent(
-        state_size          = (board_dim + 2)**2,
+        state_size          = state_size**2,
         action_size         = 4,
         init_snake_lengths  = array([2, 2]),
         seed                = 1337,
@@ -47,7 +48,11 @@ if __name__ == "__main__":
         max_board_shape         = array([board_dim, board_dim]),
         replay_interval         = 0,
         snakes                  = [dqn_snake],
-        tiles_populated         = [MineTile],
+        tiles_populated         = {
+            "air_tile": AirTile(),
+            "wall_tile": WallTile(),
+            "mine_tile": MineTile()
+        },
     )
 
     scores_window = deque(maxlen=100) # last 100 scores

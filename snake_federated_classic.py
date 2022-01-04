@@ -27,14 +27,15 @@ if __name__ == "__main__":
     env_episode_amount: int = 100
     save_every: int = 50
     board_dim: int = 5
-    model_id: str = "{}x{}".format(board_dim + 2, board_dim + 2)
+    state_size: int = 5
+    model_id: str = "{}x{}".format(state_size, state_size)
     model_path: str = 'models/checkpoint{}.pth'.format(model_id)
 
     # snake for:
     #           * early game exploration (small snake length and high epsilon)
     #           * late game exploration (large snake and high epsilon)
     dqn_snake_exploration: DQNAgent = DQNAgent(
-        state_size          = (board_dim + 2)**2,
+        state_size          = state_size**2,
         action_size         = 4,
         init_snake_lengths  = array([2, 20]),
         seed                = 1337,
@@ -52,7 +53,7 @@ if __name__ == "__main__":
     #           * early game exploitation (small snake length and low epsilon)
     #           * late game exploitation (large snake and low epsilon)
     dqn_snake_exploitation: DQNAgent = DQNAgent(
-        state_size          = (board_dim + 2)**2,
+        state_size          = state_size**2,
         action_size         = 4,
         init_snake_lengths  = array([2, 20]),
         seed                = 69,
@@ -69,7 +70,7 @@ if __name__ == "__main__":
 
     #           * normal snake agent (small snake with decreesing epsilon)
     dqn_snake_normal: DQNAgent = DQNAgent(
-        state_size          = (board_dim + 2)**2,
+        state_size          = state_size**2,
         action_size         = 4,
         init_snake_lengths  = array([2, 2]),
         seed                = 69,
@@ -91,7 +92,11 @@ if __name__ == "__main__":
         max_board_shape         = array([board_dim, board_dim]),
         replay_interval         = 0,
         snakes                  = [],
-        tiles_populated         = [FoodTile],
+        tiles_populated         = {
+            "air_tile": AirTile(),
+            "wall_tile": WallTile(),
+            "food_tile": FoodTile()
+        },
     )
     #           * board with dynamic size and only mine tile
     board_mine: Board = Board(
@@ -99,7 +104,11 @@ if __name__ == "__main__":
         max_board_shape         = array([board_dim, board_dim]),
         replay_interval         = 0,
         snakes                  = [],
-        tiles_populated         = [MineTile],
+        tiles_populated         = {
+            "air_tile": AirTile(),
+            "wall_tile": WallTile(),
+            "mine_tile": MineTile()
+        },
     )
     #           * default board with fixed size both mine and food tile
     board_fruit_mine: Board = Board(
@@ -107,7 +116,12 @@ if __name__ == "__main__":
         max_board_shape         = array([board_dim, board_dim]),
         replay_interval         = 0,
         snakes                  = [],
-        tiles_populated         = [FoodTile, MineTile],
+        tiles_populated         = {
+            "air_tile": AirTile(),
+            "wall_tile": WallTile(),
+            "food_tile": FoodTile(),
+            "mine_tile": MineTile()
+        },
     )
 
     # Lists holding all snakes and boards for easy itteration and mixing
@@ -126,7 +140,7 @@ if __name__ == "__main__":
         for snake in snakes:
             for board in boards:
                 board.set_snakes([snake])
-                median = dqn(board=board, snake=snake, env_episode_amount=env_episode_amount)
+                median = dqn(board, snake, env_episode_amount, lambda: observation_near(board=board, snake=snake, kernel=array([5, 5])))
                 
         print('\rEpisode {}\tAverage Scores {:.3f}\tRandom act chance {:.6f}'.format(i * env_episode_amount, median, dqn_snake_normal.calculate_epsilon()))
 
@@ -143,4 +157,4 @@ if __name__ == "__main__":
 
     # test a snake over 10 displayed runs
     for _ in range(10):
-        display_run(board_fruit_mine, dqn_snake_normal)
+        display_run(board_fruit_mine, dqn_snake_normal, array([board_dim+2, board_dim+2]))

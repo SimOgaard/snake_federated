@@ -50,12 +50,12 @@ class MineTile(Tiles):
     def on_hit(self, snake, **kwargs: dict) -> float:
         '''
         Removes tail from snake 
-        Kills snake if snake body length is zero
+        Kills snake if snake body length is one
         '''
-        snake.remove_snake_tail()
-        if (len(snake.snake_body) == 0):
+        if (len(snake.snake_body) == 1):
             snake.done = True
             return -1. # return larger penalty because snake died
+        snake.remove_snake_tail()
         return self.reward
 
 class FoodTile(Tiles):

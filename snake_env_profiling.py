@@ -12,23 +12,39 @@ if __name__ == "__main__":
     random_snake: RandomAgent = RandomAgent(init_snake_lengths=array([2, 10]))
 
     board: Board = Board(
-        min_board_shape         = array([25, 25]),
-        max_board_shape         = array([25, 25]),
+        min_board_shape         = array([250, 250]),
+        max_board_shape         = array([250, 250]),
         replay_interval         = 0,
         snakes                  = [random_snake],
-        tiles_populated         = [FoodTile, MineTile],
+        tiles_populated         = {
+            "air_tile": AirTile(),
+            "wall_tile": WallTile(),
+            "food_tile": FoodTile(),
+            # "mine_tile": MineTile()
+        },
     )
 
-    step_count: int = 0 
+    step_count: int = 0
+    board_create_count: int = 0
     start_time = time.time()
 
     while True:
+        import time
+        start = time.time()
+
+        board_create_count+=1
         board.__restart__()
 
-        while board.is_alive():
-            action: int = random_snake.act()
-            reward: float = random_snake.move(action)
+        # while board.is_alive():
+        #     action: int = random_snake.act()
+        #     reward: float = random_snake.move(action)
 
-            step_count+=1
-            if step_count % 1_000 == 0:
-                print('\rAPS: {:.0f}'.format(step_count / (time.time() - start_time)))
+        #     step_count+=1
+        #     if step_count % 100 == 0:
+        #         print('\rAPS: {:.0f}'.format(step_count / (time.time() - start_time)))
+
+        end = time.time()
+        print(end - start)
+
+        # if board_create_count % 10 == 0:
+        #     print('\rAPS: {:.5f}'.format(board_create_count / (time.time() - start_time)))

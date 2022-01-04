@@ -5,12 +5,12 @@ from snake_env.snake_agents.agents import *
 # matplotlib imports
 from matplotlib import pyplot as plt
 
-def pretty_print(state: FloatTensor, board_dim: int) -> None:
+def pretty_print(state: FloatTensor, board_dim: array) -> None:
     '''
     Prints given state in 2d
     '''
     print(chr(27) + "[2J")
-    print(state.detach().clone().resize_(board_dim + 2, board_dim + 2))
+    print(state.detach().clone().resize_(board_dim[0], board_dim[1]))
 
 def display(state: FloatTensor, board_dim: int) -> None:
     '''
@@ -27,15 +27,19 @@ if __name__ == "__main__":
     '''
     board_dim: int = 9
 
-    player_snake: ControllableAgent = ControllableAgent(init_snake_lengths=array([2, 10]))
-    random_snake: RandomAgent = RandomAgent(init_snake_lengths=array([2, 10]))
+    player_snake: ControllableAgent = ControllableAgent(init_snake_lengths=array([2, 2]))
+    #random_snake: RandomAgent = RandomAgent(init_snake_lengths=array([2, 10]))
 
     board: Board = Board(
         min_board_shape         = array([3, 3]),
         max_board_shape         = array([9, 9]),
         replay_interval         = 0,
-        snakes                  = [player_snake, random_snake],
-        tiles_populated         = [FoodTile],
+        snakes                  = [player_snake],
+        tiles_populated         = {
+            "air_tile": AirTile(),
+            "wall_tile": WallTile(),
+            "food_tile": FoodTile()
+        },
     )
 
     # fig = plt.figure()
@@ -47,13 +51,14 @@ if __name__ == "__main__":
         board.__restart__()
 
         while board.is_alive():
-            state = observation_full(board = board)
-            pretty_print(state, board_dim)
+            state = observation_near(board=board, snake=player_snake, kernel=array([5,5]))
+            #state = observation_full(board=board)
+            pretty_print(state, array([5,5]))
             if (not player_snake.done):
                 action: int = player_snake.act()
                 reward: float = player_snake.move(action)
-            if (not random_snake.done):
-                action: int = random_snake.act()
-                reward: float = random_snake.move(action)
+            # if (not random_snake.done):
+            #     action: int = random_snake.act()
+            #     reward: float = random_snake.move(action)
 
         input("Every snake is dead...")

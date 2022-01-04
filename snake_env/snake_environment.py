@@ -16,7 +16,7 @@ class Board(TilesSpawn):
     '''
     Snake game board
     '''
-    def __init__(self, min_board_shape: array, max_board_shape: array, replay_interval: int, snakes: list, tiles_populated: list) -> None:
+    def __init__(self, min_board_shape: array, max_board_shape: array, replay_interval: int, snakes: list, tiles_populated: dict = {"air_tile": AirTile(), "wall_tile": WallTile()}) -> None:
         '''
         Initilizes a Board object 
         '''
@@ -53,7 +53,7 @@ class Board(TilesSpawn):
         '''
         super(TilesSpawn, self).__init__()
 
-        self.open_board_positions = {}
+        self.open_board_positions = {} # why cant python fuck fase fuxkcklahsjd fhjkl init capacity of this dict?!?!
 
         assert self.min_board_shape[0] <= self.max_board_shape[0]
         assert self.min_board_shape[1] <= self.max_board_shape[1]
@@ -68,19 +68,22 @@ class Board(TilesSpawn):
 
         self.bounding_box = array([start_row, start_col, start_row + width - 1, start_col + height - 1])
         
+        import time
+        start = time.time()
         for row in range(true_board_width):
             for col in range(true_board_height):
                 is_side: bool = row < self.bounding_box[0] or row > self.bounding_box[2]
                 is_top: bool = col < self.bounding_box[1] or col > self.bounding_box[3]
 
                 if (is_side or is_top):
-                    self.board_tiles[row][col] = WallTile()
+                    self.board_tiles[row][col] = self.tiles_populated["wall_tile"]
                 else:
-                    coord: array =([row, col])
-                    self.open_board_positions[tuple(coord)] = coord
-                    self.board_tiles[row][col] = AirTile()
+                    self.open_board_positions[(row, col)] = array([row, col])
+                    self.board_tiles[row][col] = self.tiles_populated["air_tile"]
 
                 self.board[row][col] = self.board_tiles[row][col].visual
+        end = time.time()
+        print("time for this fuck:" + str(end - start))
         
         self.run += 1
 
@@ -91,7 +94,7 @@ class Board(TilesSpawn):
             # init snake
             snake.__restart__()
 
-        for tile in self.tiles_populated:
+        for tile in self.tiles_populated.values():
             self.spawn_tile(tile)
 
         return self

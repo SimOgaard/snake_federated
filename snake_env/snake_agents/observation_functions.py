@@ -3,6 +3,7 @@ from numpy import array
 
 # Torch imports
 from torch import FloatTensor, flatten
+from torch.nn import ConstantPad2d
 
 # Repo imports
 from snake_env.snake_agents.virtual_snake import Snake
@@ -14,36 +15,48 @@ def observation_full(board: Board) -> FloatTensor:
     '''
     return flatten(board.board.detach().clone())
 
-def observation_near(board: Board, snake: Snake, snake_head: array, kernel: array) -> FloatTensor:
+def observation_near(board: Board, snake: Snake, kernel: array) -> FloatTensor:
     '''
     Returns kernel sized state around head
     '''
-    point_u = snake_head + snake.all_actions[1]
-    point_r = snake_head + snake.all_actions[2]
-    point_d = snake_head + snake.all_actions[0]
-    point_l = snake_head + snake.all_actions[3]
+    def clamp_coord(val:int, min_val:int, max_val:int) -> int:
+        '''
+        Returns clamped val between min_val and max_val
+        '''
+        if (val < min_val):
+            return min_val
+        if val > max_val:
+            return max_val
+        return val
 
-    try:
+    kernel = (kernel - array([1, 1])) // 2
+    snake_head: array = snake.snake_body[0]
 
-        state = [
-            # What is up
-            board.board[point_u[0]][point_u[1]],
-            
-            # What is right
-            board.board[point_r[0]][point_r[1]],
+    # get x coordinates 
+    x_from: int = snake_head[0] - kernel[0]
+    x_from_clamped: int = clamp_coord(x_from, 0, board.max_board_shape[0] + 1)
+    x_to: int = snake_head[0] + kernel[0] + 1
+    x_to_clamped: int = clamp_coord(x_to, 0, board.max_board_shape[0] + 2)
 
-            # What is down
-            board.board[point_d[0]][point_d[1]],
+    # get y coordinates 
+    y_from: int = snake_head[1] - kernel[1]
+    y_from_clamped: int = clamp_coord(y_from, 0, board.max_board_shape[1] + 1)
+    y_to: int = snake_head[1] + kernel[1] + 1
+    y_to_clamped: int = clamp_coord(y_to, 0, board.max_board_shape[1] + 2)
 
-            # What is left
-            board.board[point_l[0]][point_l[1]],
+    clipped_tensor = board.board[x_from_clamped:x_to_clamped,y_from_clamped:y_to_clamped]
 
-            # Current_direction
-            snake.action
-        ]
-        return FloatTensor(state)
-    except:
-        return FloatTensor([5, 5, 5, 5, snake.action])
+    diff_left: int = y_from_clamped - y_from
+    padding_left: int = diff_left if (diff_left > 0) else 0
+    diff_right: int = y_to - y_to_clamped
+    padding_right: int = diff_right if (diff_right > 0) else 0
+    diff_up: int = x_from_clamped - x_from
+    padding_up: int = diff_up if (diff_up > 0) else 0
+    diff_down: int = x_to - x_to_clamped
+    padding_down: int = diff_down if (diff_down > 0) else 0
+
+    padding = ConstantPad2d((padding_left, padding_right, padding_up, padding_down), board.tiles_populated["wall_tile"].visual)
+    return flatten(padding(clipped_tensor))
 
 def observation_to_bool(tensor: FloatTensor) -> FloatTensor:
     '''

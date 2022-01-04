@@ -16,12 +16,12 @@ from torch import div as torch_div
 # Generic imports
 from os import path
 
-def dqn(board: Board, snake: Snake, env_episode_amount: int) -> float:
+def dqn(board: Board, snake: Snake, env_episode_amount: int, observation_function: object) -> float:
     scores_window = deque(maxlen=100) # last 100 scores
 
     for i in range (env_episode_amount):
         board.__restart__() # restart board
-        state: FloatTensor = observation_full(board = board) # save init state
+        state: FloatTensor = observation_function() # save init state
         while board.is_alive(): # check if snakes are alive
 
             action: int = snake.act(state) # choose an action for given snake
@@ -30,7 +30,7 @@ def dqn(board: Board, snake: Snake, env_episode_amount: int) -> float:
             action = LongTensor([action]) # take the agents action that leed to that reward and state
             reward = FloatTensor([reward]) # take the reward that the agent stored
 
-            next_state: FloatTensor = observation_full(board = board) # observe what steps taken lead to
+            next_state: FloatTensor = observation_function() # observe what steps taken lead to
 
             snake.step(state, action, reward, next_state, snake.done) # signal step to snake
 
@@ -91,13 +91,14 @@ if __name__ == "__main__":
     episode_amount: int = 10_000
     env_episode_amount: int = 100
     save_every: int = 50
-    board_dim: int = 5
-    model_id: str = "{}x{}".format(board_dim + 2, board_dim + 2)
+    board_dim: int = 25
+    state_size: int = 5
+    model_id: str = "{}x{}".format(state_size, state_size)
     model_path: str = 'models/checkpoint{}.pth'.format(model_id)
 
     # Snake and its environment with only mines
     dqn_snake_mine: DQNAgent = DQNAgent(
-        state_size          = (board_dim + 2)**2,
+        state_size          = state_size**2, #(board_dim + 2)**2,
         action_size         = 4,
         init_snake_lengths  = array([2, 2]),
         seed                = 1337,
@@ -116,12 +117,16 @@ if __name__ == "__main__":
         max_board_shape         = array([board_dim, board_dim]),
         replay_interval         = 0,
         snakes                  = [dqn_snake_mine],
-        tiles_populated         = [MineTile],
+        tiles_populated         = {
+            "air_tile": AirTile(),
+            "wall_tile": WallTile(),
+            "mine_tile": MineTile()
+        },
     )
 
     # Snake and its environment with fruit
     dqn_snake_fruit: DQNAgent = DQNAgent(
-        state_size          = (board_dim + 2)**2,
+        state_size          = state_size**2, #(board_dim + 2)**2,
         action_size         = 4,
         init_snake_lengths  = array([2, 2]),
         seed                = 69,
@@ -140,7 +145,11 @@ if __name__ == "__main__":
         max_board_shape         = array([board_dim, board_dim]),
         replay_interval         = 0,
         snakes                  = [dqn_snake_fruit],
-        tiles_populated         = [FoodTile],
+        tiles_populated         = {
+            "air_tile": AirTile(),
+            "wall_tile": WallTile(),
+            "food_tile": FoodTile()
+        },
     )
 
     if (path.exists(model_path)): # load model
@@ -150,8 +159,8 @@ if __name__ == "__main__":
 
     for i in range(episode_amount):
         # train each snake seperatly for env_episode_amount episodes
-        mine_median: float = dqn(board=board_mine, snake=dqn_snake_mine, env_episode_amount=env_episode_amount)
-        fruit_median: float = dqn(board=board_fruit, snake=dqn_snake_fruit, env_episode_amount=env_episode_amount)
+        mine_median: float = dqn(board_mine, dqn_snake_mine, env_episode_amount, lambda: observation_near(board=board_mine, snake=dqn_snake_mine, kernel=array([5, 5])))
+        fruit_median: float = dqn(board_fruit, dqn_snake_fruit, env_episode_amount, lambda: observation_near(board=board_mine, snake=dqn_snake_mine, kernel=array([5, 5])))
 
         print('\rEpisode {}\tAverage Scores ({:.3f}, {:.3f})\tRandom act chance {:.6f}'.format(i * env_episode_amount, mine_median, fruit_median, dqn_snake_fruit.calculate_epsilon()))
 
@@ -172,8 +181,13 @@ if __name__ == "__main__":
         max_board_shape         = array([board_dim, board_dim]),
         replay_interval         = 0,
         snakes                  = [dqn_snake_mine],
-        tiles_populated         = [FoodTile, MineTile],
+        tiles_populated         = {
+            "air_tile": AirTile(),
+            "wall_tile": WallTile(),
+            "food_tile": FoodTile(),
+            "mine_tile": MineTile()
+        },
     )
     # display 10 runs
     for _ in range(10):
-        display_run(board_combined, dqn_snake_mine, board_dim)
+        display_run(board_combined, dqn_snake_mine, array([board_dim+2, board_dim+2]))
