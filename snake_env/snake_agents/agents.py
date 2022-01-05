@@ -4,9 +4,6 @@ from random import seed as random_seed
 from random import random, choice
 from math import exp
 
-# Input
-from msvcrt import getch
-
 # Repo imports
 from snake_env.snake_agents.virtual_snake import *
 from snake_env.snake_agents.observation_functions import *
@@ -67,7 +64,10 @@ class ControllableAgent(Agent):
         '''
         Returns action given key presses
         '''
-        def KeyCheck() -> array:
+        def KeyCheck() -> int:
+            ''' Input NOT Linux supported '''
+            from msvcrt import getch
+
             base = getch()
             if base == b'\x00':
                 sub = getch()
