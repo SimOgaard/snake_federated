@@ -26,7 +26,7 @@ if __name__ == "__main__":
         state_size          = (board_dim + 2)**2,
         action_size         = 4,
         init_snake_lengths  = array([2, 2]),
-        seed                = 1337,
+        seed                = 2674,
         batch_size          = 64,
         gamma               = 0.999,
         epsilon_start       = 1.,

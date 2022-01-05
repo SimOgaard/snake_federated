@@ -90,7 +90,7 @@ class Board(TilesSpawn):
         self.spawn_tile(FoodTile)
 
         # place random amount of teleports
-        self.spawn_tele_tiles(TeleTile)
+        #self.spawn_tele_tiles(TeleTile)
 
         # place random amount of mines
         self.spawn_tile(MineTile)
