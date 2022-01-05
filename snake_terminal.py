@@ -31,7 +31,7 @@ if __name__ == "__main__":
     #random_snake: RandomAgent = RandomAgent(init_snake_lengths=array([2, 10]))
 
     board: Board = Board(
-        min_board_shape         = array([3, 3]),
+        min_board_shape         = array([9, 9]),
         max_board_shape         = array([9, 9]),
         replay_interval         = 0,
         snakes                  = [player_snake],
@@ -52,8 +52,8 @@ if __name__ == "__main__":
 
         while board.is_alive():
             state = observation_near(board=board, snake=player_snake, kernel=array([5,5]))
-            #state = observation_full(board=board)
-            pretty_print(state, array([5,5]))
+            state = observation_full(board=board)
+            pretty_print(state, array([11,11]))
             if (not player_snake.done):
                 action: int = player_snake.act()
                 reward: float = player_snake.move(action)

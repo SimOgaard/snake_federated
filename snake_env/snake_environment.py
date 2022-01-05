@@ -1,16 +1,18 @@
 # Torch imports
 from numpy.lib.shape_base import tile
 from torch import empty as torch_empty
+from torch import tensor
+from torch import float as torch_float
 
 # Math modules
 from numpy.random import rand
 from numpy import empty
 from random import randrange
+from random import randint
 
 # Repo imports
 from snake_env.tiles.tiles import *
 from snake_env.tiles.tiles_spawn import *
-from generic import *
 
 class Board(TilesSpawn):
     '''
@@ -29,7 +31,7 @@ class Board(TilesSpawn):
         self.replay_interval: int = replay_interval
 
         self.bounding_box: array = None
-        self.board = torch_empty(tuple(self.max_board_shape + array([2, 2])))
+        self.board = torch_empty(tuple(self.max_board_shape + array([2, 2])), dtype=torch_float)
         self.board_tiles = empty(tuple(self.max_board_shape + array([2, 2])), dtype=object)
 
         # 3d cube of runs
@@ -58,33 +60,57 @@ class Board(TilesSpawn):
         assert self.min_board_shape[0] <= self.max_board_shape[0]
         assert self.min_board_shape[1] <= self.max_board_shape[1]
 
-        true_board_width: int = self.max_board_shape[0] + 2
-        true_board_height: int = self.max_board_shape[1] + 2
+        # true_board_width: int = self.max_board_shape[0] + 2
+        # true_board_height: int = self.max_board_shape[1] + 2
 
-        width: int = better_rand(self.min_board_shape[0], self.max_board_shape[0])
-        height: int = better_rand(self.min_board_shape[1], self.max_board_shape[1])
-        start_row: int = better_rand(0, self.max_board_shape[0] - width) + 1
-        start_col: int = better_rand(0, self.max_board_shape[1] - height) + 1
+        width: int = randint(self.min_board_shape[0], self.max_board_shape[0])
+        height: int = randint(self.min_board_shape[1], self.max_board_shape[1])
+        start_row: int = randint(0, self.max_board_shape[0] - width) + 1
+        start_col: int = randint(0, self.max_board_shape[1] - height) + 1
 
-        self.bounding_box = array([start_row, start_col, start_row + width - 1, start_col + height - 1])
+        self.bounding_box = array([start_row, start_col, start_row + width, start_col + height])
         
-        import time
-        start = time.time()
-        for row in range(true_board_width):
-            for col in range(true_board_height):
-                is_side: bool = row < self.bounding_box[0] or row > self.bounding_box[2]
-                is_top: bool = col < self.bounding_box[1] or col > self.bounding_box[3]
+        # ## THIS IS SLOW AF
+        # import time
+        # start = time.time()
+        # for row in range(true_board_width):
+        #     for col in range(true_board_height):
+        #         is_side: bool = row < self.bounding_box[0] or row > self.bounding_box[2]
+        #         is_top: bool = col < self.bounding_box[1] or col > self.bounding_box[3]
 
-                if (is_side or is_top):
-                    self.board_tiles[row][col] = self.tiles_populated["wall_tile"]
-                else:
-                    self.open_board_positions[(row, col)] = array([row, col])
-                    self.board_tiles[row][col] = self.tiles_populated["air_tile"]
+        #         if (is_side or is_top):
+        #             self.board_tiles[row][col] = self.tiles_populated["wall_tile"]
+        #         else:
+        #             self.open_board_positions[(row, col)] = array([row, col])
+        #             self.board_tiles[row][col] = self.tiles_populated["air_tile"]
 
-                self.board[row][col] = self.board_tiles[row][col].visual
-        end = time.time()
-        print("time for this fuck:" + str(end - start))
+        #         self.board[row][col] = self.board_tiles[row][col].visual
         
+        # ugly ass Python way is fast because its compiled to an acutal language c:
+
+        # fill both tensor and np array with air
+        self.board_tiles.fill(self.tiles_populated["air_tile"])
+        self.board.fill_(self.tiles_populated["air_tile"].visual)
+
+        # fill sides by boundingbox indices with wall
+        # tensor:
+        indices_row: list = list(range(0, self.bounding_box[0])) + list(range(self.bounding_box[2], self.board.shape[0]))
+        self.board.index_fill_(0, tensor(indices_row), self.tiles_populated["wall_tile"].visual)
+        indices_col = list(range(0, self.bounding_box[1])) + list(range(self.bounding_box[3], self.board.shape[1]))
+        self.board.index_fill_(1, tensor(indices_col), self.tiles_populated["wall_tile"].visual)
+        # numpy:
+        self.board_tiles[indices_row,:] = self.tiles_populated["wall_tile"]
+        self.board_tiles[:, indices_col] = self.tiles_populated["wall_tile"]
+        
+        # end = time.time()
+        # print("c implementation:" + str(end - start))
+        # start = time.time()
+        # fill dictionary:
+        for row in range(self.bounding_box[0], self.bounding_box[2]):
+            for col in range(self.bounding_box[1], self.bounding_box[3]):
+                self.open_board_positions[(row, col)] = array([row, col])
+        # end = time.time()
+        # print("python itteration that i do not know how to fix:" + str(end - start))
         self.run += 1
 
         self.temporary_snakes: list = []

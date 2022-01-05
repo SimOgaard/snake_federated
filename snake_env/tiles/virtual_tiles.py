@@ -4,7 +4,7 @@ class Tiles():
     Made to make it easy to add new tiles
     '''
 
-    def __init__(self, visual: int, reward: int, occupy: bool, salt_pepper_chance: float, spawn_amount: int) -> None:
+    def __init__(self, visual: int, reward: int, occupy: bool, salt_pepper_chance: float, spawn_amount: int, procentual_spawn_rate: float) -> None:
         '''
         Common tiles init (values)
         '''
@@ -15,6 +15,7 @@ class Tiles():
         self.occupy = occupy
         self.salt_pepper_chance = salt_pepper_chance
         self.spawn_amount = spawn_amount
+        self.procentual_spawn_rate = procentual_spawn_rate
 
     def on_hit(self, snake, **kwargs: dict) -> None:
         '''

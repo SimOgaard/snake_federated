@@ -36,7 +36,7 @@ class Snake():
             Returns snake body list and direction
             '''
             # choose random max length that snake should be init as
-            rand_max_length: int = better_rand(self.init_snake_lengths[0], self.init_snake_lengths[1])
+            rand_max_length: int = randint(self.init_snake_lengths[0], self.init_snake_lengths[1])
             # copy action list so we can shuffle them
             shuffled_actions: list = self.all_actions.copy()
             # init snake body list
