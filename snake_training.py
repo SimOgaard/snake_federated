@@ -6,10 +6,14 @@ from snake_env.snake_agents.agents import *
 from numpy import mean as numpy_mean
 
 # Torch imports
-from torch import tensor, save, load
+from torch import save, load
 
 # Generic imports
 from os import path
+
+def load_checkpoint(snake, checkpoint) -> None:
+    snake.qnetwork_local.load_state_dict(checkpoint['network_local'])
+    snake.qnetwork_target.load_state_dict(checkpoint['network_target'])
 
 if __name__ == "__main__":
     '''
@@ -19,20 +23,21 @@ if __name__ == "__main__":
     episode_amount: int = 100_000
     save_every: int = 5_000
     board_dim: int = 5
-    model_id: str = "{}x{}".format(board_dim + 2, board_dim + 2)
-    model_path: str = 'snake_rl/models/checkpoint{}.pth'.format(model_id)
+    state_size: int = 5
+    model_id: str = "{}x{}".format(state_size, state_size)
+    model_path: str = 'models/checkpoint{}.pth'.format(model_id)
 
     dqn_snake: DQNAgent = DQNAgent(
-        state_size          = (board_dim + 2)**2,
+        state_size          = state_size**2,
         action_size         = 4,
         init_snake_lengths  = array([2, 2]),
-        seed                = 2674,
-        batch_size          = 64,
+        seed                = 1337,
+        batch_size          = 128,
         gamma               = 0.999,
         epsilon_start       = 1.,
         epsilon_end         = 0.,
         epsilon_decay       = 10_000,
-        learning_rate       = 5e-4,
+        learning_rate       = 1e-4,
         tau                 = 1e-3,
         update_every        = 32,
         buffer_size         = 1_000_000
@@ -43,14 +48,18 @@ if __name__ == "__main__":
         max_board_shape         = array([board_dim, board_dim]),
         replay_interval         = 0,
         snakes                  = [dqn_snake],
+        tiles_populated         = {
+            "air_tile": AirTile(),
+            "wall_tile": WallTile(),
+            "mine_tile": MineTile()
+        },
     )
 
     scores_window = deque(maxlen=100) # last 100 scores
 
     if (path.exists(model_path)): # load model
         checkpoint = load(model_path)
-        dqn_snake.qnetwork_local.load_state_dict(checkpoint['network_local'])
-        dqn_snake.qnetwork_target.load_state_dict(checkpoint['network_target'])
+        load_checkpoint(dqn_snake, checkpoint)
 
     while board.run < episode_amount:
         
@@ -59,11 +68,11 @@ if __name__ == "__main__":
 
         while board.is_alive(): # check if snakes are alive
 
-            action: int = dqn_snake.act(state) # choose an action for given snake
-            reward: float = dqn_snake.move(action)
+            action, is_random = dqn_snake.act(state) # choose an action for given snake
+            reward: float = dqn_snake.move(action, is_random)
 
-            action = tensor([action], device=device) # take the agents action that leed to that reward and state
-            reward = tensor([reward], device=device) # take the reward that the agent stored
+            action = LongTensor([action]) # take the agents action that leed to that reward and state
+            reward = FloatTensor([reward]) # take the reward that the agent stored
 
             next_state: FloatTensor = observation_full(board = board) # observe what steps taken lead to
 

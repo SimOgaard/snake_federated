@@ -4,16 +4,13 @@ from random import seed as random_seed
 from random import random, choice
 from math import exp
 
-# Input
-from msvcrt import getch
-
 # Repo imports
 from snake_env.snake_agents.virtual_snake import *
 from snake_env.snake_agents.observation_functions import *
 from snake_env.snake_agents.neural_nets.deep_q_learning import *
 
 # Torch imports
-from torch import no_grad, argmax
+from torch import no_grad, argmax, LongTensor
 from torch.optim import Adam
 
 class Agent(Snake):
@@ -51,7 +48,7 @@ class RandomAgent(Agent):
         '''
         Returns random action
         '''
-        return randrange(len(self.all_actions))
+        return randrange(len(self.all_actions)), True
 
 class ControllableAgent(Agent):
     '''
@@ -67,10 +64,10 @@ class ControllableAgent(Agent):
         '''
         Returns action given key presses
         '''
-        def KeyCheck() -> array:
-            global Break_KeyCheck
-            Break_KeyCheck = False
-            
+        def KeyCheck() -> int:
+            ''' Input NOT Linux supported '''
+            from msvcrt import getch
+
             base = getch()
             if base == b'\x00':
                 sub = getch()
@@ -82,8 +79,21 @@ class ControllableAgent(Agent):
                     return 0
                 elif sub == b'K':
                     return 3
+            # while True:
+            #     with keyboard.Events() as events:
+            #         # Block for as much as possible
+            #         key_press = events.get(1e6).key
 
-        return KeyCheck()
+            #         if key_press == keyboard.Key.up:
+            #             return 1
+            #         elif key_press == keyboard.Key.right:
+            #             return 2
+            #         elif key_press == keyboard.Key.down:
+            #             return 0
+            #         elif key_press == keyboard.Key.left:
+            #             return 3
+
+        return KeyCheck(), False
 
 class DQNAgent(Agent):    
     '''
@@ -105,7 +115,6 @@ class DQNAgent(Agent):
         self.update_every: int = update_every
         self.buffer_size: int = buffer_size
 
-        
         self.state_size = state_size
         self.action_size = action_size
         self.seed = random_seed(seed)
@@ -127,7 +136,7 @@ class DQNAgent(Agent):
         '''
         super(DQNAgent, self).__restart__()
 
-    def step(self, state: FloatTensor, action: FloatTensor, reward: FloatTensor, next_state: FloatTensor, done: bool) -> None:
+    def step(self, state: FloatTensor, action: LongTensor, reward: FloatTensor, next_state: FloatTensor, done: bool) -> None:
         '''
         Trains a step
         '''
@@ -149,7 +158,7 @@ class DQNAgent(Agent):
         '''
         return self.epsilon_end + (self.epsilon_start - self.epsilon_end) * exp(-1. * self.board.run / self.epsilon_decay)
 
-    def act(self, state: FloatTensor) -> None:
+    def act(self, state: FloatTensor) -> int:
         '''
         Returns action for given state as per current policy
         '''
@@ -164,9 +173,9 @@ class DQNAgent(Agent):
         eps_threshold: float = self.calculate_epsilon()
 
         if sample > eps_threshold:
-            return argmax(action_values.cpu().data)
+            return argmax(action_values.cpu().data), False
         else:
-            return choice(arange(self.action_size))
+            return choice(arange(self.action_size)), True
             
     def learn(self, experiences) -> None:
         """

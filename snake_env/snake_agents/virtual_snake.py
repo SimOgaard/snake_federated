@@ -10,7 +10,7 @@ class Snake():
     Snake (self explanatory i guess)
     '''
 
-    def __init__(self, init_snake_lengths: array) -> None:
+    def __init__(self, init_snake_lengths: array, snake_tiles: dict = {"snake_tile": SnakeTile(), "snake_head_tile": SnakeHeadTile()}) -> None:
         '''
         Initilizes our snake at given board
         '''
@@ -20,7 +20,11 @@ class Snake():
         self.all_actions: list = [array([1, 0]), array([-1, 0]), array([0, 1]), array([0, -1])]
         self.board = None
         self.init_snake_lengths: array = init_snake_lengths - array([1, 1])
-        
+        self.snake_tiles = snake_tiles
+
+        self.death = 0
+        self.random_action_death = 0
+
         # needs to run restart but you do it in externally
         # self.__restart__()
 
@@ -35,7 +39,7 @@ class Snake():
             Returns snake body list and direction
             '''
             # choose random max length that snake should be init as
-            rand_max_length: int = better_rand(self.init_snake_lengths[0], self.init_snake_lengths[1])
+            rand_max_length: int = randint(self.init_snake_lengths[0], self.init_snake_lengths[1])
             # copy action list so we can shuffle them
             shuffled_actions: list = self.all_actions.copy()
             # init snake body list
@@ -47,7 +51,7 @@ class Snake():
                 self.done = True
                 return
             snake_body.append(self.board.random_open_tile_coord())
-            self.board.place_tile(SnakeHeadTile(), snake_body[0])
+            self.board.place_tile(self.snake_tiles["snake_head_tile"], snake_body[0])
 
             # go through each snake body
             for body_count in range(rand_max_length):
@@ -58,7 +62,7 @@ class Snake():
                     if not self.board.board_tiles[tail_coord[0]][tail_coord[1]].occupy:
                         # append open position to snake
                         snake_body.append(tail_coord)
-                        self.board.place_tile(SnakeTile(), tail_coord)
+                        self.board.place_tile(self.snake_tiles["snake_tile"], tail_coord)
                         break
                 else:
                     # break if no positions around snake are open
@@ -89,18 +93,19 @@ class Snake():
         '''
         Adds new head to snake
         '''
-        self.board.place_tile(SnakeTile(), self.snake_body[0])
+        if (len(self.snake_body) != 0):
+            self.board.place_tile(self.snake_tiles["snake_tile"], self.snake_body[0])
         self.snake_body.insert(0, snake_coord)
-        self.board.place_tile(SnakeHeadTile(), snake_coord)
+        self.board.place_tile(self.snake_tiles["snake_head_tile"], snake_coord)
         
     def place_new_snake_tail(self, snake_coord: array) -> None:
         '''
         Adds new bodypart to snake
         '''
         self.snake_body.append(snake_coord)
-        self.board.place_tile(SnakeTile(), snake_coord)
+        self.board.place_tile(self.snake_tiles["snake_tile"], snake_coord)
 
-    def move(self, direction_index: int) -> float:
+    def move(self, direction_index: int, random_action: bool) -> float:
         '''
         Moves snake in direction and returns reward
         '''
@@ -127,6 +132,9 @@ class Snake():
             reward_sum += tile.on_hit(self, old_snake_tail_pos=tail_point)
 
             if (self.done):
+                self.death += 1
+                if (random_action):
+                    self.random_action_death += 1
                 break
 
         return reward_sum

@@ -1,14 +1,12 @@
 # Math modules
 from random import sample
 from random import seed as random_seed
-from numpy import vstack
-from numpy import uint8 as np_uint8
 
 # Generic modules
 from collections import namedtuple, deque
 
 # Torch imports
-from torch import FloatTensor, manual_seed, from_numpy, nn
+from torch import FloatTensor, manual_seed, nn, vstack
 from torch.nn import functional as F
 from torch import device as torch_device
 from torch.cuda import is_available as cuda_is_available
@@ -34,7 +32,7 @@ class ReplayBuffer:
         '''
         Add a new experience to memory
         '''
-        e = self.experiences(state,action,reward,next_state,done)
+        e = self.experiences(state,action,reward,next_state,FloatTensor([done]))
         self.memory.append(e)
         
     def sample(self) -> tuple:
@@ -43,12 +41,12 @@ class ReplayBuffer:
         '''
         experiences = sample(self.memory,k=self.batch_size)
         
-        states = from_numpy(vstack([e.state for e in experiences if e is not None])).float().to(device)
-        actions = from_numpy(vstack([e.action for e in experiences if e is not None])).long().to(device)
-        rewards = from_numpy(vstack([e.reward for e in experiences if e is not None])).float().to(device)
-        next_states = from_numpy(vstack([e.next_state for e in experiences if e is not None])).float().to(device)
-        dones = from_numpy(vstack([e.done for e in experiences if e is not None]).astype(np_uint8)).float().to(device)
-        
+        states = vstack([e.state for e in experiences if e is not None]).to(device)
+        actions = vstack([e.action for e in experiences if e is not None]).to(device)
+        rewards = vstack([e.reward for e in experiences if e is not None]).to(device)
+        next_states = vstack([e.next_state for e in experiences if e is not None]).to(device)
+        dones = vstack([e.done for e in experiences if e is not None]).to(device)
+
         return (states, actions, rewards, next_states, dones)
 
     def __len__(self) -> int:
@@ -103,8 +101,11 @@ class DQNLin(nn.Module):
         '''
         super(DQNLin, self).__init__()
         self.seed = manual_seed(seed)
-        self.fc1 = nn.Linear(state_size, 1024)
-        self.fc2 = nn.Linear(1024, action_size)
+        self.fc1 = nn.Linear(state_size, 2048)
+        self.fc2 = nn.Linear(2048, 1024)
+        self.fc3 = nn.Linear(1024, 256)
+        self.fc4 = nn.Linear(256, 64)
+        self.fc5 = nn.Linear(64, action_size)
         
     def forward(self, x) -> FloatTensor:
         '''
@@ -112,4 +113,7 @@ class DQNLin(nn.Module):
         '''
         # x = x.to(device)
         x = F.relu(self.fc1(x))
-        return self.fc2(x)
+        x = F.relu(self.fc2(x))
+        x = F.relu(self.fc3(x))
+        x = F.relu(self.fc4(x))
+        return self.fc5(x)
