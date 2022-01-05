@@ -136,8 +136,8 @@ class Board(TilesSpawn):
         # make all temporary snakes act and move
         for snake in self.temporary_snakes:
             if (not snake.done):
-                action: int = snake.act()
-                snake.move(action)
+                action, is_random = snake.act()
+                snake.move(action, is_random)
 
         snakes_alive: int = 0
         for snake in self.snakes:

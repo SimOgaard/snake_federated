@@ -24,8 +24,8 @@ def dqn(board: Board, snake: Snake, env_episode_amount: int, observation_functio
         state: FloatTensor = observation_function() # save init state
         while board.is_alive(): # check if snakes are alive
 
-            action: int = snake.act(state) # choose an action for given snake
-            reward: float = snake.move(action)
+            action, is_random = snake.act(state) # choose an action for given snake
+            reward: float = snake.move(action, is_random)
 
             action = LongTensor([action]) # take the agents action that leed to that reward and state
             reward = FloatTensor([reward]) # take the reward that the agent stored
@@ -91,7 +91,7 @@ if __name__ == "__main__":
     episode_amount: int = 10_000
     env_episode_amount: int = 100
     save_every: int = 50
-    board_dim: int = 25
+    board_dim: int = 20
     state_size: int = 5
     model_id: str = "{}x{}".format(state_size, state_size)
     model_path: str = 'models/checkpoint{}.pth'.format(model_id)

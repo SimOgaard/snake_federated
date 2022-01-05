@@ -22,8 +22,8 @@ def display_run(board: Board, snake: Snake, board_dim: array):
         pretty_print(state, board_dim)
         input()
 
-        action: int = snake.act(state) # choose an action for given snake
-        reward: float = snake.move(action)
+        action, is_random = snake.act(state) # choose an action for given snake
+        reward: float = snake.move(action, is_random)
 
         state: FloatTensor = observation_full(board = board) # observe what steps taken lead to
     input("snake died with final length of {}...".format(len(snake.snake_body)))

@@ -55,10 +55,10 @@ if __name__ == "__main__":
             state = observation_full(board=board)
             pretty_print(state, array([11,11]))
             if (not player_snake.done):
-                action: int = player_snake.act()
-                reward: float = player_snake.move(action)
+                action, is_random = player_snake.act()
+                reward: float = player_snake.move(action, is_random)
             # if (not random_snake.done):
-            #     action: int = random_snake.act()
-            #     reward: float = random_snake.move(action)
+            #     action, is_random = random_snake.act()
+            #     reward: float = random_snake.move(action, is_random)
 
         input("Every snake is dead...")

@@ -51,7 +51,7 @@ class RandomAgent(Agent):
         '''
         Returns random action
         '''
-        return randrange(len(self.all_actions))
+        return randrange(len(self.all_actions)), True
 
 class ControllableAgent(Agent):
     '''
@@ -93,7 +93,7 @@ class ControllableAgent(Agent):
             #         elif key_press == keyboard.Key.left:
             #             return 3
 
-        return KeyCheck()
+        return KeyCheck(), False
 
 class DQNAgent(Agent):    
     '''
@@ -158,7 +158,7 @@ class DQNAgent(Agent):
         '''
         return self.epsilon_end + (self.epsilon_start - self.epsilon_end) * exp(-1. * self.board.run / self.epsilon_decay)
 
-    def act(self, state: FloatTensor) -> None:
+    def act(self, state: FloatTensor) -> int:
         '''
         Returns action for given state as per current policy
         '''
@@ -173,9 +173,9 @@ class DQNAgent(Agent):
         eps_threshold: float = self.calculate_epsilon()
 
         if sample > eps_threshold:
-            return argmax(action_values.cpu().data)
+            return argmax(action_values.cpu().data), False
         else:
-            return choice(arange(self.action_size))
+            return choice(arange(self.action_size)), True
             
     def learn(self, experiences) -> None:
         """

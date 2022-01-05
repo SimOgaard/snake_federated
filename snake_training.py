@@ -68,8 +68,8 @@ if __name__ == "__main__":
 
         while board.is_alive(): # check if snakes are alive
 
-            action: int = dqn_snake.act(state) # choose an action for given snake
-            reward: float = dqn_snake.move(action)
+            action, is_random = dqn_snake.act(state) # choose an action for given snake
+            reward: float = dqn_snake.move(action, is_random)
 
             action = LongTensor([action]) # take the agents action that leed to that reward and state
             reward = FloatTensor([reward]) # take the reward that the agent stored

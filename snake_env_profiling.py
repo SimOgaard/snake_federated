@@ -36,8 +36,8 @@ if __name__ == "__main__":
         board.__restart__()
 
         # while board.is_alive():
-        #     action: int = random_snake.act()
-        #     reward: float = random_snake.move(action)
+        #     action, is_random = random_snake.act()
+        #     reward: float = random_snake.move(action, is_random)
 
         #     step_count+=1
         #     if step_count % 100 == 0:

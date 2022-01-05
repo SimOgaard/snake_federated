@@ -22,6 +22,9 @@ class Snake():
         self.init_snake_lengths: array = init_snake_lengths - array([1, 1])
         self.snake_tiles = snake_tiles
 
+        self.death = 0
+        self.random_action_death = 0
+
         # needs to run restart but you do it in externally
         # self.__restart__()
 
@@ -94,7 +97,7 @@ class Snake():
         self.snake_body.append(snake_coord)
         self.board.place_tile(self.snake_tiles["snake_tile"], snake_coord)
 
-    def move(self, direction_index: int) -> float:
+    def move(self, direction_index: int, random_action: bool) -> float:
         '''
         Moves snake in direction and returns reward
         '''
@@ -121,6 +124,9 @@ class Snake():
             reward_sum += tile.on_hit(self, old_snake_tail_pos=tail_point)
 
             if (self.done):
+                self.death += 1
+                if (random_action):
+                    self.random_action_death += 1
                 break
 
         return reward_sum
