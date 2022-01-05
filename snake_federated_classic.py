@@ -26,8 +26,8 @@ if __name__ == "__main__":
     episode_amount: int = 500
     env_episode_amount: int = 100
     save_every: int = 50
-    board_dim: int = 5
-    state_size: int = 5
+    board_dim: int = 25
+    state_size: int = 7
     model_id: str = "{}x{}".format(state_size, state_size)
     model_path: str = 'models/checkpoint{}.pth'.format(model_id)
 
@@ -41,9 +41,7 @@ if __name__ == "__main__":
         seed                = 1337,
         batch_size          = 128,
         gamma               = 0.999,
-        epsilon_start       = 1.,
-        epsilon_end         = 0.25,
-        epsilon_decay       = 100_000,
+        epsilon             = Epsilon(1, 0.25, 100_000),
         learning_rate       = 1e-4,
         tau                 = 1e-3,
         update_every        = 32,
@@ -59,9 +57,7 @@ if __name__ == "__main__":
         seed                = 69,
         batch_size          = 128,
         gamma               = 0.999,
-        epsilon_start       = .25,
-        epsilon_end         = 0.,
-        epsilon_decay       = 100_000,
+        epsilon             = Epsilon(0.25, 0., 100_000),
         learning_rate       = 1e-4,
         tau                 = 1e-3,
         update_every        = 32,
@@ -76,18 +72,15 @@ if __name__ == "__main__":
         seed                = 69,
         batch_size          = 128,
         gamma               = 0.999,
-        epsilon_start       = 1.,
-        epsilon_end         = 0.,
-        epsilon_decay       = 10_000,
+        epsilon             = Epsilon(1, 0., 25_000),
         learning_rate       = 1e-4,
         tau                 = 1e-3,
         update_every        = 32,
         buffer_size         = 1_000_000
     )
 
-    # different board types:
-    #           * board with dynamic size and only food tile
-    board_fruit: Board = Board(
+    #           * board with static size and lots of fruit
+    board_LOTS_of_fruit: Board = Board(
         min_board_shape         = array([board_dim, board_dim]),
         max_board_shape         = array([board_dim, board_dim]),
         replay_interval         = 0,
@@ -95,22 +88,10 @@ if __name__ == "__main__":
         tiles_populated         = {
             "air_tile": AirTile(),
             "wall_tile": WallTile(),
-            "food_tile": FoodTile()
+            "food_tile": FoodTile(epsilon=Epsilon(1, 0.25, 1_000))
         },
     )
-    #           * board with dynamic size and only mine tile
-    board_mine: Board = Board(
-        min_board_shape         = array([board_dim, board_dim]),
-        max_board_shape         = array([board_dim, board_dim]),
-        replay_interval         = 0,
-        snakes                  = [],
-        tiles_populated         = {
-            "air_tile": AirTile(),
-            "wall_tile": WallTile(),
-            "mine_tile": MineTile()
-        },
-    )
-    #           * default board with fixed size both mine and food tile
+    #           * default board with fixed size and only one fruit
     board_fruit_mine: Board = Board(
         min_board_shape         = array([board_dim, board_dim]),
         max_board_shape         = array([board_dim, board_dim]),
@@ -119,14 +100,13 @@ if __name__ == "__main__":
         tiles_populated         = {
             "air_tile": AirTile(),
             "wall_tile": WallTile(),
-            "food_tile": FoodTile(),
-            "mine_tile": MineTile()
+            "food_tile": FoodTile(spawn_amount = array([1, 1]))
         },
     )
 
     # Lists holding all snakes and boards for easy itteration and mixing
     snakes: list = [dqn_snake_exploration, dqn_snake_exploitation, dqn_snake_normal]
-    boards: list = [board_fruit, board_mine, board_fruit_mine]
+    boards: list = [board_LOTS_of_fruit, board_fruit_mine]
 
     if (path.exists(model_path)): # load model
         checkpoint = load(model_path)
@@ -140,9 +120,9 @@ if __name__ == "__main__":
         for snake in snakes:
             for board in boards:
                 board.set_snakes([snake])
-                median = dqn(board, snake, env_episode_amount, lambda: observation_near(board=board, snake=snake, kernel=array([5, 5])))
+                median = dqn(board, snake, env_episode_amount, lambda: observation_near(board=board, snake=snake, kernel=array([state_size, state_size])))
                 
-        print('\rEpisode {}\tAverage Scores {:.3f}\tRandom act chance {:.6f}'.format(i * env_episode_amount, median, dqn_snake_normal.calculate_epsilon()))
+        print('\rEpisode {}\tAverage Scores {:.3f}\tRandom act chance {:.6f}'.format(i * env_episode_amount, median, dqn_snake_normal.epsilon(dqn_snake_normal.board.run)))
 
         # do a fedaverage between them
         agregate(snakes)

@@ -34,9 +34,7 @@ if __name__ == "__main__":
         seed                = 1337,
         batch_size          = 128,
         gamma               = 0.999,
-        epsilon_start       = 1.,
-        epsilon_end         = 0.,
-        epsilon_decay       = 10_000,
+        epsilon             = Epsilon(1, 0., 10_000),
         learning_rate       = 1e-4,
         tau                 = 1e-3,
         update_every        = 32,
@@ -81,11 +79,11 @@ if __name__ == "__main__":
             state = next_state # set old state to the next state
 
         scores_window.append(len(dqn_snake.snake_body)) # save the most recent score
-        print('\rEpisode {}\tAverage Score {:.3f}\tRandom act chance {:.6f}'.format(board.run, numpy_mean(scores_window), dqn_snake.calculate_epsilon()), end="")
+        print('\rEpisode {}\tAverage Score {:.3f}\tRandom act chance {:.6f}'.format(board.run, numpy_mean(scores_window), dqn_snake.epsilon(dqn_snake.board.run)), end="")
         
         if board.run != 0:
             if board.run % 100 == 0:
-                print('\rEpisode {}\tAverage Score {:.3f}\tRandom act chance {:.6f}'.format(board.run, numpy_mean(scores_window), dqn_snake.calculate_epsilon()))
+                print('\rEpisode {}\tAverage Score {:.3f}\tRandom act chance {:.6f}'.format(board.run, numpy_mean(scores_window), dqn_snake.epsilon(dqn_snake.board.run)))
             if board.run % save_every == 0:
                 state: dict = {
                     'network_local': dqn_snake.qnetwork_local.state_dict(),

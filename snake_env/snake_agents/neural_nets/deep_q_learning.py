@@ -1,6 +1,7 @@
 # Math modules
 from random import sample
 from random import seed as random_seed
+from math import exp
 
 # Generic modules
 from collections import namedtuple, deque
@@ -13,6 +14,27 @@ from torch.cuda import is_available as cuda_is_available
 
 # Global stored string of current utilized device 
 device: str = torch_device("cuda" if cuda_is_available() else "cpu")
+
+# C# struct
+from dataclasses import dataclass
+
+@dataclass
+class Epsilon:
+    '''
+    Epsilon struct
+    '''
+    epsilon_start: float
+    epsilon_end: float
+    epsilon_decay: int
+
+    def __call__(self, n) -> float:
+        '''
+        Returns current epsilon value given self.board.run (n)
+        '''
+        if (self.epsilon_decay == 0):
+            return self.epsilon_start
+        return self.epsilon_end + (self.epsilon_start - self.epsilon_end) * exp(-1. * n / self.epsilon_decay)
+
 
 class ReplayBuffer:
     '''

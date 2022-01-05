@@ -12,8 +12,8 @@ if __name__ == "__main__":
     random_snake: RandomAgent = RandomAgent(init_snake_lengths=array([2, 10]))
 
     board: Board = Board(
-        min_board_shape         = array([50, 50]),
-        max_board_shape         = array([50, 50]),
+        min_board_shape         = array([500, 500]),
+        max_board_shape         = array([500, 500]),
         replay_interval         = 0,
         snakes                  = [random_snake],
         tiles_populated         = {

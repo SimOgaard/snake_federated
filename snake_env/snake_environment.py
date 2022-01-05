@@ -111,7 +111,7 @@ class Board(TilesSpawn):
                 self.open_board_positions[(row, col)] = array([row, col])
         # end = time.time()
         # print("python itteration that i do not know how to fix:" + str(end - start))
-        # self.run += 1
+        self.run += 1
 
         self.temporary_snakes: list = []
 
@@ -122,8 +122,6 @@ class Board(TilesSpawn):
 
         for tile in self.tiles_populated.values():
             self.spawn_tile(tile)
-
-        return self
 
     def is_alive(self) -> bool:
         '''

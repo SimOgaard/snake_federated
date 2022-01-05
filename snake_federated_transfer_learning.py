@@ -37,10 +37,10 @@ def dqn(board: Board, snake: Snake, env_episode_amount: int, observation_functio
             state = next_state # set old state to the next state
 
         scores_window.append(len(snake.snake_body)) # save the most recent score
-        #print('\rEpisode {}\tAverage Score {:.3f}\tRandom act chance {:.6f}'.format(board.run, numpy_mean(scores_window), snake.calculate_epsilon()), end="")
+        #print('\rEpisode {}\tAverage Score {:.3f}\tRandom act chance {:.6f}'.format(board.run, numpy_mean(scores_window), snake.epsilon(snake.board.run)), end="")
 
     return numpy_mean(scores_window)
-    #print('\rEpisode {}\tAverage Score {:.3f}\tRandom act chance {:.6f}'.format(board.run, numpy_mean(scores_window), snake.calculate_epsilon()))
+    #print('\rEpisode {}\tAverage Score {:.3f}\tRandom act chance {:.6f}'.format(board.run, numpy_mean(scores_window), snake.epsilon(snake.board.run)))
 
 def agregate(agents: list) -> None:
     '''
@@ -104,9 +104,7 @@ if __name__ == "__main__":
         seed                = 1337,
         batch_size          = 512,
         gamma               = 0.999,
-        epsilon_start       = 1.,
-        epsilon_end         = 0.,
-        epsilon_decay       = 100_000,
+        epsilon             = Epsilon(1, 0., 100_000),
         learning_rate       = 1e-4,
         tau                 = 1e-3,
         update_every        = 32,
@@ -132,9 +130,7 @@ if __name__ == "__main__":
         seed                = 69,
         batch_size          = 512,
         gamma               = 0.999,
-        epsilon_start       = 1.,
-        epsilon_end         = 0.,
-        epsilon_decay       = 100_000,
+        epsilon             = Epsilon(1, 0., 100_000),
         learning_rate       = 1e-4,
         tau                 = 1e-3,
         update_every        = 32,
@@ -159,10 +155,10 @@ if __name__ == "__main__":
 
     for i in range(episode_amount):
         # train each snake seperatly for env_episode_amount episodes
-        mine_median: float = dqn(board_mine, dqn_snake_mine, env_episode_amount, lambda: observation_near(board=board_mine, snake=dqn_snake_mine, kernel=array([5, 5])))
-        fruit_median: float = dqn(board_fruit, dqn_snake_fruit, env_episode_amount, lambda: observation_near(board=board_mine, snake=dqn_snake_mine, kernel=array([5, 5])))
+        mine_median: float = dqn(board_mine, dqn_snake_mine, env_episode_amount, lambda: observation_near(board=board_mine, snake=dqn_snake_mine, kernel=array([state_size, state_size])))
+        fruit_median: float = dqn(board_fruit, dqn_snake_fruit, env_episode_amount, lambda: observation_near(board=board_mine, snake=dqn_snake_mine, kernel=array([state_size, state_size])))
 
-        print('\rEpisode {}\tAverage Scores ({:.3f}, {:.3f})\tRandom act chance {:.6f}'.format(i * env_episode_amount, mine_median, fruit_median, dqn_snake_fruit.calculate_epsilon()))
+        print('\rEpisode {}\tAverage Scores ({:.3f}, {:.3f})\tRandom act chance {:.6f}'.format(i * env_episode_amount, mine_median, fruit_median, dqn_snake_fruit.epsilon(dqn_snake_fruit.board.run)))
 
         # do a fedaverage between them
         agregate([dqn_snake_mine, dqn_snake_fruit])

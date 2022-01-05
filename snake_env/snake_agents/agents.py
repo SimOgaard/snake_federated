@@ -99,7 +99,7 @@ class DQNAgent(Agent):
     '''
     Implements DQN (deep q learning) to act in given enviroment
     '''
-    def __init__(self, state_size: int, action_size: int, init_snake_lengths: array = array([2, 2]), seed: int = 1337, batch_size: int = 64, gamma: float = 0.999, epsilon_start: float = 1, epsilon_end: float = 0.0, epsilon_decay: int = 2500, learning_rate: float = 5e-4, tau: float = 1e-3, update_every: int = 10, buffer_size: int = 500_000) -> None:
+    def __init__(self, state_size: int, action_size: int, init_snake_lengths: array = array([2, 2]), seed: int = 1337, batch_size: int = 64, gamma: float = 0.999, epsilon: Epsilon = Epsilon(1, 0, 50_000), learning_rate: float = 5e-4, tau: float = 1e-3, update_every: int = 10, buffer_size: int = 500_000) -> None:
         '''
         Initialize an Agent object.
         '''
@@ -107,9 +107,7 @@ class DQNAgent(Agent):
 
         self.batch_size: int = batch_size
         self.gamma: float = gamma
-        self.epsilon_start: float = epsilon_start
-        self.epsilon_end: float = epsilon_end
-        self.epsilon_decay: int = epsilon_decay
+        self.epsilon: Epsilon = epsilon
         self.learning_rate: float = learning_rate
         self.tau: float = tau
         self.update_every: int = update_every
@@ -152,12 +150,6 @@ class DQNAgent(Agent):
                 experience = self.memory.sample()
                 self.learn(experience)
     
-    def calculate_epsilon(self) -> float:
-        '''
-        Returns current epsilon value 
-        '''
-        return self.epsilon_end + (self.epsilon_start - self.epsilon_end) * exp(-1. * self.board.run / self.epsilon_decay)
-
     def act(self, state: FloatTensor) -> int:
         '''
         Returns action for given state as per current policy
@@ -170,7 +162,7 @@ class DQNAgent(Agent):
 
         #Epsilon -greedy action selction
         sample: float = random()
-        eps_threshold: float = self.calculate_epsilon()
+        eps_threshold: float = self.epsilon(self.board.run)
 
         if sample > eps_threshold:
             return argmax(action_values.cpu().data), False
