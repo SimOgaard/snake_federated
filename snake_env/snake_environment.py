@@ -71,7 +71,7 @@ class Board(TilesSpawn):
         self.bounding_box = array([start_row, start_col, start_row + width, start_col + height])
         
         # ## THIS IS SLOW AF
-        # import time
+        import time
         # start = time.time()
         # for row in range(true_board_width):
         #     for col in range(true_board_height):
@@ -111,7 +111,7 @@ class Board(TilesSpawn):
                 self.open_board_positions[(row, col)] = array([row, col])
         # end = time.time()
         # print("python itteration that i do not know how to fix:" + str(end - start))
-        self.run += 1
+        # self.run += 1
 
         self.temporary_snakes: list = []
 

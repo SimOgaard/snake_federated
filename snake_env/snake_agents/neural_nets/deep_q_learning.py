@@ -39,13 +39,13 @@ class ReplayBuffer:
         '''
         Randomly sample a batch of experiences from memory
         '''
-        experiences = sample(self.memory,k=self.batch_size)
+        experiences = sample(self.memory, k=self.batch_size)
         
-        states = vstack([e.state for e in experiences if e is not None]).to(device)
-        actions = vstack([e.action for e in experiences if e is not None]).to(device)
-        rewards = vstack([e.reward for e in experiences if e is not None]).to(device)
-        next_states = vstack([e.next_state for e in experiences if e is not None]).to(device)
-        dones = vstack([e.done for e in experiences if e is not None]).to(device)
+        states = vstack([e.state for e in experiences]).to(device)
+        actions = vstack([e.action for e in experiences]).to(device)
+        rewards = vstack([e.reward for e in experiences]).to(device)
+        next_states = vstack([e.next_state for e in experiences]).to(device)
+        dones = vstack([e.done for e in experiences]).to(device)
 
         return (states, actions, rewards, next_states, dones)
 
