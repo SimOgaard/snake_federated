@@ -102,14 +102,10 @@ class DQNLin(nn.Module):
         super(DQNLin, self).__init__()
         self.seed = manual_seed(seed)
         self.fc1 = nn.Linear(state_size, 2048)
-        self.fc2 = nn.Linear(2048, 4096)
-        self.fc3 = nn.Linear(4096, 2048)
-        self.fc4 = nn.Linear(2048, 1024)
-        self.fc5 = nn.Linear(1024, 2048)
-        self.fc6 = nn.Linear(2048, 1024)
-        self.fc7 = nn.Linear(1024, 512)
-        self.fc8 = nn.Linear(512, 128)
-        self.fc9 = nn.Linear(128, action_size)
+        self.fc2 = nn.Linear(2048, 1024)
+        self.fc3 = nn.Linear(1024, 256)
+        self.fc4 = nn.Linear(256, 64)
+        self.fc5 = nn.Linear(64, action_size)
         
     def forward(self, x) -> FloatTensor:
         '''
@@ -120,8 +116,4 @@ class DQNLin(nn.Module):
         x = F.relu(self.fc2(x))
         x = F.relu(self.fc3(x))
         x = F.relu(self.fc4(x))
-        x = F.relu(self.fc5(x))
-        x = F.relu(self.fc6(x))
-        x = F.relu(self.fc7(x))
-        x = F.relu(self.fc8(x))
-        return self.fc9(x)
+        return self.fc5(x)
