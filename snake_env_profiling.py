@@ -45,4 +45,4 @@ if __name__ == "__main__":
             board_step_amount += 1
         board_step_time += time.time() - start_time
 
-        print('\rBoards Per Second: {:.5f} Steps Per Seconds: {:.5f}'.format(board_reset_amount / board_reset_time, board_step_amount / board_step_time), end="")
+        print('\rBoards Per Second: {:.5f} Steps Per Second: {:.5f}'.format(board_reset_amount / board_reset_time, board_step_amount / board_step_time), end="")
