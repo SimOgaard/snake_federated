@@ -1,21 +1,10 @@
 # Repo imports
-import torch
 from snake_env.snake_environment import *
 from snake_env.snake_agents.agents import *
-from snake_terminal import pretty_print, display
-from snake_testing import display_run
-from snake_training import load_checkpoint
-from snake_federated_transfer_learning import dqn, agregate
 
-# Math modules
-from numpy import mean as numpy_mean
-
-# Torch imports
-from torch import save, load
-from torch import div as torch_div
-
-# Generic imports
-from os import path
+from composed_functions.ui_helper import pretty_print, display, display_run
+from composed_functions.dqn_helper import dqn, load_checkpoint, load_checkpoint_to_snake, save_checkpoint
+from federated_learning.federated_average import agregate
 
 if __name__ == "__main__":
     '''
@@ -25,7 +14,7 @@ if __name__ == "__main__":
 
     episode_amount: int = 500
     env_episode_amount: int = 100
-    save_every: int = 50
+    save_every: int = 5
     board_dim: int = 25
     state_size: int = 7
     model_id: str = "{}x{}".format(state_size, state_size)
@@ -108,11 +97,10 @@ if __name__ == "__main__":
     snakes: list = [dqn_snake_exploration, dqn_snake_exploitation, dqn_snake_normal]
     boards: list = [board_LOTS_of_fruit, board_fruit_mine]
 
-    if (path.exists(model_path)): # load model
-        checkpoint = load(model_path)
-        load_checkpoint(dqn_snake_exploration, checkpoint)
-        load_checkpoint(dqn_snake_exploitation, checkpoint)
-        load_checkpoint(dqn_snake_normal, checkpoint)
+    checkpoint = load_checkpoint(model_path)
+    load_checkpoint_to_snake(dqn_snake_normal, checkpoint)
+    load_checkpoint_to_snake(dqn_snake_exploitation, checkpoint)
+    load_checkpoint_to_snake(dqn_snake_exploration, checkpoint)
 
     for i in range(episode_amount):
         # train all snakes on all boards for env_episode_amount episodes
@@ -129,12 +117,8 @@ if __name__ == "__main__":
 
         # Save their model
         if i % save_every == 0:
-            state: dict = {
-                'network_local': dqn_snake_normal.qnetwork_local.state_dict(),
-                'network_target': dqn_snake_normal.qnetwork_target.state_dict()
-            }
-            save(state, model_path)
+            save_checkpoint(dqn_snake_normal, model_path)
 
     # test a snake over 10 displayed runs
     for _ in range(10):
-        display_run(board_fruit_mine, dqn_snake_normal, array([board_dim+2, board_dim+2]))
+        display_run(board_fruit_mine, dqn_snake_normal, array([state_size, state_size]), pretty_print, observation_near)

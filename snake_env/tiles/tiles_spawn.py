@@ -3,8 +3,6 @@ from numpy.random import rand
 from random import sample
 from random import randint
 
-from torch._C import parse_ir
-
 # Repo imports
 from snake_env.tiles.virtual_tiles import Tiles
 

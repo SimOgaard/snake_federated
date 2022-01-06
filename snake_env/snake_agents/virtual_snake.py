@@ -1,9 +1,8 @@
 # Math modules
-from random import randrange, shuffle
+from random import shuffle, randint
 
 # Repo imports
 from snake_env.tiles.tiles import *
-from generic import *
 
 class Snake():
     '''

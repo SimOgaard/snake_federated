@@ -1,8 +1,7 @@
 # Math modules
 from numpy import array, arange
 from random import seed as random_seed
-from random import random, choice
-from math import exp
+from random import random, choice, randrange
 
 # Repo imports
 from snake_env.snake_agents.virtual_snake import *

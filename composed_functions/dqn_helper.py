@@ -1,0 +1,55 @@
+# Torch imports
+from torch import save, load
+
+# Os system modules
+from os import path
+
+def load_checkpoint(model_path) -> dict:
+    if (path.exists(model_path)): # load model
+        return load(model_path)
+    return None
+
+def load_checkpoint_to_snake(snake, checkpoint) -> None:
+    if (checkpoint != None): # load model
+        snake.qnetwork_local.load_state_dict(checkpoint['network_local'])
+        snake.qnetwork_target.load_state_dict(checkpoint['network_target'])
+
+def save_checkpoint(snake, model_path: str) -> None:
+    state: dict = {
+        'network_local': snake.qnetwork_local.state_dict(),
+        'network_target': snake.qnetwork_target.state_dict()
+    }
+    save(state, model_path)
+
+# Torch imports
+from torch import FloatTensor, LongTensor
+# Math module
+from numpy import mean as numpy_mean
+# Generic modules
+from collections import deque
+
+def dqn(board, snake, env_episode_amount: int, observation_function: object) -> float:
+    scores_window = deque(maxlen=100) # last 100 scores
+
+    for i in range (env_episode_amount):
+        board.__restart__() # restart board
+        state: FloatTensor = observation_function() # save init state
+        while board.is_alive(): # check if snakes are alive
+
+            action, is_random = snake.act(state) # choose an action for given snake
+            reward: float = snake.move(action, is_random)
+
+            action = LongTensor([action]) # take the agents action that leed to that reward and state
+            reward = FloatTensor([reward]) # take the reward that the agent stored
+
+            next_state: FloatTensor = observation_function() # observe what steps taken lead to
+
+            snake.step(state, action, reward, next_state, snake.done) # signal step to snake
+
+            state = next_state # set old state to the next state
+
+        scores_window.append(len(snake.snake_body)) # save the most recent score
+        #print('\rEpisode {}\tAverage Score {:.3f}\tRandom act chance {:.6f}'.format(board.run, numpy_mean(scores_window), snake.epsilon(snake.board.run)), end="")
+
+    return numpy_mean(scores_window)
+    #print('\rEpisode {}\tAverage Score {:.3f}\tRandom act chance {:.6f}'.format(board.run, numpy_mean(scores_window), snake.epsilon(snake.board.run)))

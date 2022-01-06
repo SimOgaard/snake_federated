@@ -9,13 +9,13 @@ from torch.nn import ConstantPad2d
 from snake_env.snake_agents.virtual_snake import Snake
 from snake_env.snake_environment import Board
 
-def observation_full(board: Board) -> FloatTensor:
+def observation_full(board: Board, *args) -> FloatTensor:
     '''
     Returns the whole board
     '''
     return flatten(board.board.detach().clone())
 
-def observation_near(board: Board, snake: Snake, kernel: array) -> FloatTensor:
+def observation_near(board: Board, snake: Snake, kernel: array, *args) -> FloatTensor:
     '''
     Returns kernel sized state around head
     '''
@@ -66,6 +66,6 @@ def observation_to_bool(tensor: FloatTensor) -> FloatTensor:
 
 def observation_food(snake_head: array, board: Board) -> FloatTensor:
     '''
-    Returns bool tensor where nearest food is [up, right, down, left]
+    Returns float tensor where nearest food is [down, up, right, left] tiles from snake_head
     '''
-    return FloatTensor([1, 0, 0, 0])
+    return FloatTensor([0, 0, 0, 0])

@@ -35,7 +35,6 @@ class Epsilon:
             return self.epsilon_start
         return self.epsilon_end + (self.epsilon_start - self.epsilon_end) * exp(-1. * n / self.epsilon_decay)
 
-
 class ReplayBuffer:
     '''
     Fixed -size buffe to store experience tuples.
@@ -107,7 +106,7 @@ class DQNCnn(nn.Module):
         '''
         Called with either one element to determine next action, or a batch during optimization. Returns tensor([[left0exp,right0exp]...]).
         '''
-        # x = x.to(device)
+        x = x.to(device)
         x = F.relu(self.bn1(self.conv1(x)))
         x = F.relu(self.bn2(self.conv2(x)))
         x = F.relu(self.bn3(self.conv3(x)))
@@ -133,7 +132,7 @@ class DQNLin(nn.Module):
         '''
         Build a network that maps state -> action values.
         '''
-        # x = x.to(device)
+        x = x.to(device)
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
         x = F.relu(self.fc3(x))

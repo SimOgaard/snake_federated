@@ -1,11 +1,9 @@
 # Torch imports
-from numpy.lib.shape_base import tile
 from torch import empty as torch_empty
 from torch import tensor
 from torch import float as torch_float
 
 # Math modules
-from numpy.random import rand
 from numpy import empty
 from random import randrange
 from random import randint

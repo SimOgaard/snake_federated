@@ -7,7 +7,7 @@ import time
 
 if __name__ == "__main__":
     '''
-    Creates a large environment and counts achived apm of random agent
+    Creates a large environment and counts achived aps of random agent and board creation
     '''
     random_snake: RandomAgent = RandomAgent(init_snake_lengths=array([2, 10]))
 
@@ -35,7 +35,6 @@ if __name__ == "__main__":
         board.__restart__()
         board_reset_amount += 1
         board_reset_time += time.time() - start_time
-        # print(time.time() - start_time)
 
         start_time: float = time.time()
         while board.is_alive():
