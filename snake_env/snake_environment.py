@@ -43,6 +43,9 @@ class Board(TilesSpawn):
         # self.__restart__()
 
     def set_snakes(self, snakes: list) -> None:
+        '''
+        Sets given snakes to be on self
+        '''
         self.snakes = snakes
         for snake in self.snakes:
             snake.board = self
@@ -53,13 +56,10 @@ class Board(TilesSpawn):
         '''
         super(TilesSpawn, self).__init__()
 
-        self.open_board_positions = {} # why cant python fuck fase fuxkcklahsjd fhjkl init capacity of this dict?!?!
+        self.open_board_positions = {} # cant specify capacity ?!?!?!!?!?
 
         assert self.min_board_shape[0] <= self.max_board_shape[0]
         assert self.min_board_shape[1] <= self.max_board_shape[1]
-
-        # true_board_width: int = self.max_board_shape[0] + 2
-        # true_board_height: int = self.max_board_shape[1] + 2
 
         width: int = randint(self.min_board_shape[0], self.max_board_shape[0])
         height: int = randint(self.min_board_shape[1], self.max_board_shape[1])
@@ -68,9 +68,7 @@ class Board(TilesSpawn):
 
         self.bounding_box = array([start_row, start_col, start_row + width, start_col + height])
         
-        # ## THIS IS SLOW AF
-        import time
-        # start = time.time()
+        ### this is programmed c-like (easy to read) but its python; so its slow af
         # for row in range(true_board_width):
         #     for col in range(true_board_height):
         #         is_side: bool = row < self.bounding_box[0] or row > self.bounding_box[2]
@@ -84,31 +82,26 @@ class Board(TilesSpawn):
 
         #         self.board[row][col] = self.board_tiles[row][col].visual
         
-        # ugly ass Python way is fast because its compiled to an acutal language c:
-
+        ### this is programmed in pythonic way that is hard to read but is compiled to an acutal language c; so it is faster. eventhough we do a lot of unneeded calculations
         # fill both tensor and np array with air
         self.board_tiles.fill(self.tiles_populated["air_tile"])
         self.board.fill_(self.tiles_populated["air_tile"].visual)
 
-        # fill sides by boundingbox indices with wall
-        # tensor:
+        # find all indices that should be filled by boundingbox 
         indices_row: list = list(range(0, self.bounding_box[0])) + list(range(self.bounding_box[2], self.board.shape[0]))
-        self.board.index_fill_(0, tensor(indices_row), self.tiles_populated["wall_tile"].visual)
         indices_col = list(range(0, self.bounding_box[1])) + list(range(self.bounding_box[3], self.board.shape[1]))
+
+        # tensor:
+        self.board.index_fill_(0, tensor(indices_row), self.tiles_populated["wall_tile"].visual)
         self.board.index_fill_(1, tensor(indices_col), self.tiles_populated["wall_tile"].visual)
         # numpy:
         self.board_tiles[indices_row,:] = self.tiles_populated["wall_tile"]
         self.board_tiles[:, indices_col] = self.tiles_populated["wall_tile"]
         
-        # end = time.time()
-        # print("c implementation:" + str(end - start))
-        # start = time.time()
         # fill dictionary:
         for row in range(self.bounding_box[0], self.bounding_box[2]):
             for col in range(self.bounding_box[1], self.bounding_box[3]):
                 self.open_board_positions[(row, col)] = array([row, col])
-        # end = time.time()
-        # print("python itteration that i do not know how to fix:" + str(end - start))
         self.run += 1
 
         self.temporary_snakes: list = []
@@ -127,6 +120,7 @@ class Board(TilesSpawn):
         '''
 
         if (self.replay_interval != 0 and self.run % self.replay_interval == 0):
+            # save replay
             self.board_replay.append(self.board.detach().clone())
 
         # make all temporary snakes act and move
@@ -147,6 +141,10 @@ class Board(TilesSpawn):
         Returns random tilecord that is not occupied by tiles marked with occupy
         '''
         def get_nth_key(n=0):
+            '''
+            Indexs into python dictionary is O(n)
+            cant index into Python dict wtf?!?!?!?!?!
+            '''
             if n < 0:
                 n += len()
             for i, key in enumerate(self.open_board_positions.keys()):

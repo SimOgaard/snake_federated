@@ -18,9 +18,10 @@ def display(state, board_dim: int) -> None:
     # plt.draw()
 
 from snake_env.snake_agents.observation_functions import observation_full
+
 def display_run(board, snake, board_dim, display_function: object, observation_function: object):
     '''
-    Displays a run from given snake
+    Displays a run on board from snake
     '''
     board.__restart__() # restart board
     snake_state = observation_function(board = board, snake = snake, kernel = board_dim) # save init state

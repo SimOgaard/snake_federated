@@ -5,16 +5,25 @@ from torch import save, load
 from os import path
 
 def load_checkpoint(model_path) -> dict:
-    if (path.exists(model_path)): # load model
+    '''
+    Load model checkpoint given path 
+    '''
+    if (path.exists(model_path)):
         return load(model_path)
     return None
 
 def load_checkpoint_to_snake(snake, checkpoint) -> None:
-    if (checkpoint != None): # load model
+    '''
+    Loads given checkpoint to snake
+    '''
+    if (checkpoint != None):
         snake.qnetwork_local.load_state_dict(checkpoint['network_local'])
         snake.qnetwork_target.load_state_dict(checkpoint['network_target'])
 
 def save_checkpoint(snake, model_path: str) -> None:
+    '''
+    Saves dqn snake networks
+    '''
     state: dict = {
         'network_local': snake.qnetwork_local.state_dict(),
         'network_target': snake.qnetwork_target.state_dict()
@@ -29,6 +38,9 @@ from numpy import mean as numpy_mean
 from collections import deque
 
 def dqn(board, snake, env_episode_amount: int, observation_function: object) -> float:
+    '''
+    Trains snake on board for env_episode_amount episodes
+    '''
     scores_window = deque(maxlen=100) # last 100 scores
 
     for i in range (env_episode_amount):
@@ -49,7 +61,5 @@ def dqn(board, snake, env_episode_amount: int, observation_function: object) -> 
             state = next_state # set old state to the next state
 
         scores_window.append(len(snake.snake_body)) # save the most recent score
-        #print('\rEpisode {}\tAverage Score {:.3f}\tRandom act chance {:.6f}'.format(board.run, numpy_mean(scores_window), snake.epsilon(snake.board.run)), end="")
 
     return numpy_mean(scores_window)
-    #print('\rEpisode {}\tAverage Score {:.3f}\tRandom act chance {:.6f}'.format(board.run, numpy_mean(scores_window), snake.epsilon(snake.board.run)))

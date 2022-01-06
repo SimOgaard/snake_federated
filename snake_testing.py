@@ -7,7 +7,7 @@ from composed_functions.dqn_helper import load_checkpoint, load_checkpoint_to_sn
 
 if __name__ == "__main__":
     '''
-    Trains a DQN-agent
+    Tests saved model
     '''
 
     episode_amount: int = 100_000

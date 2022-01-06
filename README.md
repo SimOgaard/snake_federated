@@ -26,6 +26,9 @@ python3 snake_federated_transfer_learning.py
 * detta fungerar ej med federated learning
 
 ## TODO:
+### Other
+* Fix observation_food function
+
 ### Optimization:
 * [this bitch](https://github.com/SimOgaard/snake_federated/blob/fc85c3bc567efef0b785bc600a8b191950b012ea/snake_env/snake_environment.py#L109) takes 45% of compute power
 * Traing takes a lot of cpu power (100%) and not a lot of gpu power (40%). Se if you cast tensor to right device and dtype. And if ReplayBuffer.sample can be improved uppon.

@@ -89,7 +89,7 @@ if __name__ == "__main__":
         tiles_populated         = {
             "air_tile": AirTile(),
             "wall_tile": WallTile(),
-            "food_tile": FoodTile(spawn_amount = array([1, 1]))
+            "food_tile": FoodTile()
         },
     )
 

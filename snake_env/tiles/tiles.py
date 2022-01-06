@@ -62,7 +62,7 @@ class FoodTile(Tiles):
     '''
     Adds new bodypart to snake
     '''
-    def __init__(self, visual: int = 3, reward: float = 1, occupy: bool = True, salt_pepper_chance: float = 0., spawn_amount: array = array([1, 10]), procentual_spawn_rate: float = 0., epsilon: Epsilon = Epsilon(0, 0, 0)) -> None:
+    def __init__(self, visual: int = 3, reward: float = 1, occupy: bool = True, salt_pepper_chance: float = 0., spawn_amount: array = array([1, 1]), procentual_spawn_rate: float = 0., epsilon: Epsilon = Epsilon(0, 0, 0)) -> None:
         '''
         Initialize a food tile object.
         '''

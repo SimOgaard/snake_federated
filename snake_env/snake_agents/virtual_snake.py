@@ -107,7 +107,7 @@ class Snake():
 
         reward_sum: float = 0
 
-        for i in range(self.snake_move_count):
+        for _ in range(self.snake_move_count):
             moved_head_point: array = self.snake_body[0] + self.snake_direction
 
             # move tail

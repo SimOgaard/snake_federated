@@ -34,4 +34,4 @@ if __name__ == "__main__":
                 action, is_random = player_snake.act()
                 reward: float = player_snake.move(action, is_random)
 
-        input("You died...")
+        input("You died with final length of {}...".format(len(player_snake.snake_body)))

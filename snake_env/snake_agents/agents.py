@@ -12,6 +12,9 @@ from snake_env.snake_agents.neural_nets.deep_q_learning import *
 from torch import no_grad, argmax, LongTensor
 from torch.optim import Adam
 
+# Operating system
+from os import name as system_name
+
 class Agent(Snake):
     '''
     Placeholders that all agents should inherrent from.
@@ -64,7 +67,8 @@ class ControllableAgent(Agent):
         Returns action given key presses
         '''
         def KeyCheck() -> int:
-            ''' Input NOT Linux supported '''
+            ''' Input only windows supported '''
+            assert system_name == 'nt'
             from msvcrt import getch
 
             base = getch()
@@ -78,19 +82,6 @@ class ControllableAgent(Agent):
                     return 0
                 elif sub == b'K':
                     return 3
-            # while True:
-            #     with keyboard.Events() as events:
-            #         # Block for as much as possible
-            #         key_press = events.get(1e6).key
-
-            #         if key_press == keyboard.Key.up:
-            #             return 1
-            #         elif key_press == keyboard.Key.right:
-            #             return 2
-            #         elif key_press == keyboard.Key.down:
-            #             return 0
-            #         elif key_press == keyboard.Key.left:
-            #             return 3
 
         return KeyCheck(), False
 
