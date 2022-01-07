@@ -68,8 +68,8 @@ if __name__ == "__main__":
         buffer_size         = 1_000_000
     )
 
-    #           * board with static size and lots of fruit
-    board_LOTS_of_fruit: Board = Board(
+    #           * board with static size and lots of food
+    board_LOTS_of_food: Board = Board(
         min_board_shape         = array([board_dim, board_dim]),
         max_board_shape         = array([board_dim, board_dim]),
         replay_interval         = 0,
@@ -80,8 +80,8 @@ if __name__ == "__main__":
             "food_tile": FoodTile(epsilon=Epsilon(1, 0.25, 1_000))
         },
     )
-    #           * default board with fixed size and only one fruit
-    board_fruit_mine: Board = Board(
+    #           * default board with fixed size and only one food
+    board_food_mine: Board = Board(
         min_board_shape         = array([board_dim, board_dim]),
         max_board_shape         = array([board_dim, board_dim]),
         replay_interval         = 0,
@@ -95,7 +95,7 @@ if __name__ == "__main__":
 
     # Lists holding all snakes and boards for easy itteration and mixing
     snakes: list = [dqn_snake_exploration, dqn_snake_exploitation, dqn_snake_normal]
-    boards: list = [board_LOTS_of_fruit, board_fruit_mine]
+    boards: list = [board_LOTS_of_food, board_food_mine]
 
     checkpoint = load_checkpoint(model_path)
     load_checkpoint_to_snake(dqn_snake_normal, checkpoint)
@@ -104,7 +104,7 @@ if __name__ == "__main__":
 
     for i in range(episode_amount):
         # train all snakes on all boards for env_episode_amount episodes
-        median: float = 0 # median length of dqn_snake_normal in board_fruit_mine
+        median: float = 0 # median length of dqn_snake_normal in board_food_mine
         for snake in snakes:
             for board in boards:
                 board.set_snakes([snake])
@@ -121,4 +121,4 @@ if __name__ == "__main__":
 
     # test a snake over 10 displayed runs
     for _ in range(10):
-        display_run(board_fruit_mine, dqn_snake_normal, array([state_size, state_size]), pretty_print, observation_near)
+        display_run(board_food_mine, dqn_snake_normal, array([state_size, state_size]), pretty_print, observation_near)

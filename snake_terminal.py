@@ -30,6 +30,7 @@ if __name__ == "__main__":
         while board.is_alive():
             state = observation_full(board=board)
             pretty_print(state, array([board_dim+2,board_dim+2]))
+            print(observation_food(snake=player_snake))
             if (not player_snake.done):
                 action, is_random = player_snake.act()
                 reward: float = player_snake.move(action, is_random)

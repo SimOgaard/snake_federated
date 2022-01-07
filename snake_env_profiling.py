@@ -38,6 +38,7 @@ if __name__ == "__main__":
 
         start_time: float = time.time()
         while board.is_alive():
+            # observation_food(random_snake)
             action, is_random = random_snake.act()
             reward: float = random_snake.move(action, is_random)
 

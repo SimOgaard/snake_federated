@@ -56,7 +56,8 @@ class Board(TilesSpawn):
         '''
         super(TilesSpawn, self).__init__()
 
-        self.open_board_positions = {} # cant specify capacity ?!?!?!!?!?
+        self.open_board_positions: dict = {} # cant specify capacity ?!?!?!!?!?
+        self.all_food_on_board: dict = {}
 
         assert self.min_board_shape[0] <= self.max_board_shape[0]
         assert self.min_board_shape[1] <= self.max_board_shape[1]
@@ -147,9 +148,9 @@ class Board(TilesSpawn):
             '''
             if n < 0:
                 n += len()
-            for i, key in enumerate(self.open_board_positions.keys()):
+            for i, value in enumerate(self.open_board_positions.values()):
                 if (i == n):
-                    return key
+                    return value
             raise IndexError("dictionary index out of range")
         
         random_index: int = randrange(len(self.open_board_positions))
@@ -159,11 +160,18 @@ class Board(TilesSpawn):
         '''
         Places tile at given position on board
         '''
+        coord_tuple: tuple = tuple(coord)
+
+        if (isinstance(tile, FoodTile)):
+            self.all_food_on_board[coord_tuple] = coord
+        elif (isinstance(self.board_tiles[coord[0]][coord[1]], FoodTile)):
+            del self.all_food_on_board[coord_tuple]
+        
         self.board_tiles[coord[0]][coord[1]] = tile
         self.board[coord[0]][coord[1]] = tile.visual
         
         if (tile.occupy):
-            if (tuple(coord) in self.open_board_positions):
-                del self.open_board_positions[tuple(coord)]
+            if (coord_tuple in self.open_board_positions):
+                del self.open_board_positions[coord_tuple]
         else:
-            self.open_board_positions[tuple(coord)] = coord
+            self.open_board_positions[coord_tuple] = coord

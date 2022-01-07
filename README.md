@@ -27,20 +27,21 @@ python3 snake_federated_transfer_learning.py
 
 ## TODO:
 ### Other
-* Fix observation_food function
+* 
 
 ### Optimization:
 * [this bitch](https://github.com/SimOgaard/snake_federated/blob/fc85c3bc567efef0b785bc600a8b191950b012ea/snake_env/snake_environment.py#L109) takes 45% of compute power
 * Traing takes a lot of cpu power (100%) and not a lot of gpu power (40%). Se if you cast tensor to right device and dtype. And if ReplayBuffer.sample can be improved uppon.
+* Observation_food function is sloow and requires cpu when not even using it (all_food_on_board: dict)
 
 ### UI:
 * Fix ui for display in snake_terminal
 * Print % amount of deaths that are from random action
 
 ### Env:
-* Fruit that splits snake into two (currently not working)
-* Fruit that detatches one bit of the tail and leaves it on board
-* Super fruit that gives more reward but gives you longer body
+* Food that splits snake into two (currently not working)
+* Food that detatches one bit of the tail and leaves it on board
+* Super food that gives more reward but gives you longer body
 * Random board structure not just cubic
 
 ### NN:
