@@ -16,7 +16,7 @@ if __name__ == "__main__":
     save_every: int = 1_000
     board_dim: int = 20
     state_size: int = 7
-    model_id: str = "{}x{}+".format(state_size, state_size, 4)
+    model_id: str = "{}x{}+{}".format(state_size, state_size, 4)
     model_path: str = 'models/checkpoint{}.pth'.format(model_id)
 
     dqn_snake: DQNAgent = DQNAgent(

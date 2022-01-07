@@ -83,7 +83,7 @@ class Board(TilesSpawn):
 
         #         self.board[row][col] = self.board_tiles[row][col].visual
         
-        ### this is programmed in pythonic way that is hard to read but is compiled to an acutal language c; so it is faster. eventhough we do a lot of unneeded calculations
+        ### this is pythonic that is hard to read but is compiled to an acutal language c; so it is faster. eventhough we do a lot of unneeded calculations 🙃
         # fill both tensor and np array with air
         self.board_tiles.fill(self.tiles_populated["air_tile"])
         self.board.fill_(self.tiles_populated["air_tile"].visual)
