@@ -11,9 +11,9 @@ if __name__ == "__main__":
     '''
 
     episode_amount: int = 100_000
-    board_dim: int = 5
-    state_size: int = 5
-    model_id: str = "{}x{}".format(state_size, state_size)
+    board_dim: int = 20
+    state_size: int = 7
+    model_id: str = "{}x{}+{}".format(state_size, state_size, 4)
     model_path: str = 'snake_rl/models/checkpoint{}.pth'.format(model_id)
 
     dqn_snake: DQNAgent = DQNAgent(
