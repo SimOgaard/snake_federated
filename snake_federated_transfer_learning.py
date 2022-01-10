@@ -106,4 +106,4 @@ if __name__ == "__main__":
 
     # display 10 runs
     for _ in range(10):
-        display_run(board_combined, dqn_snake_mine, array([state_size, state_size]), pretty_print, observation_near)
+        display_run(board_combined, dqn_snake_mine, array([state_size, state_size]), pretty_print, lambda: observation_near(board=board_mine, snake=dqn_snake_mine, kernel=array([state_size, state_size])))

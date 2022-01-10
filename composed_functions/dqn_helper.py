@@ -4,12 +4,15 @@ from torch import save, load
 # Os system modules
 from os import path
 
+# Repo imports
+from snake_env.snake_agents.neural_nets.deep_q_learning import *
+
 def load_checkpoint(model_path) -> dict:
     '''
     Load model checkpoint given path 
     '''
     if (path.exists(model_path)):
-        return load(model_path)
+        return load(model_path, map_location=device)
     return None
 
 def load_checkpoint_to_snake(snake, checkpoint) -> None:
@@ -51,8 +54,8 @@ def dqn(board, snake, env_episode_amount: int, observation_function: object) -> 
             action, is_random = snake.act(state) # choose an action for given snake
             reward: float = snake.move(action, is_random)
 
-            action = LongTensor([action]) # take the agents action that leed to that reward and state
-            reward = FloatTensor([reward]) # take the reward that the agent stored
+            # action = LongTensor([action]) # take the agents action that leed to that reward and state
+            # reward = FloatTensor([reward]) # take the reward that the agent stored
 
             next_state: FloatTensor = observation_function() # observe what steps taken lead to
 

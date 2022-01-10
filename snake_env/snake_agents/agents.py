@@ -157,7 +157,7 @@ class DQNAgent(Agent):
         if sample > eps_threshold:
             return argmax(action_values.cpu().data), False
         else:
-            return choice(arange(self.action_size)), True
+            return LongTensor([choice(arange(self.action_size))])[0], True
             
     def learn(self, experiences) -> None:
         """

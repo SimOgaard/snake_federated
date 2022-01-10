@@ -17,13 +17,13 @@ if __name__ == "__main__":
     model_path: str = 'snake_rl/models/checkpoint{}.pth'.format(model_id)
 
     dqn_snake: DQNAgent = DQNAgent(
-        state_size    = state_size**2,
+        state_size    = state_size**2 + 4,
         action_size   = 4,
         init_snake_lengths=array([2, 2]),
         seed          = 1337,
         batch_size    = 128,
         gamma         = 0.999,
-        epsilon       = Epsilon(0, 0., 100_000),
+        epsilon       = Epsilon(0, 0, 1_000),
         learning_rate = 5e-4,
         tau           = 1e-3,
         update_every  = 32,
@@ -38,7 +38,7 @@ if __name__ == "__main__":
         tiles_populated         = {
             "air_tile": AirTile(),
             "wall_tile": WallTile(),
-            "food_tile": FoodTile()
+            "food_tile": FoodTile(spawn_amount=array([20,20]))
         },
     )
 
@@ -46,4 +46,17 @@ if __name__ == "__main__":
     load_checkpoint_to_snake(dqn_snake, checkpoint)
 
     while board.run < episode_amount:
-        display_run(board, dqn_snake, array([state_size, state_size]), pretty_print, observation_near)
+        display_run(
+            board,
+            dqn_snake,
+            array([board_dim, board_dim]),
+            pretty_print,
+            lambda: observation_cat(
+                observation_near(
+                    board=board,
+                    snake=dqn_snake,
+                    kernel=array([state_size, state_size])
+                ),
+                observation_food(dqn_snake)
+            )
+        )

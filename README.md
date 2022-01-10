@@ -53,3 +53,9 @@ python3 snake_federated_transfer_learning.py
 * HamiltonianCycleAgent
 * SupervisedLearningAgent
 * BreadthFirstSearchAgent (hardcoded a* algorythm)
+
+
+### gör:
+<!-- fixa snake testing till modell (0 epsilon) -->
+Träna utan och med Federated
+lägg up allt på hans git

@@ -46,8 +46,8 @@ class Board(TilesSpawn):
 
         self.all_board_positions = {}
 
-        print(self.board.shape[0])
-        print(self.board.shape[1])
+        # print(self.board.shape[0])
+        # print(self.board.shape[1])
 
         for row in range(0, self.board.shape[0]):
             for col in range(0, self.board.shape[1]):

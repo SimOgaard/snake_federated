@@ -121,4 +121,4 @@ if __name__ == "__main__":
 
     # test a snake over 10 displayed runs
     for _ in range(10):
-        display_run(board_food_mine, dqn_snake_normal, array([state_size, state_size]), pretty_print, observation_near)
+        display_run(board_food_mine, dqn_snake_normal, array([state_size, state_size]), pretty_print, lambda: observation_near(board=board, snake=snake, kernel=array([state_size, state_size])))

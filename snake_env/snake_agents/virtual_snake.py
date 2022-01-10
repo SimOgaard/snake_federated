@@ -1,6 +1,9 @@
 # Math modules
 from random import shuffle, randint
 
+# Torch modules
+from torch import FloatTensor
+
 # Repo imports
 from snake_env.tiles.tiles import *
 
@@ -104,7 +107,7 @@ class Snake():
         self.snake_body.append(snake_coord)
         self.board.place_tile(self.snake_tiles["snake_tile"], snake_coord)
 
-    def move(self, direction_index: int, random_action: bool) -> float:
+    def move(self, direction_index: FloatTensor, random_action: FloatTensor) -> FloatTensor:
         '''
         Moves snake in direction and returns reward
         '''
@@ -132,8 +135,8 @@ class Snake():
 
             if (self.done):
                 self.death += 1
-                if (random_action):
+                if (random_action == 1.):
                     self.random_action_death += 1
                 break
 
-        return reward_sum
+        return FloatTensor([reward_sum])
