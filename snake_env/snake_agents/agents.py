@@ -1,8 +1,7 @@
 # Math modules
 from numpy import array, arange
 from random import seed as random_seed
-from random import random, choice
-from math import exp
+from random import random, choice, randrange
 
 # Repo imports
 from snake_env.snake_agents.virtual_snake import *
@@ -12,6 +11,9 @@ from snake_env.snake_agents.neural_nets.deep_q_learning import *
 # Torch imports
 from torch import no_grad, argmax, LongTensor
 from torch.optim import Adam
+
+# Operating system
+from os import name as system_name
 
 class Agent(Snake):
     '''
@@ -65,7 +67,8 @@ class ControllableAgent(Agent):
         Returns action given key presses
         '''
         def KeyCheck() -> int:
-            ''' Input NOT Linux supported '''
+            ''' Input only windows supported '''
+            assert system_name == 'nt'
             from msvcrt import getch
 
             base = getch()
@@ -79,19 +82,6 @@ class ControllableAgent(Agent):
                     return 0
                 elif sub == b'K':
                     return 3
-            # while True:
-            #     with keyboard.Events() as events:
-            #         # Block for as much as possible
-            #         key_press = events.get(1e6).key
-
-            #         if key_press == keyboard.Key.up:
-            #             return 1
-            #         elif key_press == keyboard.Key.right:
-            #             return 2
-            #         elif key_press == keyboard.Key.down:
-            #             return 0
-            #         elif key_press == keyboard.Key.left:
-            #             return 3
 
         return KeyCheck(), False
 
@@ -99,7 +89,7 @@ class DQNAgent(Agent):
     '''
     Implements DQN (deep q learning) to act in given enviroment
     '''
-    def __init__(self, state_size: int, action_size: int, init_snake_lengths: array = array([2, 2]), seed: int = 1337, batch_size: int = 64, gamma: float = 0.999, epsilon_start: float = 1, epsilon_end: float = 0.0, epsilon_decay: int = 2500, learning_rate: float = 5e-4, tau: float = 1e-3, update_every: int = 10, buffer_size: int = 500_000) -> None:
+    def __init__(self, state_size: int, action_size: int, init_snake_lengths: array = array([2, 2]), seed: int = 1337, batch_size: int = 64, gamma: float = 0.999, epsilon: Epsilon = Epsilon(1, 0, 50_000), learning_rate: float = 5e-4, tau: float = 1e-3, update_every: int = 10, buffer_size: int = 500_000) -> None:
         '''
         Initialize an Agent object.
         '''
@@ -107,9 +97,7 @@ class DQNAgent(Agent):
 
         self.batch_size: int = batch_size
         self.gamma: float = gamma
-        self.epsilon_start: float = epsilon_start
-        self.epsilon_end: float = epsilon_end
-        self.epsilon_decay: int = epsilon_decay
+        self.epsilon: Epsilon = epsilon
         self.learning_rate: float = learning_rate
         self.tau: float = tau
         self.update_every: int = update_every
@@ -152,12 +140,6 @@ class DQNAgent(Agent):
                 experience = self.memory.sample()
                 self.learn(experience)
     
-    def calculate_epsilon(self) -> float:
-        '''
-        Returns current epsilon value 
-        '''
-        return self.epsilon_end + (self.epsilon_start - self.epsilon_end) * exp(-1. * self.board.run / self.epsilon_decay)
-
     def act(self, state: FloatTensor) -> int:
         '''
         Returns action for given state as per current policy
@@ -170,7 +152,7 @@ class DQNAgent(Agent):
 
         #Epsilon -greedy action selction
         sample: float = random()
-        eps_threshold: float = self.calculate_epsilon()
+        eps_threshold: float = self.epsilon(self.board.run)
 
         if sample > eps_threshold:
             return argmax(action_values.cpu().data), False

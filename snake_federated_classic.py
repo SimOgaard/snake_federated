@@ -1,21 +1,10 @@
 # Repo imports
-import torch
 from snake_env.snake_environment import *
 from snake_env.snake_agents.agents import *
-from snake_terminal import pretty_print, display
-from snake_testing import display_run
-from snake_training import load_checkpoint
-from snake_federated_transfer_learning import dqn, agregate
 
-# Math modules
-from numpy import mean as numpy_mean
-
-# Torch imports
-from torch import save, load
-from torch import div as torch_div
-
-# Generic imports
-from os import path
+from composed_functions.ui_helper import pretty_print, display, display_run
+from composed_functions.dqn_helper import dqn, load_checkpoint, load_checkpoint_to_snake, save_checkpoint
+from federated_learning.federated_average import agregate
 
 if __name__ == "__main__":
     '''
@@ -25,9 +14,9 @@ if __name__ == "__main__":
 
     episode_amount: int = 500
     env_episode_amount: int = 100
-    save_every: int = 50
-    board_dim: int = 5
-    state_size: int = 5
+    save_every: int = 5
+    board_dim: int = 25
+    state_size: int = 7
     model_id: str = "{}x{}".format(state_size, state_size)
     model_path: str = 'models/checkpoint{}.pth'.format(model_id)
 
@@ -38,12 +27,10 @@ if __name__ == "__main__":
         state_size          = state_size**2,
         action_size         = 4,
         init_snake_lengths  = array([2, 20]),
-        seed                = 1337,
+        seed                = 69,
         batch_size          = 128,
         gamma               = 0.999,
-        epsilon_start       = 1.,
-        epsilon_end         = 0.25,
-        epsilon_decay       = 100_000,
+        epsilon             = Epsilon(1, 0.25, 100_000),
         learning_rate       = 1e-4,
         tau                 = 1e-3,
         update_every        = 32,
@@ -59,9 +46,7 @@ if __name__ == "__main__":
         seed                = 69,
         batch_size          = 128,
         gamma               = 0.999,
-        epsilon_start       = .25,
-        epsilon_end         = 0.,
-        epsilon_decay       = 100_000,
+        epsilon             = Epsilon(0.25, 0., 50_000),
         learning_rate       = 1e-4,
         tau                 = 1e-3,
         update_every        = 32,
@@ -76,18 +61,27 @@ if __name__ == "__main__":
         seed                = 69,
         batch_size          = 128,
         gamma               = 0.999,
-        epsilon_start       = 1.,
-        epsilon_end         = 0.,
-        epsilon_decay       = 10_000,
+        epsilon             = Epsilon(1, 0., 25_000),
         learning_rate       = 1e-4,
         tau                 = 1e-3,
         update_every        = 32,
         buffer_size         = 1_000_000
     )
 
-    # different board types:
-    #           * board with dynamic size and only food tile
-    board_fruit: Board = Board(
+    #           * board with static size and lots of food
+    board_LOTS_of_food: Board = Board(
+        min_board_shape         = array([board_dim, board_dim]),
+        max_board_shape         = array([board_dim, board_dim]),
+        replay_interval         = 0,
+        snakes                  = [],
+        tiles_populated         = {
+            "air_tile": AirTile(),
+            "wall_tile": WallTile(),
+            "food_tile": FoodTile(epsilon=Epsilon(1, 0.25, 1_000))
+        },
+    )
+    #           * default board with fixed size and only one food
+    board_food_mine: Board = Board(
         min_board_shape         = array([board_dim, board_dim]),
         max_board_shape         = array([board_dim, board_dim]),
         replay_interval         = 0,
@@ -98,63 +92,33 @@ if __name__ == "__main__":
             "food_tile": FoodTile()
         },
     )
-    #           * board with dynamic size and only mine tile
-    board_mine: Board = Board(
-        min_board_shape         = array([board_dim, board_dim]),
-        max_board_shape         = array([board_dim, board_dim]),
-        replay_interval         = 0,
-        snakes                  = [],
-        tiles_populated         = {
-            "air_tile": AirTile(),
-            "wall_tile": WallTile(),
-            "mine_tile": MineTile()
-        },
-    )
-    #           * default board with fixed size both mine and food tile
-    board_fruit_mine: Board = Board(
-        min_board_shape         = array([board_dim, board_dim]),
-        max_board_shape         = array([board_dim, board_dim]),
-        replay_interval         = 0,
-        snakes                  = [],
-        tiles_populated         = {
-            "air_tile": AirTile(),
-            "wall_tile": WallTile(),
-            "food_tile": FoodTile(),
-            "mine_tile": MineTile()
-        },
-    )
 
     # Lists holding all snakes and boards for easy itteration and mixing
     snakes: list = [dqn_snake_exploration, dqn_snake_exploitation, dqn_snake_normal]
-    boards: list = [board_fruit, board_mine, board_fruit_mine]
+    boards: list = [board_LOTS_of_food, board_food_mine]
 
-    if (path.exists(model_path)): # load model
-        checkpoint = load(model_path)
-        load_checkpoint(dqn_snake_exploration, checkpoint)
-        load_checkpoint(dqn_snake_exploitation, checkpoint)
-        load_checkpoint(dqn_snake_normal, checkpoint)
+    checkpoint = load_checkpoint(model_path)
+    load_checkpoint_to_snake(dqn_snake_normal, checkpoint)
+    load_checkpoint_to_snake(dqn_snake_exploitation, checkpoint)
+    load_checkpoint_to_snake(dqn_snake_exploration, checkpoint)
 
     for i in range(episode_amount):
         # train all snakes on all boards for env_episode_amount episodes
-        median: float = 0 # median length of dqn_snake_normal in board_fruit_mine
+        median: float = 0 # median length of dqn_snake_normal in board_food_mine
         for snake in snakes:
             for board in boards:
                 board.set_snakes([snake])
-                median = dqn(board, snake, env_episode_amount, lambda: observation_near(board=board, snake=snake, kernel=array([5, 5])))
+                median = dqn(board, snake, env_episode_amount, lambda: observation_near(board=board, snake=snake, kernel=array([state_size, state_size])))
                 
-        print('\rEpisode {}\tAverage Scores {:.3f}\tRandom act chance {:.6f}'.format(i * env_episode_amount, median, dqn_snake_normal.calculate_epsilon()))
+        print('\rEpisode {}\tAverage Scores {:.3f}\tRandom act chance {:.6f}'.format(i * env_episode_amount, median, dqn_snake_normal.epsilon(dqn_snake_normal.board.run)))
 
         # do a fedaverage between them
         agregate(snakes)
 
         # Save their model
         if i % save_every == 0:
-            state: dict = {
-                'network_local': dqn_snake_normal.qnetwork_local.state_dict(),
-                'network_target': dqn_snake_normal.qnetwork_target.state_dict()
-            }
-            save(state, model_path)
+            save_checkpoint(dqn_snake_normal, model_path)
 
     # test a snake over 10 displayed runs
     for _ in range(10):
-        display_run(board_fruit_mine, dqn_snake_normal, array([board_dim+2, board_dim+2]))
+        display_run(board_food_mine, dqn_snake_normal, array([state_size, state_size]), pretty_print, observation_near)

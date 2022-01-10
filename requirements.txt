@@ -1,6 +1,3 @@
 numpy>=1.18.0
 torch>=1.10.0
 matplotlib>=3.4.3
-# pynput==1.7.5 # DOESNT WORK WITH DOCKER?
-# opencv-python==4.5.4.60
-# Pillow==8.3.2

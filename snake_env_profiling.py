@@ -7,7 +7,7 @@ import time
 
 if __name__ == "__main__":
     '''
-    Creates a large environment and counts achived apm of random agent
+    Creates a large environment and counts achived aps of random agent and board creation
     '''
     random_snake: RandomAgent = RandomAgent(init_snake_lengths=array([2, 10]))
 
@@ -24,27 +24,25 @@ if __name__ == "__main__":
         },
     )
 
-    step_count: int = 0
-    board_create_count: int = 0
-    start_time = time.time()
+    board_reset_amount: int = 0
+    board_reset_time = 1e-5
+
+    board_step_amount: int = 0
+    board_step_time = 1e-5
 
     while True:
-        # import time
-        # start = time.time()
-
-        board_create_count+=1
+        start_time: float = time.time()
         board.__restart__()
+        board_reset_amount += 1
+        board_reset_time += time.time() - start_time
 
-        # while board.is_alive():
-        #     action, is_random = random_snake.act()
-        #     reward: float = random_snake.move(action, is_random)
+        start_time: float = time.time()
+        while board.is_alive():
+            # observation_food(random_snake)
+            action, is_random = random_snake.act()
+            reward: float = random_snake.move(action, is_random)
 
-        #     step_count+=1
-        #     if step_count % 100 == 0:
-        #         print('\rAPS: {:.0f}'.format(step_count / (time.time() - start_time)))
+            board_step_amount += 1
+        board_step_time += time.time() - start_time
 
-        # end = time.time()
-        # print(end - start)
-
-        if board_create_count % 5 == 0:
-            print('\rAPS: {:.5f}'.format(board_create_count / (time.time() - start_time)))
+        print('\rBoards Per Second: {:.5f} Steps Per Second: {:.5f}'.format(board_reset_amount / board_reset_time, board_step_amount / board_step_time), end="")

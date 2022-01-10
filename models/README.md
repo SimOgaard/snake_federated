@@ -1,1 +1,1 @@
-### Map containing all saved models with naming convention of {training_type}_checkpoint{boardsize}.pth
+### Map containing all saved models with naming convention of checkpoint{boardsize}.pth

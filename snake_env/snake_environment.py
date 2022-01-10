@@ -1,11 +1,9 @@
 # Torch imports
-from numpy.lib.shape_base import tile
 from torch import empty as torch_empty
 from torch import tensor
 from torch import float as torch_float
 
 # Math modules
-from numpy.random import rand
 from numpy import empty
 from random import randrange
 from random import randint
@@ -59,6 +57,9 @@ class Board(TilesSpawn):
         # self.__restart__()
 
     def set_snakes(self, snakes: list) -> None:
+        '''
+        Sets given snakes to be on self
+        '''
         self.snakes = snakes
         for snake in self.snakes:
             snake.board = self
@@ -69,13 +70,10 @@ class Board(TilesSpawn):
         '''
         super(TilesSpawn, self).__init__()
 
-        # why cant python fuck fase fuxkcklahsjd fhjkl init capacity of this dict?!?!
+        self.all_food_on_board: dict = {}
 
         assert self.min_board_shape[0] <= self.max_board_shape[0]
         assert self.min_board_shape[1] <= self.max_board_shape[1]
-
-        # true_board_width: int = self.max_board_shape[0] + 2
-        # true_board_height: int = self.max_board_shape[1] + 2
 
         width: int = randint(self.min_board_shape[0], self.max_board_shape[0])
         height: int = randint(self.min_board_shape[1], self.max_board_shape[1])
@@ -84,9 +82,7 @@ class Board(TilesSpawn):
 
         self.bounding_box = array([start_row, start_col, start_row + width, start_col + height])
         
-        # ## THIS IS SLOW AF
-        # import time
-        # start = time.time()
+        ### this is programmed c-like (easy to read) but its python; so its slow af
         # for row in range(true_board_width):
         #     for col in range(true_board_height):
         #         is_side: bool = row < self.bounding_box[0] or row > self.bounding_box[2]
@@ -100,17 +96,17 @@ class Board(TilesSpawn):
 
         #         self.board[row][col] = self.board_tiles[row][col].visual
         
-        # ugly ass Python way is fast because its compiled to an acutal language c:
-
+        ### this is pythonic that is hard to read but is compiled to an acutal language c; so it is faster. eventhough we do a lot of unneeded calculations 🙃
         # fill both tensor and np array with air
         self.board_tiles.fill(self.tiles_populated["air_tile"])
         self.board.fill_(self.tiles_populated["air_tile"].visual)
 
-        # fill sides by boundingbox indices with wall
-        # tensor:
+        # find all indices that should be filled by boundingbox 
         indices_row: list = list(range(0, self.bounding_box[0])) + list(range(self.bounding_box[2], self.board.shape[0]))
-        self.board.index_fill_(0, tensor(indices_row), self.tiles_populated["wall_tile"].visual)
         indices_col = list(range(0, self.bounding_box[1])) + list(range(self.bounding_box[3], self.board.shape[1]))
+
+        # tensor:
+        self.board.index_fill_(0, tensor(indices_row), self.tiles_populated["wall_tile"].visual)
         self.board.index_fill_(1, tensor(indices_col), self.tiles_populated["wall_tile"].visual)
         # numpy:
         self.board_tiles[indices_row,:] = self.tiles_populated["wall_tile"]
@@ -150,14 +146,13 @@ class Board(TilesSpawn):
         for tile in self.tiles_populated.values():
             self.spawn_tile(tile)
 
-        return self
-
     def is_alive(self) -> bool:
         '''
         Are all snakes alive?
         '''
 
         if (self.replay_interval != 0 and self.run % self.replay_interval == 0):
+            # save replay
             self.board_replay.append(self.board.detach().clone())
 
         # make all temporary snakes act and move
@@ -178,11 +173,15 @@ class Board(TilesSpawn):
         Returns random tilecord that is not occupied by tiles marked with occupy
         '''
         def get_nth_key(n=0):
+            '''
+            Indexs into python dictionary is O(n)
+            cant index into Python dict wtf?!?!?!?!?!
+            '''
             if n < 0:
                 n += len()
-            for i, key in enumerate(self.open_board_positions.keys()):
+            for i, value in enumerate(self.open_board_positions.values()):
                 if (i == n):
-                    return key
+                    return value
             raise IndexError("dictionary index out of range")
         
         random_index: int = randrange(len(self.open_board_positions))
@@ -192,11 +191,18 @@ class Board(TilesSpawn):
         '''
         Places tile at given position on board
         '''
+        coord_tuple: tuple = tuple(coord)
+
+        if (isinstance(tile, FoodTile)):
+            self.all_food_on_board[coord_tuple] = coord
+        elif (isinstance(self.board_tiles[coord[0]][coord[1]], FoodTile)):
+            del self.all_food_on_board[coord_tuple]
+        
         self.board_tiles[coord[0]][coord[1]] = tile
         self.board[coord[0]][coord[1]] = tile.visual
         
         if (tile.occupy):
-            if (tuple(coord) in self.open_board_positions):
-                del self.open_board_positions[tuple(coord)]
+            if (coord_tuple in self.open_board_positions):
+                del self.open_board_positions[coord_tuple]
         else:
-            self.open_board_positions[tuple(coord)] = coord
+            self.open_board_positions[coord_tuple] = coord

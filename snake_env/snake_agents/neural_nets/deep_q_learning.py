@@ -1,6 +1,7 @@
 # Math modules
 from random import sample
 from random import seed as random_seed
+from math import exp
 
 # Generic modules
 from collections import namedtuple, deque
@@ -13,6 +14,26 @@ from torch.cuda import is_available as cuda_is_available
 
 # Global stored string of current utilized device 
 device: str = torch_device("cuda" if cuda_is_available() else "cpu")
+
+# C# struct
+from dataclasses import dataclass
+
+@dataclass
+class Epsilon:
+    '''
+    Epsilon struct
+    '''
+    epsilon_start: float
+    epsilon_end: float
+    epsilon_decay: int
+
+    def __call__(self, n) -> float:
+        '''
+        Returns current epsilon value given self.board.run (n)
+        '''
+        if (self.epsilon_decay == 0):
+            return self.epsilon_start
+        return self.epsilon_end + (self.epsilon_start - self.epsilon_end) * exp(-1. * n / self.epsilon_decay)
 
 class ReplayBuffer:
     '''
@@ -39,13 +60,13 @@ class ReplayBuffer:
         '''
         Randomly sample a batch of experiences from memory
         '''
-        experiences = sample(self.memory,k=self.batch_size)
+        experiences = sample(self.memory, k=self.batch_size)
         
-        states = vstack([e.state for e in experiences if e is not None]).to(device)
-        actions = vstack([e.action for e in experiences if e is not None]).to(device)
-        rewards = vstack([e.reward for e in experiences if e is not None]).to(device)
-        next_states = vstack([e.next_state for e in experiences if e is not None]).to(device)
-        dones = vstack([e.done for e in experiences if e is not None]).to(device)
+        states = vstack([e.state for e in experiences]).to(device)
+        actions = vstack([e.action for e in experiences]).to(device)
+        rewards = vstack([e.reward for e in experiences]).to(device)
+        next_states = vstack([e.next_state for e in experiences]).to(device)
+        dones = vstack([e.done for e in experiences]).to(device)
 
         return (states, actions, rewards, next_states, dones)
 
@@ -85,7 +106,7 @@ class DQNCnn(nn.Module):
         '''
         Called with either one element to determine next action, or a batch during optimization. Returns tensor([[left0exp,right0exp]...]).
         '''
-        # x = x.to(device)
+        x = x.to(device)
         x = F.relu(self.bn1(self.conv1(x)))
         x = F.relu(self.bn2(self.conv2(x)))
         x = F.relu(self.bn3(self.conv3(x)))
@@ -111,7 +132,7 @@ class DQNLin(nn.Module):
         '''
         Build a network that maps state -> action values.
         '''
-        # x = x.to(device)
+        x = x.to(device)
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
         x = F.relu(self.fc3(x))

@@ -1,42 +1,19 @@
 # Repo imports
 from snake_env.snake_environment import *
 from snake_env.snake_agents.agents import *
-from snake_terminal import display, pretty_print
-from snake_training import load_checkpoint
 
-# Math modules
-from numpy import mean as numpy_mean
-
-# Torch imports
-from torch import tensor, save, load
-
-# Generic imports
-from os import path
-
-def display_run(board: Board, snake: Snake, board_dim: array):
-    board.__restart__() # restart board
-    state: FloatTensor = observation_full(board = board) # save init state
-
-    while board.is_alive(): # check if snakes are alive
-
-        pretty_print(state, board_dim)
-        input()
-
-        action, is_random = snake.act(state) # choose an action for given snake
-        reward: float = snake.move(action, is_random)
-
-        state: FloatTensor = observation_full(board = board) # observe what steps taken lead to
-    input("snake died with final length of {}...".format(len(snake.snake_body)))
+from composed_functions.ui_helper import pretty_print, display, display_run
+from composed_functions.dqn_helper import load_checkpoint, load_checkpoint_to_snake
 
 if __name__ == "__main__":
     '''
-    Trains a DQN-agent
+    Tests saved model
     '''
 
     episode_amount: int = 100_000
-    board_dim: int = 5
-    state_size: int = 5
-    model_id: str = "{}x{}".format(state_size, state_size)
+    board_dim: int = 20
+    state_size: int = 7
+    model_id: str = "{}x{}+{}".format(state_size, state_size, 4)
     model_path: str = 'snake_rl/models/checkpoint{}.pth'.format(model_id)
 
     dqn_snake: DQNAgent = DQNAgent(
@@ -46,9 +23,7 @@ if __name__ == "__main__":
         seed          = 1337,
         batch_size    = 128,
         gamma         = 0.999,
-        epsilon_start = 0.,
-        epsilon_end   = 0.,
-        epsilon_decay = 5000,
+        epsilon       = Epsilon(0, 0., 100_000),
         learning_rate = 5e-4,
         tau           = 1e-3,
         update_every  = 32,
@@ -67,9 +42,8 @@ if __name__ == "__main__":
         },
     )
 
-    if (path.exists(model_path)): # load model
-        checkpoint = load(model_path)
-        load_checkpoint(dqn_snake)
+    checkpoint = load_checkpoint(model_path)
+    load_checkpoint_to_snake(dqn_snake, checkpoint)
 
     while board.run < episode_amount:
-        display_run(board, dqn_snake, array([board_dim+2, board_dim+2]))
+        display_run(board, dqn_snake, array([state_size, state_size]), pretty_print, observation_near)
