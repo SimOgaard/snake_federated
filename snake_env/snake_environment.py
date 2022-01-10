@@ -14,6 +14,10 @@ from random import randint
 from snake_env.tiles.tiles import *
 from snake_env.tiles.tiles_spawn import *
 
+import time
+
+from itertools import chain
+
 class Board(TilesSpawn):
     '''
     Snake game board
@@ -41,6 +45,16 @@ class Board(TilesSpawn):
         self.set_snakes(snakes)
 
         self.tiles_populated = tiles_populated
+
+        self.all_board_positions = {}
+
+        print(self.board.shape[0])
+        print(self.board.shape[1])
+
+        for row in range(0, self.board.shape[0]):
+            for col in range(0, self.board.shape[1]):
+                #print((row, col))
+                self.all_board_positions[(row, col)] = array([row, col])
         # needs to run __restart__ for board to start working, is done externally
         # self.__restart__()
 
@@ -55,7 +69,7 @@ class Board(TilesSpawn):
         '''
         super(TilesSpawn, self).__init__()
 
-        self.open_board_positions = {} # why cant python fuck fase fuxkcklahsjd fhjkl init capacity of this dict?!?!
+        # why cant python fuck fase fuxkcklahsjd fhjkl init capacity of this dict?!?!
 
         assert self.min_board_shape[0] <= self.max_board_shape[0]
         assert self.min_board_shape[1] <= self.max_board_shape[1]
@@ -104,13 +118,26 @@ class Board(TilesSpawn):
         
         # end = time.time()
         # print("c implementation:" + str(end - start))
-        # start = time.time()
+        #start = time.time()
         # fill dictionary:
-        for row in range(self.bounding_box[0], self.bounding_box[2]):
-            for col in range(self.bounding_box[1], self.bounding_box[3]):
-                self.open_board_positions[(row, col)] = array([row, col])
-        # end = time.time()
-        # print("python itteration that i do not know how to fix:" + str(end - start))
+        # print(str(self.bounding_box[0]) + " " +  str(self.bounding_box[2]))
+        # print(str(self.bounding_box[1]) + " " +  str(self.bounding_box[3]))
+
+        self.open_board_positions = dict(self.all_board_positions)
+
+        for row in chain(range(0, self.bounding_box[0]), range((self.bounding_box[2]), self.board.shape[0])):
+            for col in range(0, self.board.shape[0]):
+                self.open_board_positions.pop((row, col))
+
+
+        for col in chain(range(0, self.bounding_box[1]), range((self.bounding_box[3]), self.board.shape[1])):
+            for row in range(self.bounding_box[0], self.bounding_box[2]):
+                self.open_board_positions.pop((row, col))
+
+        #end = time.time()
+        #print(self.open_board_positions[(self.bounding_box[0], self.bounding_box[1])])
+        #print(array([1, 1]))
+        #print("python itteration that i do not know how to fix:" + str(end - start))
         self.run += 1
 
         self.temporary_snakes: list = []
