@@ -58,6 +58,10 @@ def test_snake(board, snake, observation_function: object):
 
             snake_state = observation_function() # observe what steps taken lead to
 
+            # pretty_print(snake_state, array([7,7]))
+            # print(observation_to_bool(snake_state[-4:]))
+            # print(len(snake.snake_body))
+
         if (len(snake.snake_body) > max_val):
             max_val = len(snake.snake_body)
         if (len(snake.snake_body) < min_val):

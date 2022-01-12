@@ -54,7 +54,7 @@ if __name__ == "__main__":
                 snake=dqn_snake,
                 kernel=array([state_size, state_size])
             ),
-            observation_food(dqn_snake)
+            observation_to_bool(observation_food(dqn_snake))
         )
     )
 
@@ -70,6 +70,6 @@ if __name__ == "__main__":
                     snake=dqn_snake,
                     kernel=array([state_size, state_size])
                 ),
-                observation_food(dqn_snake)
+                observation_to_bool(observation_food(dqn_snake))
             )
         )

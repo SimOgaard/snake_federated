@@ -3,7 +3,7 @@ from numpy import array
 from numpy.linalg import norm
 
 # Torch imports
-from torch import FloatTensor, flatten, cat
+from torch import FloatTensor, flatten, cat, where
 from torch.nn import ConstantPad2d
 
 # Repo imports
@@ -67,7 +67,7 @@ def observation_to_bool(tensor: FloatTensor) -> FloatTensor:
     '''
     Returns bool tensor of input tensor
     '''
-    return tensor.where(tensor == 0 or tensor == 0, 1, 0.)
+    return where(tensor > 0, 1., 0.)
 
 def observation_food(snake: Snake, *args, **kwargs) -> FloatTensor:
     '''

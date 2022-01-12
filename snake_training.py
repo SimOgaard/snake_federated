@@ -53,7 +53,7 @@ if __name__ == "__main__":
     while board.run < episode_amount:
         
         board.__restart__() # restart board
-        state: FloatTensor = observation_cat(observation_near(board=board, snake=dqn_snake, kernel=state_size), observation_food(dqn_snake)) # save init state
+        state: FloatTensor = observation_cat(observation_near(board=board, snake=dqn_snake, kernel=state_size), observation_to_bool(observation_food(dqn_snake))) # save init state
 
         while board.is_alive(): # check if snakes are alive
 
@@ -63,7 +63,7 @@ if __name__ == "__main__":
             # action = LongTensor([action]) # take the agents action that leed to that reward and state
             # reward = FloatTensor([reward]) # take the reward that the agent stored
 
-            next_state: FloatTensor = observation_cat(observation_near(board=board, snake=dqn_snake, kernel=state_size), observation_food(dqn_snake)) # observe what steps taken lead to
+            next_state: FloatTensor = observation_cat(observation_near(board=board, snake=dqn_snake, kernel=state_size), observation_to_bool(observation_food(dqn_snake))) # observe what steps taken lead to
 
             dqn_snake.step(state, action, reward, next_state, dqn_snake.done) # signal step to snake
 
