@@ -2,7 +2,7 @@
 from snake_env.snake_environment import *
 from snake_env.snake_agents.agents import *
 
-from composed_functions.ui_helper import pretty_print, display, display_run
+from composed_functions.ui_helper import pretty_print, display, display_run, test_snake
 from composed_functions.dqn_helper import load_checkpoint, load_checkpoint_to_snake
 
 if __name__ == "__main__":
@@ -14,7 +14,7 @@ if __name__ == "__main__":
     board_dim: int = 20
     state_size: int = 7
     model_id: str = "{}x{}+{}".format(state_size, state_size, 4)
-    model_path: str = 'snake_rl/models/checkpoint{}.pth'.format(model_id)
+    model_path: str = 'models/checkpoint{}.pth'.format(model_id)
 
     dqn_snake: DQNAgent = DQNAgent(
         state_size    = state_size**2 + 4,
@@ -38,12 +38,25 @@ if __name__ == "__main__":
         tiles_populated         = {
             "air_tile": AirTile(),
             "wall_tile": WallTile(),
-            "food_tile": FoodTile(spawn_amount=array([20,20]))
+            "food_tile": FoodTile(spawn_amount=array([1,1]))
         },
     )
 
     checkpoint = load_checkpoint(model_path)
     load_checkpoint_to_snake(dqn_snake, checkpoint)
+
+    test_snake(
+        board=board,
+        snake=dqn_snake,
+        observation_function = lambda: observation_cat(
+            observation_near(
+                board=board,
+                snake=dqn_snake,
+                kernel=array([state_size, state_size])
+            ),
+            observation_food(dqn_snake)
+        )
+    )
 
     while board.run < episode_amount:
         display_run(

@@ -8,7 +8,7 @@ class AirTile(Tiles):
     '''
     Tile that does nothing
     '''
-    def __init__(self, visual: int = 0, reward: float = 0.01, occupy: bool = False, salt_pepper_chance: float = 0., spawn_amount: array = array([0, 0]), procentual_spawn_rate: float = 0., epsilon: Epsilon = Epsilon(0, 0, 0)) -> None:
+    def __init__(self, visual: int = 0, reward: float = 0., occupy: bool = False, salt_pepper_chance: float = 0., spawn_amount: array = array([0, 0]), procentual_spawn_rate: float = 0., epsilon: Epsilon = Epsilon(0, 0, 0)) -> None:
         '''
         Initialize a air tile object.
         '''
