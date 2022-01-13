@@ -34,7 +34,7 @@ if __name__ == "__main__":
         learning_rate       = 1e-4,
         tau                 = 1e-3,
         update_every        = 32,
-        buffer_size         = 1_000_000
+        buffer_size         = 100_000
     )
 
     #           * early game exploitation (small snake length and low epsilon)
@@ -50,7 +50,7 @@ if __name__ == "__main__":
         learning_rate       = 1e-4,
         tau                 = 1e-3,
         update_every        = 32,
-        buffer_size         = 1_000_000
+        buffer_size         = 100_000
     )
 
     #           * normal snake agent (small snake with decreesing epsilon)
@@ -65,7 +65,7 @@ if __name__ == "__main__":
         learning_rate       = 1e-4,
         tau                 = 1e-3,
         update_every        = 32,
-        buffer_size         = 1_000_000
+        buffer_size         = 100_000
     )
 
     #           * board with static size and lots of food

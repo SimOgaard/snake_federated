@@ -27,7 +27,7 @@ if __name__ == "__main__":
         learning_rate = 5e-4,
         tau           = 1e-3,
         update_every  = 32,
-        buffer_size   = 500_000
+        buffer_size   = 100_000
     )
 
     board: Board = Board(
