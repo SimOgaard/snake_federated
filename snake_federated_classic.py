@@ -15,16 +15,16 @@ if __name__ == "__main__":
     episode_amount: int = 500
     env_episode_amount: int = 100
     save_every: int = 5
-    board_dim: int = 25
+    board_dim: int = 20
     state_size: int = 7
-    model_id: str = "{}x{}".format(state_size, state_size)
+    model_id: str = "{}x{}+{}".format(state_size, state_size, 4)
     model_path: str = 'models/checkpoint{}.pth'.format(model_id)
 
     # snake for:
     #           * early game exploration (small snake length and high epsilon)
     #           * late game exploration (large snake and high epsilon)
     dqn_snake_exploration: DQNAgent = DQNAgent(
-        state_size          = state_size**2,
+        state_size          = state_size**2 + 4,
         action_size         = 4,
         init_snake_lengths  = array([2, 20]),
         seed                = 69,
@@ -40,7 +40,7 @@ if __name__ == "__main__":
     #           * early game exploitation (small snake length and low epsilon)
     #           * late game exploitation (large snake and low epsilon)
     dqn_snake_exploitation: DQNAgent = DQNAgent(
-        state_size          = state_size**2,
+        state_size          = state_size**2 + 4,
         action_size         = 4,
         init_snake_lengths  = array([2, 20]),
         seed                = 69,
@@ -55,7 +55,7 @@ if __name__ == "__main__":
 
     #           * normal snake agent (small snake with decreesing epsilon)
     dqn_snake_normal: DQNAgent = DQNAgent(
-        state_size          = state_size**2,
+        state_size          = state_size**2 + 4,
         action_size         = 4,
         init_snake_lengths  = array([2, 2]),
         seed                = 69,
@@ -108,7 +108,19 @@ if __name__ == "__main__":
         for snake in snakes:
             for board in boards:
                 board.set_snakes([snake])
-                median = dqn(board, snake, env_episode_amount, lambda: observation_near(board=board, snake=snake, kernel=array([state_size, state_size])))
+                median = dqn(
+                    board,
+                    snake,
+                    env_episode_amount,
+                    lambda: observation_cat(
+                        observation_near(
+                            board=board,
+                            snake=snake,
+                            kernel=array([state_size, state_size])
+                        ),
+                        observation_to_bool(observation_food(snake))
+                    )
+                )
                 
         print('\rEpisode {}\tAverage Scores {:.3f}\tRandom act chance {:.6f}'.format(i * env_episode_amount, median, dqn_snake_normal.epsilon(dqn_snake_normal.board.run)))
 
@@ -120,5 +132,5 @@ if __name__ == "__main__":
             save_checkpoint(dqn_snake_normal, model_path)
 
     # test a snake over 10 displayed runs
-    for _ in range(10):
-        display_run(board_food_mine, dqn_snake_normal, array([state_size, state_size]), pretty_print, lambda: observation_near(board=board, snake=snake, kernel=array([state_size, state_size])))
+    # for _ in range(10):
+    #     display_run(board_food_mine, dqn_snake_normal, array([state_size, state_size]), pretty_print, lambda: observation_near(board=board, snake=snake, kernel=array([state_size, state_size])))
