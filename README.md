@@ -56,6 +56,5 @@ python3 snake_federated_transfer_learning.py
 
 
 ### gör:
-<!-- fixa snake testing till modell (0 epsilon) -->
-Träna utan och med Federated
+fedaverage färre ggr?
 lägg up allt på hans git

@@ -33,6 +33,17 @@ def save_checkpoint(snake, model_path: str) -> None:
     }
     save(state, model_path)
 
+def clone_snake(_from, _to):
+    '''
+    Clones snake networks from snake _from to snake _to
+    '''
+    state: dict = {
+        'network_local': _from.qnetwork_local.state_dict(),
+        'network_target': _from.qnetwork_target.state_dict()
+    }
+    _to.qnetwork_local.load_state_dict(state['network_local'])
+    _to.qnetwork_target.load_state_dict(state['network_target'])
+
 # Torch imports
 from torch import FloatTensor, LongTensor
 # Math module
