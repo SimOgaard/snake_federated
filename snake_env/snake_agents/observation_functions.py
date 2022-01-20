@@ -73,6 +73,9 @@ def observation_food(snake: Snake, *args, **kwargs) -> FloatTensor:
     '''
     Returns float tensor where nearest food is [down, up, right, left] tiles from snake_head
     '''
+    if (len(snake.board.all_food_on_board) == 0):
+        return FloatTensor([0, 0, 0, 0])
+
     snake_head: array = snake.snake_body[0]
 
     dist: float = float('inf')

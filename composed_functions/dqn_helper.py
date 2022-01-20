@@ -46,6 +46,8 @@ def dqn(board, snake, env_episode_amount: int, observation_function: object) -> 
     '''
     scores_window = deque(maxlen=100) # last 100 scores
 
+    board.set_snakes(snake)
+
     for i in range (env_episode_amount):
         board.__restart__() # restart board
         state: FloatTensor = observation_function() # save init state

@@ -1,4 +1,5 @@
 # matplotlib imports
+from math import fabs
 from matplotlib import pyplot as plt
 
 def pretty_print(state, board_dim) -> None:
@@ -40,7 +41,7 @@ def display_run(board, snake, board_dim, display_function: object, observation_f
         visual_state = observation_full(board = board)
     input("snake died with final length of {}...".format(len(snake.snake_body)))
 
-def test_snake(board, snake, observation_function: object):
+def test_snake(board, snake, observation_function: object, test_amount: int = 10, max_step_without_food: int = 2_500, visualize: bool = False, print_every: int = 10):
     '''
     Tests snake multiple times and saves min, average, max
     '''    
@@ -48,9 +49,18 @@ def test_snake(board, snake, observation_function: object):
     average_val: int = 0
     max_val: int = float('-inf')
 
-    while True:
+    board.set_snakes(snake)
+
+    stuck_amount: int = 0
+    old_board_run: int = board.run
+
+    for i in range(test_amount):
         board.__restart__() # restart board
         snake_state = observation_function() # save init state
+
+        # store snake lenght and steps with same length
+        last_snake_length: int = len(snake.snake_body)
+        time_without_food: int = 0
 
         while board.is_alive(): # check if snakes are alive
             action, is_random = snake.act(snake_state) # choose an action for given snake
@@ -58,9 +68,20 @@ def test_snake(board, snake, observation_function: object):
 
             snake_state = observation_function() # observe what steps taken lead to
 
-            pretty_print(snake_state, array([7,7]))
-            print(snake_state[-4:])
-            input(len(snake.snake_body))
+            if (visualize):
+                pretty_print(snake_state, array([7,7]))
+                print(snake_state[-4:])
+                input(len(snake.snake_body))
+
+            # if snake has been the same length for max_step_without_food steps; break (it got stuck in a loop)
+            time_without_food += 1
+            if (last_snake_length != len(snake.snake_body)):
+                last_snake_length = len(snake.snake_body)
+                time_without_food = 0
+            elif (time_without_food > max_step_without_food):
+                stuck_amount += 1
+                #print("SNAKE GOT STUCK IN A LOOP")
+                break
 
         if (len(snake.snake_body) > max_val):
             max_val = len(snake.snake_body)
@@ -68,4 +89,8 @@ def test_snake(board, snake, observation_function: object):
             min_val = len(snake.snake_body)
         average_val += len(snake.snake_body)
 
-        print("Min: {}; Average: {}; Max: {}".format(min_val, average_val/(board.run+1), max_val))
+        if ((i + 1) % print_every == 0 and i != 0):
+            print("Min: {}; Average: {}; Max: {}; Stuck: {}".format(min_val, average_val/(i + 1), max_val, stuck_amount))
+        
+        # reset board and snake like this test didnt happen
+        board.run = old_board_run

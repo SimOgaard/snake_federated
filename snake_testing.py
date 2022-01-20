@@ -13,7 +13,8 @@ if __name__ == "__main__":
     episode_amount: int = 100_000
     board_dim: int = 20
     state_size: int = 7
-    model_id: str = "{}x{}+{}".format(state_size, state_size, 4)
+    model_type: str = "fed_none"
+    model_id: str = "_{}_{}x{}+{}".format(model_type, state_size, state_size, 4)
     model_path: str = 'models/checkpoint{}.pth'.format(model_id)
 
     dqn_snake: DQNAgent = DQNAgent(
@@ -38,7 +39,7 @@ if __name__ == "__main__":
         tiles_populated         = {
             "air_tile": AirTile(),
             "wall_tile": WallTile(),
-            "food_tile": FoodTile(spawn_amount=array([1,1]))
+            "food_tile": FoodTile()
         },
     )
 
@@ -55,21 +56,23 @@ if __name__ == "__main__":
                 kernel=array([state_size, state_size])
             ),
             observation_to_bool(observation_food(dqn_snake))
-        )
+        ),
+        test_amount=1000000,
+        #visualize=True
     )
 
-    while board.run < episode_amount:
-        display_run(
-            board,
-            dqn_snake,
-            array([board_dim, board_dim]),
-            pretty_print,
-            lambda: observation_cat(
-                observation_near(
-                    board=board,
-                    snake=dqn_snake,
-                    kernel=array([state_size, state_size])
-                ),
-                observation_to_bool(observation_food(dqn_snake))
-            )
-        )
+    # while board.run < episode_amount:
+    #     display_run(
+    #         board,
+    #         dqn_snake,
+    #         array([board_dim, board_dim]),
+    #         pretty_print,
+    #         lambda: observation_cat(
+    #             observation_near(
+    #                 board=board,
+    #                 snake=dqn_snake,
+    #                 kernel=array([state_size, state_size])
+    #             ),
+    #             observation_to_bool(observation_food(dqn_snake))
+    #         )
+    #     )
