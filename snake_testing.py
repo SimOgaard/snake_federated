@@ -10,9 +10,9 @@ if __name__ == "__main__":
     Tests saved model
     '''
 
-    episode_amount: int = 100_000
+    episode_amount: int = 1_000_000
     board_dim: int = 20
-    state_size: int = 7
+    state_size: int = 9
     model_type: str = "fed_none"
     model_id: str = "_{}_{}x{}+{}".format(model_type, state_size, state_size, 4)
     model_path: str = 'models/checkpoint{}.pth'.format(model_id)
@@ -25,7 +25,7 @@ if __name__ == "__main__":
         batch_size    = 128,
         gamma         = 0.999,
         epsilon       = Epsilon(0, 0, 1_000),
-        learning_rate = 5e-4,
+        learning_rate = 1e-3,
         tau           = 1e-3,
         update_every  = 32,
         buffer_size   = 100_000
@@ -58,7 +58,7 @@ if __name__ == "__main__":
             observation_to_bool(observation_food(dqn_snake))
         ),
         test_amount=1000000,
-        #visualize=True
+        visualize=True
     )
 
     # while board.run < episode_amount:

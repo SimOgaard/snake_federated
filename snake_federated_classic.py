@@ -12,11 +12,11 @@ if __name__ == "__main__":
     Does a fedaverage between the agents to show that multiple rules for multiple agents can increase preformance/exploration
     '''
 
-    episode_amount: int = 100_000
-    env_episode_amount: int = 5
+    episode_amount: int = 1_000_000
+    env_episode_amount: int = 1
     save_every: int = 50
     board_dim: int = 20
-    state_size: int = 7
+    state_size: int = 9
     model_type: str = "fed_classic"
     model_id: str = "_{}_{}x{}+{}".format(model_type, state_size, state_size, 4)
     model_path: str = 'models/checkpoint{}.pth'.format(model_id)
@@ -32,7 +32,7 @@ if __name__ == "__main__":
         batch_size          = 128,
         gamma               = 0.999,
         epsilon             = Epsilon(1, 0.25, 50_000),
-        learning_rate       = 1e-4,
+        learning_rate       = 1e-3,
         tau                 = 1e-3,
         update_every        = 32,
         buffer_size         = 100_000
@@ -47,8 +47,8 @@ if __name__ == "__main__":
         seed                = 1337,
         batch_size          = 128,
         gamma               = 0.999,
-        epsilon             = Epsilon(0.25, 0.001, 50_000),
-        learning_rate       = 1e-4,
+        epsilon             = Epsilon(0.25, 0.0001, 50_000),
+        learning_rate       = 1e-3,
         tau                 = 1e-3,
         update_every        = 32,
         buffer_size         = 100_000
@@ -62,8 +62,8 @@ if __name__ == "__main__":
         seed                = 1337,
         batch_size          = 128,
         gamma               = 0.999,
-        epsilon             = Epsilon(1, 0.001, 50_000),
-        learning_rate       = 1e-4,
+        epsilon             = Epsilon(1, 0.0001, 50_000),
+        learning_rate       = 1e-3,
         tau                 = 1e-3,
         update_every        = 32,
         buffer_size         = 100_000
@@ -77,8 +77,8 @@ if __name__ == "__main__":
         seed                = 1337,
         batch_size          = 128,
         gamma               = 0.999,
-        epsilon             = Epsilon(0, 0.000, 50_000),
-        learning_rate       = 1e-4,
+        epsilon             = Epsilon(0., 0., 50_000),
+        learning_rate       = 1e-3,
         tau                 = 1e-3,
         update_every        = 32,
         buffer_size         = 100_000
