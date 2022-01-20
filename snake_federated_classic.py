@@ -12,9 +12,9 @@ if __name__ == "__main__":
     Does a fedaverage between the agents to show that multiple rules for multiple agents can increase preformance/exploration
     '''
 
-    episode_amount: int = 1000
+    episode_amount: int = 100_000
     env_episode_amount: int = 5
-    save_every: int = 25
+    save_every: int = 50
     board_dim: int = 20
     state_size: int = 7
     model_type: str = "fed_classic"
@@ -31,7 +31,7 @@ if __name__ == "__main__":
         seed                = 1337,
         batch_size          = 128,
         gamma               = 0.999,
-        epsilon             = Epsilon(1, 0.1, 25_000),
+        epsilon             = Epsilon(1, 0.25, 50_000),
         learning_rate       = 1e-4,
         tau                 = 1e-3,
         update_every        = 32,
@@ -47,7 +47,7 @@ if __name__ == "__main__":
         seed                = 1337,
         batch_size          = 128,
         gamma               = 0.999,
-        epsilon             = Epsilon(0.25, 0.001, 25_000),
+        epsilon             = Epsilon(0.25, 0.001, 50_000),
         learning_rate       = 1e-4,
         tau                 = 1e-3,
         update_every        = 32,
@@ -62,7 +62,7 @@ if __name__ == "__main__":
         seed                = 1337,
         batch_size          = 128,
         gamma               = 0.999,
-        epsilon             = Epsilon(1, 0.001, 25_000),
+        epsilon             = Epsilon(1, 0.001, 50_000),
         learning_rate       = 1e-4,
         tau                 = 1e-3,
         update_every        = 32,
@@ -77,7 +77,7 @@ if __name__ == "__main__":
         seed                = 1337,
         batch_size          = 128,
         gamma               = 0.999,
-        epsilon             = Epsilon(0, 0.000, 25_000),
+        epsilon             = Epsilon(0, 0.000, 50_000),
         learning_rate       = 1e-4,
         tau                 = 1e-3,
         update_every        = 32,
