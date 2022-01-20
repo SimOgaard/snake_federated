@@ -68,7 +68,7 @@ if __name__ == "__main__":
         replay_interval         = 0,
         snakes                  = [dqn_snake_food],
         tiles_populated         = {
-            "air_tile": AirTile(),
+            "air_tile": AirTile(reward=0.01),
             "wall_tile": WallTile(),
             "food_tile": FoodTile(epsilon=Epsilon(1., 0., 10_000))
         },
@@ -81,7 +81,7 @@ if __name__ == "__main__":
         replay_interval         = 0,
         snakes                  = [dqn_snake_mine],
         tiles_populated         = {
-            "air_tile": AirTile(),
+            "air_tile": AirTile(reward=0.01),
             "wall_tile": WallTile(),
             "food_tile": FoodTile(),
             "mine_tile": MineTile()
@@ -135,7 +135,7 @@ if __name__ == "__main__":
             print('\rEpisode {}\tAverage Scores {}\tRandom act chance {:.6f}'.format(i * env_episode_amount, ["{:.2f}".format(median) for median in medians], dqn_snake_food.epsilon(dqn_snake_food.board.run)))
             save_checkpoint(dqn_snake_mine, model_path)
 
-        if (i % 25 == 0):
+        if (i % 100 == 0):
             test_snake(
                 board=board_combined,
                 snake=dqn_snake_TEST,

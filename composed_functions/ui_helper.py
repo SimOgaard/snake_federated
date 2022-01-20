@@ -41,7 +41,7 @@ def display_run(board, snake, board_dim, display_function: object, observation_f
         visual_state = observation_full(board = board)
     input("snake died with final length of {}...".format(len(snake.snake_body)))
 
-def test_snake(board, snake, observation_function: object, test_amount: int = 10, max_step_without_food: int = 2_500, visualize: bool = False, print_every: int = 10):
+def test_snake(board, snake, observation_function: object, test_amount: int = 5, max_step_without_food: int = 2_500, visualize: bool = False, print_every: int = 10):
     '''
     Tests snake multiple times and saves min, average, max
     '''    

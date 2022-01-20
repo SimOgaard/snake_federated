@@ -150,7 +150,7 @@ if __name__ == "__main__":
             print('\rEpisode {}\tAverage Scores {}\tRandom act chance {:.6f}'.format(i * env_episode_amount, ["{:.2f}".format(median) for median in medians], dqn_snake_normal.epsilon(dqn_snake_normal.board.run)))
             save_checkpoint(dqn_snake_normal, model_path)
 
-        if (i % 25 == 0):
+        if (i % 100 == 0):
             test_snake(
                 board=board_food,
                 snake=dqn_snake_TEST,
