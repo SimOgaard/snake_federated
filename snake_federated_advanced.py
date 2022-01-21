@@ -8,9 +8,8 @@ from federated_learning.federated_average import agregate
 
 if __name__ == "__main__":
     '''
-    Trains two seperated DQN-agents in two seperate environments with same rules (mine and fruit)
-    Does a fedaverage between the two agents to show that two agents in seperate environments;
-        can transfer what they have learned to eachother even if the other one has no experience of it
+    Trains two seperated DQN-agents in the same environment with advanced rules (mine and fruit)
+    Does a fedaverage between the agents to show that multiple agents can achive the same preformance
     '''
 
     episode_amount: int = 1_000_000
@@ -18,12 +17,12 @@ if __name__ == "__main__":
     save_every: int = 50
     board_dim: int = 20
     state_size: int = 9
-    model_type: str = "fed_transfer"
+    model_type: str = "fed_advanced"
     model_id: str = "_{}_{}x{}+{}".format(model_type, state_size, state_size, 4)
     model_path: str = 'models/checkpoint{}.pth'.format(model_id)
 
-    # Snake and its environment with only mines
-    dqn_snake_mine: DQNAgent = DQNAgent(
+    # Snake 1 and its environment
+    dqn_snake_1: DQNAgent = DQNAgent(
         state_size          = state_size**2 + 4, #(board_dim + 2)**2,
         action_size         = 4,
         init_snake_lengths  = array([2, 2]),
@@ -36,20 +35,21 @@ if __name__ == "__main__":
         update_every        = 32,
         buffer_size         = 100_000
     )
-    board_mine: Board = Board(
+    board_1: Board = Board(
         min_board_shape         = array([board_dim, board_dim]),
         max_board_shape         = array([board_dim, board_dim]),
         replay_interval         = 0,
-        snakes                  = [dqn_snake_mine],
+        snakes                  = [dqn_snake_1],
         tiles_populated         = {
             "air_tile": AirTile(reward=0.01),
             "wall_tile": WallTile(),
+            "food_tile": FoodTile(epsilon=Epsilon(1., 0., 10_000)),
             "mine_tile": MineTile(epsilon=Epsilon(1., 0., 10_000))
         },
     )
 
     # Snake and its environment with food
-    dqn_snake_food: DQNAgent = DQNAgent(
+    dqn_snake_2: DQNAgent = DQNAgent(
         state_size          = state_size**2 + 4, #(board_dim + 2)**2,
         action_size         = 4,
         init_snake_lengths  = array([2, 2]),
@@ -62,15 +62,16 @@ if __name__ == "__main__":
         update_every        = 32,
         buffer_size         = 100_000
     )
-    board_food: Board = Board(
+    board_2: Board = Board(
         min_board_shape         = array([board_dim, board_dim]),
         max_board_shape         = array([board_dim, board_dim]),
         replay_interval         = 0,
-        snakes                  = [dqn_snake_food],
+        snakes                  = [dqn_snake_2],
         tiles_populated         = {
             "air_tile": AirTile(reward=0.01),
             "wall_tile": WallTile(),
-            "food_tile": FoodTile(epsilon=Epsilon(1., 0., 10_000))
+            "food_tile": FoodTile(epsilon=Epsilon(1., 0., 10_000)),
+            "mine_tile": MineTile(epsilon=Epsilon(1., 0., 10_000))
         },
     )
 
@@ -88,7 +89,7 @@ if __name__ == "__main__":
         buffer_size         = 100_000
     )
     # Test snake and its environment with both food and mines
-    board_combined: Board = Board(
+    board_TEST: Board = Board(
         min_board_shape         = array([board_dim, board_dim]),
         max_board_shape         = array([board_dim, board_dim]),
         replay_interval         = 0,
@@ -101,13 +102,13 @@ if __name__ == "__main__":
         },
     )
     checkpoint = load_checkpoint(model_path)
-    load_checkpoint_to_snake(dqn_snake_mine, checkpoint)
-    load_checkpoint_to_snake(dqn_snake_food, checkpoint)
+    load_checkpoint_to_snake(dqn_snake_1, checkpoint)
+    load_checkpoint_to_snake(dqn_snake_2, checkpoint)
 
     for i in range(episode_amount):
         medians: list = []
 
-        for snake, board in [(dqn_snake_mine, board_mine), (dqn_snake_food, board_food)]:
+        for snake, board in [(dqn_snake_1, board_1), (dqn_snake_2, board_2)]:
             # Train each snake seperatly for env_episode_amount episodes
             medians.append(
                 dqn(
@@ -124,23 +125,23 @@ if __name__ == "__main__":
                     )
                 )
             )
-        print('\rEpisode {}\tAverage Scores {}\tRandom act chance {:.6f}'.format(i * env_episode_amount, ["{:.2f}".format(median) for median in medians], dqn_snake_food.epsilon(dqn_snake_food.board.run)), end="")
+        print('\rEpisode {}\tAverage Scores {}\tRandom act chance {:.6f}'.format(i * env_episode_amount, ["{:.2f}".format(median) for median in medians], dqn_snake_1.epsilon(dqn_snake_1.board.run)), end="")
 
         # Do a fedaverage between them
-        agregate([dqn_snake_mine, dqn_snake_food], dqn_snake_TEST)
+        agregate([dqn_snake_1, dqn_snake_2], dqn_snake_TEST)
 
         # Save their model
         if i % save_every == 0:
-            print('\rEpisode {}\tAverage Scores {}\tRandom act chance {:.6f}'.format(i * env_episode_amount, ["{:.2f}".format(median) for median in medians], dqn_snake_food.epsilon(dqn_snake_food.board.run)))
-            save_checkpoint(dqn_snake_mine, model_path)
+            print('\rEpisode {}\tAverage Scores {}\tRandom act chance {:.6f}'.format(i * env_episode_amount, ["{:.2f}".format(median) for median in medians], dqn_snake_1.epsilon(dqn_snake_1.board.run)))
+            save_checkpoint(dqn_snake_1, model_path)
 
         if (i % 250 == 0):
             test_snake(
-                board=board_combined,
+                board=board_TEST,
                 snake=dqn_snake_TEST,
                 observation_function = lambda: observation_cat(
                     observation_near(
-                        board=board_combined,
+                        board=board_TEST,
                         snake=dqn_snake_TEST,
                         kernel=array([state_size, state_size])
                     ),
