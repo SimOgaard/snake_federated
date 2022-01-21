@@ -41,7 +41,7 @@ if __name__ == "__main__":
         replay_interval         = 0,
         snakes                  = [dqn_snake_1],
         tiles_populated         = {
-            "air_tile": AirTile(reward=0.01),
+            "air_tile": AirTile(),
             "wall_tile": WallTile(),
             "food_tile": FoodTile(epsilon=Epsilon(1., 0., 10_000)),
             "mine_tile": MineTile(epsilon=Epsilon(1., 0., 10_000))
@@ -68,7 +68,7 @@ if __name__ == "__main__":
         replay_interval         = 0,
         snakes                  = [dqn_snake_2],
         tiles_populated         = {
-            "air_tile": AirTile(reward=0.01),
+            "air_tile": AirTile(),
             "wall_tile": WallTile(),
             "food_tile": FoodTile(epsilon=Epsilon(1., 0., 10_000)),
             "mine_tile": MineTile(epsilon=Epsilon(1., 0., 10_000))
@@ -95,7 +95,7 @@ if __name__ == "__main__":
         replay_interval         = 0,
         snakes                  = [dqn_snake_TEST],
         tiles_populated         = {
-            "air_tile": AirTile(reward=0.01),
+            "air_tile": AirTile(),
             "wall_tile": WallTile(),
             "food_tile": FoodTile(),
             "mine_tile": MineTile()
