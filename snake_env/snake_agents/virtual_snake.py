@@ -11,7 +11,6 @@ class Snake():
     '''
     Snake (self explanatory i guess)
     '''
-
     def __init__(self, init_snake_lengths: array, snake_tiles: dict = {"snake_tile": SnakeTile(), "snake_head_tile": SnakeHeadTile()}) -> None:
         '''
         Initilizes our snake at given board
@@ -34,7 +33,6 @@ class Snake():
         '''
         Places our snake on board and restarts every value
         '''
-
         def create_snake() -> tuple:
             '''
             Chooses random point inside board_shape and places snake at that point in random directions of random length given self.init_snake_lengths

@@ -12,8 +12,6 @@ from random import randint
 from snake_env.tiles.tiles import *
 from snake_env.tiles.tiles_spawn import *
 
-import time
-
 from itertools import chain
 
 class Board(TilesSpawn):
@@ -46,13 +44,10 @@ class Board(TilesSpawn):
 
         self.all_board_positions = {}
 
-        # print(self.board.shape[0])
-        # print(self.board.shape[1])
-
         for row in range(0, self.board.shape[0]):
             for col in range(0, self.board.shape[1]):
-                #print((row, col))
                 self.all_board_positions[(row, col)] = array([row, col])
+
         # needs to run __restart__ for board to start working, is done externally
         # self.__restart__()
 
@@ -112,28 +107,17 @@ class Board(TilesSpawn):
         self.board_tiles[indices_row,:] = self.tiles_populated["wall_tile"]
         self.board_tiles[:, indices_col] = self.tiles_populated["wall_tile"]
         
-        # end = time.time()
-        # print("c implementation:" + str(end - start))
-        #start = time.time()
-        # fill dictionary:
-        # print(str(self.bounding_box[0]) + " " +  str(self.bounding_box[2]))
-        # print(str(self.bounding_box[1]) + " " +  str(self.bounding_box[3]))
-
+        # fill dictionary (inversed because its faster (fewer closed positions than opened)):
         self.open_board_positions = dict(self.all_board_positions)
 
         for row in chain(range(0, self.bounding_box[0]), range((self.bounding_box[2]), self.board.shape[0])):
             for col in range(0, self.board.shape[0]):
                 self.open_board_positions.pop((row, col))
 
-
         for col in chain(range(0, self.bounding_box[1]), range((self.bounding_box[3]), self.board.shape[1])):
             for row in range(self.bounding_box[0], self.bounding_box[2]):
                 self.open_board_positions.pop((row, col))
 
-        #end = time.time()
-        #print(self.open_board_positions[(self.bounding_box[0], self.bounding_box[1])])
-        #print(array([1, 1]))
-        #print("python itteration that i do not know how to fix:" + str(end - start))
         self.run += 1
 
         self.temporary_snakes: list = []
@@ -150,7 +134,6 @@ class Board(TilesSpawn):
         '''
         Are all snakes alive?
         '''
-
         if (self.replay_interval != 0 and self.run % self.replay_interval == 0):
             # save replay
             self.board_replay.append(self.board.detach().clone())

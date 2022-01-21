@@ -37,8 +37,6 @@ class Agent(Snake):
 class RandomAgent(Agent):
     '''
     Random action from all possible actions our snake can perform
-    Default observation function is ObservationNone
-    Ovveride it by doing RandomAgent.observate = ObservationRaycast.observate to test different observation functions
     '''
     def __init__(self, init_snake_lengths: array = array([2, 2])) -> None:
         '''
@@ -68,7 +66,7 @@ class ControllableAgent(Agent):
         '''
         def KeyCheck() -> int:
             ''' Input only windows supported '''
-            assert system_name == 'nt'
+            assert system_name == 'nt', "Input is only windows supported, sorry Linux King"
             from msvcrt import getch
 
             base = getch()

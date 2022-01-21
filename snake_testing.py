@@ -2,12 +2,12 @@
 from snake_env.snake_environment import *
 from snake_env.snake_agents.agents import *
 
-from composed_functions.ui_helper import pretty_print, display, display_run, test_snake
+from composed_functions.ui_helper import test_snake
 from composed_functions.dqn_helper import load_checkpoint, load_checkpoint_to_snake
 
 if __name__ == "__main__":
     '''
-    Tests saved model
+    Tests saved specified model
     '''
 
     episode_amount: int = 1_000_000
@@ -60,19 +60,3 @@ if __name__ == "__main__":
         test_amount=1000000,
         visualize=True
     )
-
-    # while board.run < episode_amount:
-    #     display_run(
-    #         board,
-    #         dqn_snake,
-    #         array([board_dim, board_dim]),
-    #         pretty_print,
-    #         lambda: observation_cat(
-    #             observation_near(
-    #                 board=board,
-    #                 snake=dqn_snake,
-    #                 kernel=array([state_size, state_size])
-    #             ),
-    #             observation_to_bool(observation_food(dqn_snake))
-    #         )
-    #     )

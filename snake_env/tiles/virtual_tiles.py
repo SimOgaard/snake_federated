@@ -5,7 +5,6 @@ class Tiles():
     Holds common functionality for tiles on board
     Made to make it easy to add new tiles
     '''
-
     def __init__(self, visual: int, reward: int, occupy: bool, salt_pepper_chance: float, spawn_amount: int, procentual_spawn_rate: float, epsilon: Epsilon) -> None:
         '''
         Common tiles init (values)

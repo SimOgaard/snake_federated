@@ -7,7 +7,9 @@ import time
 
 if __name__ == "__main__":
     '''
-    Creates a large environment and counts achived aps of random agent and board creation
+    Creates specified environment and counts;
+        achived APS (actions per second) of specified agent
+        achived board inits (how many boards can be instanciated per second)
     '''
     random_snake: RandomAgent = RandomAgent(init_snake_lengths=array([2, 10]))
 
@@ -38,7 +40,6 @@ if __name__ == "__main__":
 
         start_time: float = time.time()
         while board.is_alive():
-            # observation_food(random_snake)
             action, is_random = random_snake.act()
             reward: float = random_snake.move(action, is_random)
 

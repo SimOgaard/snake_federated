@@ -2,7 +2,7 @@
 from snake_env.snake_environment import *
 from snake_env.snake_agents.agents import *
 
-from composed_functions.ui_helper import pretty_print, display, display_run, test_snake
+from composed_functions.ui_helper import test_snake
 from composed_functions.dqn_helper import load_checkpoint, save_checkpoint, load_checkpoint_to_snake, clone_snake
 
 # Math modules
@@ -10,7 +10,7 @@ from numpy import mean as numpy_mean
 
 if __name__ == "__main__":
     '''
-    Trains a DQN-agent
+    Trains a single DQN-agent without federated learning 
     '''
 
     episode_amount: int = 1_000_000
@@ -85,9 +85,6 @@ if __name__ == "__main__":
 
             action, is_random = dqn_snake.act(state) # choose an action for given snake
             reward: float = dqn_snake.move(action, is_random)
-
-            # action = LongTensor([action]) # take the agents action that leed to that reward and state
-            # reward = FloatTensor([reward]) # take the reward that the agent stored
 
             next_state: FloatTensor = observation_cat(observation_near(board=board, snake=dqn_snake, kernel=state_size), observation_to_bool(observation_food(dqn_snake))) # observe what steps taken lead to
 

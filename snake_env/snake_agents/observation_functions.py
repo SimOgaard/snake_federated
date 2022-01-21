@@ -98,4 +98,7 @@ def observation_food(snake: Snake, *args, **kwargs) -> FloatTensor:
     return FloatTensor([down, up, right, left])
 
 def observation_cat(*args):
+    '''
+    Cats given tensors into a 1d tensor
+    '''
     return cat(args)

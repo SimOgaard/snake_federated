@@ -1,1 +1,1 @@
-### Map containing all saved models with naming convention of checkpoint{boardsize}.pth
+### Map containing all saved models with naming convention of checkpoint{fed_type}_{state_size}.pth

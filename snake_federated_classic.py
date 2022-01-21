@@ -2,14 +2,15 @@
 from snake_env.snake_environment import *
 from snake_env.snake_agents.agents import *
 
-from composed_functions.ui_helper import pretty_print, display, display_run, test_snake
+from composed_functions.ui_helper import test_snake
 from composed_functions.dqn_helper import dqn, load_checkpoint, load_checkpoint_to_snake, save_checkpoint
 from federated_learning.federated_average import agregate
 
 if __name__ == "__main__":
     '''
-    Trains multiple seperated DQN-agents in seperate environments with different rules
-    Does a fedaverage between the agents to show that multiple rules for multiple agents can increase preformance/exploration
+    Trains multiple seperated DQN-agents in seperate environments with the same rules.
+    Does a fedaverage between the agents to show that multiple agents can achive the same;
+        if not increase preformance/exploration by having each agent act differently under the same rules
     '''
 
     episode_amount: int = 1_000_000
@@ -119,9 +120,8 @@ if __name__ == "__main__":
     load_checkpoint_to_snake(dqn_snake_exploration, checkpoint)
 
     for i in range(episode_amount):
-        # train all snakes on all boards for env_episode_amount episodes
-        #median: float = 0 # median length of dqn_snake_normal in board_food_mine
-        medians: list = []
+        # Train all snakes on all boards for env_episode_amount episodes
+        medians: list = [] # median length of all snakes
         for snake in snakes:
             for board in boards:
                 medians.append(
@@ -142,7 +142,7 @@ if __name__ == "__main__":
                 
         print('\rEpisode {}\tAverage Scores {}\tRandom act chance {:.6f}'.format(i * env_episode_amount, ["{:.2f}".format(median) for median in medians], dqn_snake_normal.epsilon(dqn_snake_normal.board.run)), end="")
 
-        # do a fedaverage between them
+        # Do a fedaverage between them
         agregate(snakes, dqn_snake_TEST)
 
         # Save their model
@@ -150,6 +150,7 @@ if __name__ == "__main__":
             print('\rEpisode {}\tAverage Scores {}\tRandom act chance {:.6f}'.format(i * env_episode_amount, ["{:.2f}".format(median) for median in medians], dqn_snake_normal.epsilon(dqn_snake_normal.board.run)))
             save_checkpoint(dqn_snake_normal, model_path)
 
+        # Test model
         if (i % 250 == 0):
             test_snake(
                 board=board_food,
@@ -163,7 +164,3 @@ if __name__ == "__main__":
                     observation_to_bool(observation_food(dqn_snake_TEST))
                 )
             )
-
-    # test a snake over 10 displayed runs
-    # for _ in range(10):
-    #     display_run(board_food_mine, dqn_snake_normal, array([state_size, state_size]), pretty_print, lambda: observation_near(board=board, snake=snake, kernel=array([state_size, state_size])))

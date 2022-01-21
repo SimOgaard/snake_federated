@@ -1,5 +1,4 @@
 # Repo imports
-from statistics import median
 from snake_env.snake_environment import *
 from snake_env.snake_agents.agents import *
 
@@ -9,8 +8,9 @@ from federated_learning.federated_average import agregate
 
 if __name__ == "__main__":
     '''
-    Trains two seperated DQN-agents in two seperate environments with different rules
-    Does a fedaverage between the two agents to show that two agents in seperate environments can transfer what they have learned to eachother
+    Trains two seperated DQN-agents in two seperate environments with different rules (mine and fruit)
+    Does a fedaverage between the two agents to show that two agents in seperate environments;
+        can transfer what they have learned to eachother even if the other one has no experience of it
     '''
 
     episode_amount: int = 1_000_000
@@ -74,7 +74,7 @@ if __name__ == "__main__":
         },
     )
 
-    # test snake and its environment with both food and mines
+    # Test snake and its environment with both food and mines
     board_combined: Board = Board(
         min_board_shape         = array([board_dim, board_dim]),
         max_board_shape         = array([board_dim, board_dim]),
@@ -109,7 +109,7 @@ if __name__ == "__main__":
         medians: list = []
 
         for snake, board in [(dqn_snake_mine, board_mine), (dqn_snake_food, board_food)]:
-            # train each snake seperatly for env_episode_amount episodes
+            # Train each snake seperatly for env_episode_amount episodes
             medians.append(
                 dqn(
                     board,
@@ -127,7 +127,7 @@ if __name__ == "__main__":
             )
         print('\rEpisode {}\tAverage Scores {}\tRandom act chance {:.6f}'.format(i * env_episode_amount, ["{:.2f}".format(median) for median in medians], dqn_snake_food.epsilon(dqn_snake_food.board.run)), end="")
 
-        # do a fedaverage between them
+        # Do a fedaverage between them
         agregate([dqn_snake_mine, dqn_snake_food], dqn_snake_TEST)
 
         # Save their model

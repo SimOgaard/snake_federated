@@ -79,6 +79,7 @@ class ReplayBuffer:
 class DQNCnn(nn.Module):
     '''
     DQN that implemets a convolutional neural network
+    Is yet to be implemented
     '''
     def __init__(self, h: int, w: int, output_size: int, seed: int = 1337) -> None:
         '''

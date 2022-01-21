@@ -80,4 +80,4 @@ class TilesSpawn():
         eps_val = tile.epsilon(self.run)
         if eps_val > 0:
             self.spawn_salt_pepper(tile, eps_val)
-            # self.spawn_procent(tile, eps_val)
+            # self.spawn_procent(tile, eps_val) # Honestly thought this one would be faster but its negligable

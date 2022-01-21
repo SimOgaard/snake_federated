@@ -59,16 +59,13 @@ def dqn(board, snake, env_episode_amount: int, observation_function: object) -> 
 
     board.set_snakes(snake)
 
-    for i in range (env_episode_amount):
+    for _ in range (env_episode_amount):
         board.__restart__() # restart board
         state: FloatTensor = observation_function() # save init state
         while board.is_alive(): # check if snakes are alive
 
             action, is_random = snake.act(state) # choose an action for given snake
             reward: float = snake.move(action, is_random)
-
-            # action = LongTensor([action]) # take the agents action that leed to that reward and state
-            # reward = FloatTensor([reward]) # take the reward that the agent stored
 
             next_state: FloatTensor = observation_function() # observe what steps taken lead to
 

@@ -6,7 +6,7 @@ from composed_functions.ui_helper import pretty_print, display
 
 if __name__ == "__main__":
     '''
-    Creates a environment with controllable agent that is playable
+    Creates a environment with a controllable agent that is playable
     '''
     board_dim: int = 9
 

@@ -4,7 +4,8 @@ from matplotlib import pyplot as plt
 
 def pretty_print(state, board_dim) -> None:
     '''
-    Prints given state in 2d
+    Prints given state in 2d.
+    For larger board sizes use display function
     '''
     print(chr(27) + "[2J")
     print(state.detach().clone().resize_(board_dim[0], board_dim[1]))
@@ -12,6 +13,7 @@ def pretty_print(state, board_dim) -> None:
 def display(state, board_dim: int) -> None:
     '''
     Plots given state
+    Is yet to be implemented
     '''
     # np.uint8()
     # im = state.detach().clone().resize_(board_dim + 2, board_dim + 2)
@@ -25,19 +27,16 @@ def display_run(board, snake, board_dim, display_function: object, observation_f
     Displays a run on board from snake
     '''
     board.__restart__() # restart board
-    #snake_state = observation_cat(observation_near(board=board, snake=snake, kernel=board_dim), observation_food(snake)) # save init state
     snake_state = observation_function() # save init state
     visual_state = observation_full(board = board)
 
     while board.is_alive(): # check if snakes are alive
         display_function(visual_state, board_dim)
-        #input()
 
         action, is_random = snake.act(snake_state) # choose an action for given snake
         reward: float = snake.move(action, is_random)
 
         snake_state = observation_function() # observe what steps taken lead to
-        # snake_state = observation_cat(observation_near(board=board, snake=snake, kernel=board_dim), observation_food(snake)) # save init state
         visual_state = observation_full(board = board)
     input("snake died with final length of {}...".format(len(snake.snake_body)))
 
@@ -80,7 +79,6 @@ def test_snake(board, snake, observation_function: object, test_amount: int = 5,
                 time_without_food = 0
             elif (time_without_food > max_step_without_food):
                 stuck_amount += 1
-                #print("SNAKE GOT STUCK IN A LOOP")
                 break
 
         if (len(snake.snake_body) > max_val):
