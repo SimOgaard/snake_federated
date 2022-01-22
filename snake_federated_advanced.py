@@ -9,7 +9,7 @@ from federated_learning.federated_average import agregate
 if __name__ == "__main__":
     '''
     Trains two seperated DQN-agents in the same environment with advanced rules (mine and fruit)
-    Does a fedaverage between the agents to show that multiple agents can achive the same preformance
+    Does a fedaverage between the agents to show that multiple agents can achive the same preformance as normal
     '''
 
     episode_amount: int = 1_000_000
