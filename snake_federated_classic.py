@@ -17,7 +17,7 @@ if __name__ == "__main__":
     env_episode_amount: int = 1
     save_every: int = 50
     board_dim: int = 20
-    state_size: int = 9
+    state_size: int = 5
     model_type: str = "fed_classic"
     model_id: str = "_{}_{}x{}+{}".format(model_type, state_size, state_size, 4)
     model_path: str = 'models/checkpoint{}.pth'.format(model_id)
@@ -35,7 +35,7 @@ if __name__ == "__main__":
         epsilon             = Epsilon(1, 0.25, 50_000),
         learning_rate       = 2.5e-5,
         tau                 = 1e-3,
-        update_every        = 32,
+        update_every        = 256,
         buffer_size         = 100_000
     )
 
@@ -51,7 +51,7 @@ if __name__ == "__main__":
         epsilon             = Epsilon(0.25, 0.0001, 50_000),
         learning_rate       = 2.5e-5,
         tau                 = 1e-3,
-        update_every        = 32,
+        update_every        = 256,
         buffer_size         = 100_000
     )
 
@@ -66,7 +66,7 @@ if __name__ == "__main__":
         epsilon             = Epsilon(1, 0.0001, 50_000),
         learning_rate       = 2.5e-5,
         tau                 = 1e-3,
-        update_every        = 32,
+        update_every        = 256,
         buffer_size         = 100_000
     )
 
@@ -81,7 +81,7 @@ if __name__ == "__main__":
         epsilon             = Epsilon(0., 0., 50_000),
         learning_rate       = 2.5e-5,
         tau                 = 1e-3,
-        update_every        = 32,
+        update_every        = 256,
         buffer_size         = 100_000
     )
 
@@ -101,7 +101,7 @@ if __name__ == "__main__":
     board_food: Board = Board(
         min_board_shape         = array([board_dim, board_dim]),
         max_board_shape         = array([board_dim, board_dim]),
-        replay_interval         = 0,
+        replay_interval         = 1000,
         snakes                  = [],
         tiles_populated         = {
             "air_tile": AirTile(),
@@ -144,6 +144,9 @@ if __name__ == "__main__":
 
         # Do a fedaverage between them
         agregate(snakes, dqn_snake_TEST)
+
+        if board_food.replay_interval != 0 and i % board_food.replay_interval == 0:
+            save_checkpoint(dqn_snake_normal, "replays/replay{}/replay{}_episode_{}.pth".format(model_id, model_id, i))
 
         # Save their model
         if i % save_every == 0:

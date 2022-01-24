@@ -16,7 +16,7 @@ if __name__ == "__main__":
     episode_amount: int = 1_000_000
     save_every: int = 100
     board_dim: int = 20
-    state_size: int = 9
+    state_size: int = 5
     model_type: str = "fed_none"
     model_id: str = "_{}_{}x{}+{}".format(model_type, state_size, state_size, 4)
     model_path: str = 'models/checkpoint{}.pth'.format(model_id)
@@ -31,13 +31,13 @@ if __name__ == "__main__":
         epsilon             = Epsilon(1, 0.0001, 50_000),
         learning_rate       = 2.5e-5,
         tau                 = 1e-3,
-        update_every        = 32,
+        update_every        = 256,
         buffer_size         = 100_000
     )
     board: Board = Board(
         min_board_shape         = array([board_dim, board_dim]),
         max_board_shape         = array([board_dim, board_dim]),
-        replay_interval         = 0,
+        replay_interval         = 1000,
         snakes                  = [dqn_snake],
         tiles_populated         = {
             "air_tile": AirTile(),
@@ -56,7 +56,7 @@ if __name__ == "__main__":
         epsilon             = Epsilon(0., 0., 50_000),
         learning_rate       = 2.5e-5,
         tau                 = 1e-3,
-        update_every        = 32,
+        update_every        = 256,
         buffer_size         = 100_000
     )
     board_TEST: Board = Board(
@@ -91,6 +91,9 @@ if __name__ == "__main__":
             dqn_snake.step(state, action, reward, next_state, dqn_snake.done) # signal step to snake
 
             state = next_state # set old state to the next state
+
+        if board.replay_interval != 0 and board.run % board.replay_interval == 0:
+            save_checkpoint(dqn_snake, "replays/replay{}/replay{}_episode_{}.pth".format(model_id, model_id, board.run))
 
         scores_window.append(len(dqn_snake.snake_body)) # save the most recent score
         print('\rEpisode {}\tAverage Score {:.3f}\tRandom act chance {:.6f}'.format(board.run, numpy_mean(scores_window), dqn_snake.epsilon(dqn_snake.board.run)), end="")
