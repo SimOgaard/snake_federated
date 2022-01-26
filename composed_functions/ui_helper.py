@@ -40,6 +40,8 @@ def display_run(board, snake, board_dim, display_function: object, observation_f
         visual_state = observation_full(board = board)
     input("snake died with final length of {}...".format(len(snake.snake_body)))
 
+from snake_replay import Replay
+
 def test_snake(board, snake, observation_function: object, test_amount: int = 5, print_every: int = 5, max_step_without_food: int = 2_500, visualize: bool = False):
     '''
     Tests snake multiple times and saves min, average, max
@@ -53,7 +55,9 @@ def test_snake(board, snake, observation_function: object, test_amount: int = 5,
     stuck_amount: int = 0
     old_board_run: int = board.run
 
-    board.board_replay = []
+    #if (visualize):
+    #    replay: Replay = Replay()
+    #    replay.replay_snake()
 
     for i in range(test_amount):
         board.__restart__() # restart board
@@ -70,6 +74,7 @@ def test_snake(board, snake, observation_function: object, test_amount: int = 5,
             snake_state = observation_function() # observe what steps taken lead to
 
             if (visualize):
+                #replay.append_replay(board.board.detach().clone())
                 pretty_print(snake_state, array([7,7]))
                 print(snake_state[-4:])
                 input(len(snake.snake_body))

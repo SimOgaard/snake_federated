@@ -130,6 +130,8 @@ class Board(TilesSpawn):
         for tile in self.tiles_populated.values():
             self.spawn_tile(tile)
 
+        self.board_replay: list = []
+
     def is_alive(self) -> bool:
         '''
         Are all snakes alive?

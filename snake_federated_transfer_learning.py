@@ -31,7 +31,7 @@ if __name__ == "__main__":
         batch_size          = 512,
         gamma               = 0.999,
         epsilon             = Epsilon(1, 0.0001, 50_000),
-        learning_rate       = 2.5e-5,
+        learning_rate       = 1e-3,
         tau                 = 1e-3,
         update_every        = 256,
         buffer_size         = 100_000
@@ -39,7 +39,7 @@ if __name__ == "__main__":
     board_mine: Board = Board(
         min_board_shape         = array([board_dim, board_dim]),
         max_board_shape         = array([board_dim, board_dim]),
-        replay_interval         = 1000,
+        replay_interval         = 10000,
         snakes                  = [dqn_snake_mine],
         tiles_populated         = {
             "air_tile": AirTile(reward=0.01),
@@ -57,7 +57,7 @@ if __name__ == "__main__":
         batch_size          = 512,
         gamma               = 0.999,
         epsilon             = Epsilon(1, 0.0001, 50_000),
-        learning_rate       = 2.5e-5,
+        learning_rate       = 1e-3,
         tau                 = 1e-3,
         update_every        = 256,
         buffer_size         = 100_000
@@ -82,7 +82,7 @@ if __name__ == "__main__":
         batch_size          = 512,
         gamma               = 0.999,
         epsilon             = Epsilon(0, 0.000, 50_000),
-        learning_rate       = 2.5e-5,
+        learning_rate       = 1e-3,
         tau                 = 1e-3,
         update_every        = 256,
         buffer_size         = 100_000

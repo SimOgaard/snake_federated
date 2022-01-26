@@ -12,10 +12,11 @@ if __name__ == "__main__":
 
     episode_amount: int = 1_000_000
     board_dim: int = 20
-    state_size: int = 9
+    state_size: int = 5
     model_type: str = "fed_none"
     model_id: str = "_{}_{}x{}+{}".format(model_type, state_size, state_size, 4)
-    model_path: str = 'models/checkpoint{}.pth'.format(model_id)
+    #model_path: str = 'models/checkpoint{}.pth'.format(model_id)
+    model_path: str = 'models/checkpoint_fed_none_5x5+4.pth'
 
     dqn_snake: DQNAgent = DQNAgent(
         state_size    = state_size**2 + 4,
@@ -25,7 +26,7 @@ if __name__ == "__main__":
         batch_size    = 128,
         gamma         = 0.999,
         epsilon       = Epsilon(0, 0, 1_000),
-        learning_rate = 2.5e-5,
+        learning_rate = 1e-3,
         tau           = 1e-3,
         update_every  = 32,
         buffer_size   = 100_000

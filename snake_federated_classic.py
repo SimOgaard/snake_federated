@@ -33,7 +33,7 @@ if __name__ == "__main__":
         batch_size          = 128,
         gamma               = 0.999,
         epsilon             = Epsilon(1, 0.25, 50_000),
-        learning_rate       = 2.5e-5,
+        learning_rate       = 1e-3,
         tau                 = 1e-3,
         update_every        = 256,
         buffer_size         = 100_000
@@ -49,7 +49,7 @@ if __name__ == "__main__":
         batch_size          = 128,
         gamma               = 0.999,
         epsilon             = Epsilon(0.25, 0.0001, 50_000),
-        learning_rate       = 2.5e-5,
+        learning_rate       = 1e-3,
         tau                 = 1e-3,
         update_every        = 256,
         buffer_size         = 100_000
@@ -64,7 +64,7 @@ if __name__ == "__main__":
         batch_size          = 128,
         gamma               = 0.999,
         epsilon             = Epsilon(1, 0.0001, 50_000),
-        learning_rate       = 2.5e-5,
+        learning_rate       = 1e-3,
         tau                 = 1e-3,
         update_every        = 256,
         buffer_size         = 100_000
@@ -79,7 +79,7 @@ if __name__ == "__main__":
         batch_size          = 128,
         gamma               = 0.999,
         epsilon             = Epsilon(0., 0., 50_000),
-        learning_rate       = 2.5e-5,
+        learning_rate       = 1e-3,
         tau                 = 1e-3,
         update_every        = 256,
         buffer_size         = 100_000
@@ -101,7 +101,7 @@ if __name__ == "__main__":
     board_food: Board = Board(
         min_board_shape         = array([board_dim, board_dim]),
         max_board_shape         = array([board_dim, board_dim]),
-        replay_interval         = 1000,
+        replay_interval         = 10000,
         snakes                  = [],
         tiles_populated         = {
             "air_tile": AirTile(),
