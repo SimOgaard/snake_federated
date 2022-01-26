@@ -39,7 +39,7 @@ if __name__ == "__main__":
     board_mine: Board = Board(
         min_board_shape         = array([board_dim, board_dim]),
         max_board_shape         = array([board_dim, board_dim]),
-        replay_interval         = 10000,
+        replay_interval         = 20000,
         snakes                  = [dqn_snake_mine],
         tiles_populated         = {
             "air_tile": AirTile(reward=0.01),

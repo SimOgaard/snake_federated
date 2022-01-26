@@ -101,7 +101,7 @@ if __name__ == "__main__":
     board_food: Board = Board(
         min_board_shape         = array([board_dim, board_dim]),
         max_board_shape         = array([board_dim, board_dim]),
-        replay_interval         = 10000,
+        replay_interval         = 20000,
         snakes                  = [],
         tiles_populated         = {
             "air_tile": AirTile(),

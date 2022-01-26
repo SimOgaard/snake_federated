@@ -38,7 +38,7 @@ if __name__ == "__main__":
     board_1: Board = Board(
         min_board_shape         = array([board_dim, board_dim]),
         max_board_shape         = array([board_dim, board_dim]),
-        replay_interval         = 10000,
+        replay_interval         = 20000,
         snakes                  = [dqn_snake_1],
         tiles_populated         = {
             "air_tile": AirTile(),
