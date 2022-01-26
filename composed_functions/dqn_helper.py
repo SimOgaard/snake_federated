@@ -2,7 +2,7 @@
 from torch import save, load
 
 # Os system modules
-from os import path
+from os import path, mkdir
 
 # Repo imports
 from snake_env.snake_agents.neural_nets.deep_q_learning import *
@@ -35,7 +35,14 @@ def save_checkpoint(snake, episode, board, model_path: str) -> None:
         'episode': episode,
         'replay': board.board_replay
     }
-    save(state, model_path)
+    model_path = model_path.split("/")
+    folder_path = ""
+    file_path = model_path.pop()
+    for i in model_path:
+        folder_path += i + "/"
+    if not(path.isdir(folder_path)):
+        mkdir(folder_path)
+    save(state, folder_path + file_path)
 
 def clone_snake(_from, _to):
     '''
