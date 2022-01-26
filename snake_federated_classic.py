@@ -109,17 +109,28 @@ if __name__ == "__main__":
             "food_tile": FoodTile()
         },
     )
+    board_test: Board = Board(
+        min_board_shape         = array([board_dim, board_dim]),
+        max_board_shape         = array([board_dim, board_dim]),
+        replay_interval         = 5,
+        snakes                  = [],
+        tiles_populated         = {
+            "air_tile": AirTile(),
+            "wall_tile": WallTile(),
+            "food_tile": FoodTile()
+        },
+    )
 
     # Lists holding all snakes and boards for easy itteration and mixing
     snakes: list = [dqn_snake_exploration, dqn_snake_exploitation, dqn_snake_normal]
     boards: list = [board_LOTS_of_food, board_food]
 
     checkpoint = load_checkpoint(model_path)
-    load_checkpoint_to_snake(dqn_snake_normal, checkpoint)
-    load_checkpoint_to_snake(dqn_snake_exploitation, checkpoint)
-    load_checkpoint_to_snake(dqn_snake_exploration, checkpoint)
+    initial_episode = load_checkpoint_to_snake(dqn_snake_normal, checkpoint) + 1
+    board_LOTS_of_food.run = load_checkpoint_to_snake(dqn_snake_exploitation, checkpoint) * 3
+    board_food.run = load_checkpoint_to_snake(dqn_snake_exploration, checkpoint) * 3
 
-    for i in range(episode_amount):
+    for i in range(initial_episode, episode_amount):
         # Train all snakes on all boards for env_episode_amount episodes
         medians: list = [] # median length of all snakes
         for snake in snakes:
@@ -145,25 +156,24 @@ if __name__ == "__main__":
         # Do a fedaverage between them
         agregate(snakes, dqn_snake_TEST)
 
-        if board_food.replay_interval != 0 and i % board_food.replay_interval == 0:
-            save_checkpoint(dqn_snake_normal, "replays/replay{}/replay{}_episode_{}.pth".format(model_id, model_id, i))
-
         # Save their model
         if i % save_every == 0:
             print('\rEpisode {}\tAverage Scores {}\tRandom act chance {:.6f}'.format(i * env_episode_amount, ["{:.2f}".format(median) for median in medians], dqn_snake_normal.epsilon(dqn_snake_normal.board.run)))
-            save_checkpoint(dqn_snake_normal, model_path)
+            save_checkpoint(dqn_snake_normal, i, board_test, model_path)
 
         # Test model
         if (i % 250 == 0):
             test_snake(
-                board=board_food,
+                board=board_test,
                 snake=dqn_snake_TEST,
                 observation_function = lambda: observation_cat(
                     observation_near(
-                        board=board_food,
+                        board=board_test,
                         snake=dqn_snake_TEST,
                         kernel=array([state_size, state_size])
                     ),
                     observation_to_bool(observation_food(dqn_snake_TEST))
                 )
             )
+        if board_food.replay_interval != 0 and i % board_food.replay_interval == 0:
+            save_checkpoint(dqn_snake_normal, i, board_test, "replays/replay{}/replay{}_episode_{}.pth".format(model_id, model_id, i))

@@ -22,14 +22,18 @@ def load_checkpoint_to_snake(snake, checkpoint) -> None:
     if (checkpoint != None):
         snake.qnetwork_local.load_state_dict(checkpoint['network_local'])
         snake.qnetwork_target.load_state_dict(checkpoint['network_target'])
+        return checkpoint['episode']
+    return 0
 
-def save_checkpoint(snake, model_path: str) -> None:
+def save_checkpoint(snake, episode, board, model_path: str) -> None:
     '''
     Saves dqn snake networks
     '''
     state: dict = {
         'network_local': snake.qnetwork_local.state_dict(),
-        'network_target': snake.qnetwork_target.state_dict()
+        'network_target': snake.qnetwork_target.state_dict(),
+        'episode': episode,
+        'replay': board.board_replay
     }
     save(state, model_path)
 

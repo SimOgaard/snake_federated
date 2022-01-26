@@ -53,6 +53,8 @@ def test_snake(board, snake, observation_function: object, test_amount: int = 5,
     stuck_amount: int = 0
     old_board_run: int = board.run
 
+    board.board_replay = []
+
     for i in range(test_amount):
         board.__restart__() # restart board
         snake_state = observation_function() # save init state

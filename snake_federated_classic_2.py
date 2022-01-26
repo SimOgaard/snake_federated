@@ -90,7 +90,7 @@ if __name__ == "__main__":
     board_TEST: Board = Board(
         min_board_shape         = array([board_dim, board_dim]),
         max_board_shape         = array([board_dim, board_dim]),
-        replay_interval         = 0,
+        replay_interval         = 5,
         snakes                  = [dqn_snake_TEST],
         tiles_populated         = {
             "air_tile": AirTile(),
@@ -99,10 +99,11 @@ if __name__ == "__main__":
         },
     )
     checkpoint = load_checkpoint(model_path)
-    load_checkpoint_to_snake(dqn_snake_1, checkpoint)
-    load_checkpoint_to_snake(dqn_snake_2, checkpoint)
+    initial_episode: int = load_checkpoint_to_snake(dqn_snake_1, checkpoint) + 1
+    board_1.run = load_checkpoint_to_snake(dqn_snake_2, checkpoint)
+    board_2.run = board_1.run
 
-    for i in range(episode_amount):
+    for i in range(initial_episode, episode_amount):
         medians: list = []
 
         for snake, board in [(dqn_snake_1, board_1), (dqn_snake_2, board_2)]:
@@ -128,13 +129,10 @@ if __name__ == "__main__":
         # Do a fedaverage between them
         agregate([dqn_snake_1, dqn_snake_2], dqn_snake_TEST)
 
-        if board_1.replay_interval != 0 and i % board_1.replay_interval == 0:
-            save_checkpoint(dqn_snake_1, "replays/replay{}/replay{}_episode_{}.pth".format(model_id, model_id, i))
-
         # Save their model
         if i % save_every == 0:
             print('\rEpisode {}\tAverage Scores {}\tRandom act chance {:.6f}'.format(i * env_episode_amount, ["{:.2f}".format(median) for median in medians], dqn_snake_1.epsilon(dqn_snake_1.board.run)))
-            save_checkpoint(dqn_snake_1, model_path)
+            save_checkpoint(dqn_snake_1, i, board_TEST, model_path)
 
         if (i % 250 == 0):
             test_snake(
@@ -149,3 +147,6 @@ if __name__ == "__main__":
                     observation_to_bool(observation_food(dqn_snake_TEST))
                 )
             )
+
+        if board_1.replay_interval != 0 and i % board_1.replay_interval == 0:
+            save_checkpoint(dqn_snake_1, i, board_TEST, "replays/replay{}/replay{}_episode_{}.pth".format(model_id, model_id, i))

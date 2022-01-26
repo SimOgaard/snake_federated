@@ -91,7 +91,7 @@ if __name__ == "__main__":
     board_combined: Board = Board(
         min_board_shape         = array([board_dim, board_dim]),
         max_board_shape         = array([board_dim, board_dim]),
-        replay_interval         = 0,
+        replay_interval         = 5,
         snakes                  = [dqn_snake_TEST],
         tiles_populated         = {
             "air_tile": AirTile(reward=0.01),
@@ -101,10 +101,11 @@ if __name__ == "__main__":
         },
     )
     checkpoint = load_checkpoint(model_path)
-    load_checkpoint_to_snake(dqn_snake_mine, checkpoint)
-    load_checkpoint_to_snake(dqn_snake_food, checkpoint)
+    initial_episode: int = load_checkpoint_to_snake(dqn_snake_mine, checkpoint) + 1
+    board_food.run = load_checkpoint_to_snake(dqn_snake_food, checkpoint)
+    board_mine.run = board_food.run
 
-    for i in range(episode_amount):
+    for i in range(initial_episode, episode_amount):
         medians: list = []
 
         for snake, board in [(dqn_snake_mine, board_mine), (dqn_snake_food, board_food)]:
@@ -129,13 +130,10 @@ if __name__ == "__main__":
         # Do a fedaverage between them
         agregate([dqn_snake_mine, dqn_snake_food], dqn_snake_TEST)
 
-        if board_mine.replay_interval != 0 and i % board_mine.replay_interval == 0:
-            save_checkpoint(dqn_snake_mine, "replays/replay{}/replay{}_episode_{}.pth".format(model_id, model_id, i))
-
         # Save their model
         if i % save_every == 0:
             print('\rEpisode {}\tAverage Scores {}\tRandom act chance {:.6f}'.format(i * env_episode_amount, ["{:.2f}".format(median) for median in medians], dqn_snake_food.epsilon(dqn_snake_food.board.run)))
-            save_checkpoint(dqn_snake_mine, model_path)
+            save_checkpoint(dqn_snake_mine, i, board_combined, model_path)
 
         if (i % 250 == 0):
             test_snake(
@@ -150,3 +148,5 @@ if __name__ == "__main__":
                     observation_to_bool(observation_food(dqn_snake_TEST))
                 )
             )
+        if board_mine.replay_interval != 0 and i % board_mine.replay_interval == 0:
+            save_checkpoint(dqn_snake_mine, i, board_combined, "replays/replay{}/replay{}_episode_{}.pth".format(model_id, model_id, i))
