@@ -42,7 +42,7 @@ if __name__ == "__main__":
         tiles_populated         = {
             "air_tile": AirTile(),
             "wall_tile": WallTile(),
-            "food_tile": FoodTile(epsilon=Epsilon(1,0,10_000))
+            "food_tile": FoodTile(epsilon=Epsilon(1,0,25_000))
         },
     )
 
