@@ -28,7 +28,7 @@ class Replay():
       return mat
 
     # create discrete colormap
-    cmap = colors.ListedColormap(['royalblue', 'navy', 'darkred', 'limegreen', 'orange', 'yellow'])
+    cmap = colors.ListedColormap(['cornflowerblue', 'navy', 'darkred', 'limegreen', 'orange', 'yellow', 'darkviolet'])
 
     fig, ax = plt.subplots()
 
