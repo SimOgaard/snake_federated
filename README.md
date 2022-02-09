@@ -53,3 +53,44 @@ This can be either faults in code, optimization areas, pure UI or other NN/RL/FE
 
 ### Other
 * Fedaverage fewer times
+
+## For presentation:
+<!-- 
+* Show that our dqn model works by
+    * Showing it training without federated on board only food
+* Show that federated works with reinforcement learning by
+    * Showing it training with federated on board with only food and comparing it to the one without federated
+
+* Show that our dqn model can learn multiple rules by
+    * Showing it training without federated on board with food and blue_mines
+* Show that the same goes with federated learning by
+    * Showing it training with federated on board with food and blue_mines and comparing it to the one without federated
+
+* Show that training on one environment doesnt translate to a different environment by
+    * Testing one of the models on a never before seen environment
+        * Test model that has seen both food and blue_mine on a board with food and red_mine
+
+* Show that two different snakes on two different boards with federated learning can act on a jointly board with all rules
+    * Training federated with board:food:blue_mine and board:food:red_mine and testing it on board:food:blue_mine:red_mine
+
+* Show that you can federate two pre-trained models -->
+
+* Show that our dqn model works by
+    * Showing it training without federated on board only food
+* Show that federated works with reinforcement learning by
+    * Showing it training with federated on board with only food and comparing it to the one without federated
+
+* Show that our dqn model can learn multiple rules by
+    * Showing it training without federated on board with food and blue_mines
+* Show that the same goes with federated learning by
+    * Showing it training with federated on board with food and blue_mines and comparing it to the one without federated
+
+* Show that training on one environment doesnt translate to a different environment by
+    * Testing one of the models on a never before seen environment
+        * Test model that has seen both food and blue_mine on a board with food and red_mine and vice versa
+
+* Show that two different snakes on two different boards with federated learning can act on a jointly board with all rules by
+    * Training federated with board:food:blue_mine and board:food:red_mine and testing it on board:food:blue_mine:red_mine
+
+* Show that you can federate two pre-trained models by 
+    * Federate the two models that have trained on a board with food and blue/red_mines and test them on a board with food and both blue_mines and red_mines
