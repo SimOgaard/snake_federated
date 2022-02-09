@@ -1,6 +1,8 @@
 # matplotlib imports
 from math import fabs
 from matplotlib import pyplot as plt
+from matplotlib import colors
+import matplotlib.animation as animation
 
 def pretty_print(state, board_dim) -> None:
     '''
@@ -99,3 +101,111 @@ def test_snake(board, snake, observation_function: object, test_amount: int = 5,
         
         # reset board and snake like this test didnt happen
         board.run = old_board_run
+
+class Replay_Snake():
+
+    def __init__(self, board, snake, observation_function: object, test_amount: int = 5, max_step_without_food: int = 2_500):
+
+        self.board = board
+        self.snake = snake
+        self.observation_function = observation_function
+        self.test_amount = test_amount
+        self.max_step_without_food = max_step_without_food
+
+        self.min_val: int = float('inf')
+        self.average_val: int = 0
+        self.max_val: int = float('-inf')
+
+        self.board.set_snakes(self.snake)
+
+        self.stuck_amount: int = 0
+        self.old_board_run: int = self.board.run
+
+    def show_replay_snake(self):
+        
+        self.min_val: int = float('inf')
+        self.average_val: int = 0
+        self.max_val: int = float('-inf')
+
+        self.board.set_snakes(self.snake)
+
+        self.stuck_amount: int = 0
+        self.old_board_run: int = self.board.run
+
+        self.board.__restart__() # restart board
+        self.snake_state = self.observation_function() # save init state
+
+        # store snake lenght and steps with same length
+        self.last_snake_length: int = len(self.snake.snake_body)
+        self.time_without_food: int = 0
+
+        self.board.run = self.old_board_run
+
+        self.board.__restart__() # restart board
+        self.snake_state = self.observation_function() # save init state
+
+        # store snake lenght and steps with same length
+        self.last_snake_length: int = len(self.snake.snake_body)
+        self.time_without_food: int = 0
+
+        def replay_test_snake(i):
+
+            snake_stuck = False
+
+            action, is_random = self.snake.act(self.snake_state) # choose an action for given snake
+            self.snake.move(action, is_random)
+
+            self.snake_state = self.observation_function() # observe what steps taken lead to
+
+
+            # if snake has been the same length for max_step_without_food steps; break (it got stuck in a loop)
+            self.time_without_food += 1
+            if (self.last_snake_length != len(self.snake.snake_body)):
+                self.last_snake_length = len(self.snake.snake_body)
+                self.time_without_food = 0
+            elif (self.time_without_food > self.max_step_without_food):
+                self.stuck_amount += 1
+                snake_stuck = True
+
+            mat.set_data(self.board.board.detach().clone().tolist())
+
+            if not self.board.is_alive() or snake_stuck:
+                if (len(self.snake.snake_body) > self.max_val):
+                    self.max_val = len(self.snake.snake_body)
+                if (len(self.snake.snake_body) < self.min_val):
+                    self.min_val = len(self.snake.snake_body)
+                self.average_val += len(self.snake.snake_body)
+                
+                # reset board and snake like this test didnt happen
+                self.board.run = self.old_board_run
+
+                self.board.__restart__() # restart board
+                self.snake_state = self.observation_function() # save init state
+
+                # store snake lenght and steps with same length
+                self.last_snake_length = len(self.snake.snake_body)
+                self.time_without_food = 0
+
+                snake_stuck = False
+
+            return mat
+
+        cmap = colors.ListedColormap(['royalblue', 'navy', 'darkred', 'limegreen', 'orange', 'yellow'])
+
+        fig, ax = plt.subplots()
+
+        plt.axis('off')
+
+        mat = ax.matshow([[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0], [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 3.0, 0.0, 1.0], [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], [1.0, 
+0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 
+0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 4.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 5.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]], cmap=cmap)
+
+        plt.tight_layout()
+
+        print("start animation")
+
+        ani = animation.FuncAnimation(fig, 
+        replay_test_snake, 
+        interval=10)
+
+        plt.show()

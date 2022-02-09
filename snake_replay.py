@@ -38,7 +38,7 @@ class Replay():
 
     plt.tight_layout()
 
-    ani = animation.FuncAnimation(fig, update, self.replay_list, interval=25)
+    ani = animation.FuncAnimation(fig, update, self.replay_list, interval=50)
 
     plt.show()
 

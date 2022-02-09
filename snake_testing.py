@@ -1,8 +1,9 @@
 # Repo imports
+from cgi import test
+from composed_functions.ui_helper import Replay_Snake
 from snake_env.snake_environment import *
 from snake_env.snake_agents.agents import *
 
-from composed_functions.ui_helper import test_snake
 from composed_functions.dqn_helper import load_checkpoint, load_checkpoint_to_snake
 
 if __name__ == "__main__":
@@ -47,7 +48,7 @@ if __name__ == "__main__":
     checkpoint = load_checkpoint(model_path)
     load_checkpoint_to_snake(dqn_snake, checkpoint)
 
-    test_snake(
+    test_snake: Replay_Snake = Replay_Snake(
         board=board,
         snake=dqn_snake,
         observation_function = lambda: observation_cat(
@@ -59,5 +60,7 @@ if __name__ == "__main__":
             observation_to_bool(observation_food(dqn_snake))
         ),
         test_amount=1000000,
-        visualize=True
+        #visualize=True
     )
+
+    test_snake.show_replay_snake()
