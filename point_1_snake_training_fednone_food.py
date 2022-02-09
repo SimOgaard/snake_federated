@@ -10,14 +10,14 @@ from numpy import mean as numpy_mean
 
 if __name__ == "__main__":
     '''
-    Trains a single DQN-agent without federated learning with advanced rules (mines and fruit)
+    Trains a single DQN-agent without federated learning in an environment with standard rules (fruit)
     '''
 
     episode_amount: int = 1_000_000
     save_every: int = 100
     board_dim: int = 20
     state_size: int = 5
-    model_type: str = "fed_none_advanced"
+    model_type: str = "fed_none_food"
     model_id: str = "_{}_{}x{}+{}".format(model_type, state_size, state_size, 4)
     model_path: str = 'models/checkpoint{}.pth'.format(model_id)
 
@@ -28,7 +28,7 @@ if __name__ == "__main__":
         seed                = 1337,
         batch_size          = 128,
         gamma               = 0.999,
-        epsilon             = Epsilon(1, 0.0001, 50_000),
+        epsilon             = Epsilon(1, 0.0001, 45_000),
         learning_rate       = 1e-3,
         tau                 = 1e-3,
         update_every        = 256,
@@ -42,8 +42,7 @@ if __name__ == "__main__":
         tiles_populated         = {
             "air_tile": AirTile(),
             "wall_tile": WallTile(),
-            "food_tile": FoodTile(epsilon=Epsilon(1,0,25_000)),
-            "mine_tile": MineTile(epsilon=Epsilon(1,0,25_000))
+            "food_tile": FoodTile(epsilon=Epsilon(1,0,40_000))
         },
     )
 
@@ -54,7 +53,7 @@ if __name__ == "__main__":
         seed                = 1337,
         batch_size          = 128,
         gamma               = 0.999,
-        epsilon             = Epsilon(0., 0., 50_000),
+        epsilon             = Epsilon(0., 0., 45_000),
         learning_rate       = 1e-3,
         tau                 = 1e-3,
         update_every        = 256,
@@ -68,8 +67,7 @@ if __name__ == "__main__":
         tiles_populated         = {
             "air_tile": AirTile(),
             "wall_tile": WallTile(),
-            "food_tile": FoodTile(),
-            "mine_tile": MineTile()
+            "food_tile": FoodTile()
         },
     )
 

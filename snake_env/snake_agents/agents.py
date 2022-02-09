@@ -87,7 +87,7 @@ class DQNAgent(Agent):
     '''
     Implements DQN (deep q learning) to act in given enviroment
     '''
-    def __init__(self, state_size: int, action_size: int, init_snake_lengths: array = array([2, 2]), seed: int = 1337, batch_size: int = 64, gamma: float = 0.999, epsilon: Epsilon = Epsilon(1, 0, 50_000), learning_rate: float = 5e-4, tau: float = 1e-3, update_every: int = 10, buffer_size: int = 500_000) -> None:
+    def __init__(self, state_size: int, action_size: int, init_snake_lengths: array = array([2, 2]), seed: int = 1337, batch_size: int = 64, gamma: float = 0.999, epsilon: Epsilon = Epsilon(1, 0, 45_000), learning_rate: float = 5e-4, tau: float = 1e-3, update_every: int = 10, buffer_size: int = 500_000) -> None:
         '''
         Initialize an Agent object.
         '''
