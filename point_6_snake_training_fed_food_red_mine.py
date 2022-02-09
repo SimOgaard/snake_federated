@@ -8,8 +8,8 @@ from federated_learning.federated_average import agregate
 
 if __name__ == "__main__":
     '''
-    Trains two seperated DQN-agents in the same environment with advanced rules (mine and fruit)
-    Does a fedaverage between the agents to show that multiple agents can achive the same preformance as normal
+    Trains two seperated DQN-agents in the seperate environment with advanced rules (blue or red mine and fruit)
+    Does a fedaverage between the agents to show that multiple agents can learn from one and another and achive the same preformance as normal
     '''
 
     episode_amount: int = 1_000_000
@@ -17,7 +17,7 @@ if __name__ == "__main__":
     save_every: int = 50
     board_dim: int = 20
     state_size: int = 5
-    model_type: str = "fed_advanced"
+    model_type: str = "fed_food_blue_and_red_mine"
     model_id: str = "_{}_{}x{}+{}".format(model_type, state_size, state_size, 4)
     model_path: str = 'models/checkpoint{}.pth'.format(model_id)
 
@@ -29,7 +29,7 @@ if __name__ == "__main__":
         seed                = 1337,
         batch_size          = 512,
         gamma               = 0.999,
-        epsilon             = Epsilon(1, 0.0001, 50_000),
+        epsilon             = Epsilon(1, 0.0001, 45_000),
         learning_rate       = 1e-3,
         tau                 = 1e-3,
         update_every        = 256,
@@ -38,13 +38,13 @@ if __name__ == "__main__":
     board_1: Board = Board(
         min_board_shape         = array([board_dim, board_dim]),
         max_board_shape         = array([board_dim, board_dim]),
-        replay_interval         = 20000,
+        replay_interval         = 10000,
         snakes                  = [dqn_snake_1],
         tiles_populated         = {
             "air_tile": AirTile(),
             "wall_tile": WallTile(),
-            "food_tile": FoodTile(epsilon=Epsilon(1., 0., 25_000)),
-            "mine_tile": MineTile(epsilon=Epsilon(1., 0., 25_000))
+            "food_tile": FoodTile(epsilon=Epsilon(1., 0., 40_000)),
+            "mine_tile": MineTile(epsilon=Epsilon(1., 0., 40_000))
         },
     )
 
@@ -56,7 +56,7 @@ if __name__ == "__main__":
         seed                = 1337,
         batch_size          = 512,
         gamma               = 0.999,
-        epsilon             = Epsilon(1, 0.0001, 50_000),
+        epsilon             = Epsilon(1, 0.0001, 45_000),
         learning_rate       = 1e-3,
         tau                 = 1e-3,
         update_every        = 256,
@@ -65,13 +65,13 @@ if __name__ == "__main__":
     board_2: Board = Board(
         min_board_shape         = array([board_dim, board_dim]),
         max_board_shape         = array([board_dim, board_dim]),
-        replay_interval         = 0,
+        replay_interval         = 10000,
         snakes                  = [dqn_snake_2],
         tiles_populated         = {
             "air_tile": AirTile(),
             "wall_tile": WallTile(),
-            "food_tile": FoodTile(epsilon=Epsilon(1., 0., 25_000)),
-            "mine_tile": MineTile(epsilon=Epsilon(1., 0., 25_000))
+            "food_tile": FoodTile(epsilon=Epsilon(1., 0., 40_000)),
+            "mine_tile": MineTile(epsilon=Epsilon(1., 0., 40_000),visual=6)
         },
     )
 
@@ -82,7 +82,7 @@ if __name__ == "__main__":
         seed                = 1337,
         batch_size          = 512,
         gamma               = 0.999,
-        epsilon             = Epsilon(0, 0.000, 50_000),
+        epsilon             = Epsilon(0, 0.000, 45_000),
         learning_rate       = 1e-3,
         tau                 = 1e-3,
         update_every        = 256,
@@ -98,7 +98,8 @@ if __name__ == "__main__":
             "air_tile": AirTile(),
             "wall_tile": WallTile(),
             "food_tile": FoodTile(),
-            "mine_tile": MineTile()
+            "mine_tile": MineTile(visual=6),
+            "_mine_tile": MineTile()
         },
     )
     checkpoint = load_checkpoint(model_path)
