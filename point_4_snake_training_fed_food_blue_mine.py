@@ -29,9 +29,9 @@ if __name__ == "__main__":
         seed                = 1337,
         batch_size          = 512,
         gamma               = 0.999,
-        epsilon             = Epsilon(1, 0.0001, 45_000),
-        learning_rate       = 1e-3,
-        tau                 = 1e-3,
+        epsilon             = Epsilon(1, 0.0001, 50_000),
+        learning_rate       = 5e-4,
+        tau                 = 5e-4,
         update_every        = 256,
         buffer_size         = 100_000
     )
@@ -56,9 +56,9 @@ if __name__ == "__main__":
         seed                = 1337,
         batch_size          = 512,
         gamma               = 0.999,
-        epsilon             = Epsilon(1, 0.0001, 45_000),
-        learning_rate       = 1e-3,
-        tau                 = 1e-3,
+        epsilon             = Epsilon(1, 0.0001, 50_000),
+        learning_rate       = 5e-4,
+        tau                 = 5e-4,
         update_every        = 256,
         buffer_size         = 100_000
     )
@@ -82,9 +82,9 @@ if __name__ == "__main__":
         seed                = 1337,
         batch_size          = 512,
         gamma               = 0.999,
-        epsilon             = Epsilon(0, 0.000, 45_000),
-        learning_rate       = 1e-3,
-        tau                 = 1e-3,
+        epsilon             = Epsilon(0, 0.000, 50_000),
+        learning_rate       = 5e-4,
+        tau                 = 5e-4,
         update_every        = 256,
         buffer_size         = 100_000
     )
