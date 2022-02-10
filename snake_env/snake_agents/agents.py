@@ -1,6 +1,5 @@
 # Math modules
 from numpy import array, arange
-from random import seed as random_seed
 from random import random, choice, randrange
 
 # Repo imports
@@ -103,7 +102,6 @@ class DQNAgent(Agent):
 
         self.state_size = state_size
         self.action_size = action_size
-        self.seed = random_seed(seed)
         
         #Q Network
         self.qnetwork_local = DQNLin(state_size, action_size, seed).to(device)

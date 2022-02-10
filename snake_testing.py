@@ -63,7 +63,7 @@ if __name__ == "__main__":
             observation_to_bool(observation_food(dqn_snake))
         ),
         test_amount=1000000,
-        #visualize=True
+        save_amount=1000
     )
 
     test_snake.show_replay_snake()

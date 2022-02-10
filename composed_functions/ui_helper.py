@@ -44,7 +44,7 @@ def display_run(board, snake, board_dim, display_function: object, observation_f
 
 from snake_replay import Replay
 
-def test_snake(board, snake, observation_function: object, test_amount: int = 5, print_every: int = 5, max_step_without_food: int = 2_500, visualize: bool = False):
+def test_snake(board, snake, observation_function: object, test_amount: int = 5, print_every: int = 5, max_step_without_food: int = 500, visualize: bool = False):
     '''
     Tests snake multiple times and saves min, average, max
     '''    
@@ -103,8 +103,8 @@ def test_snake(board, snake, observation_function: object, test_amount: int = 5,
         board.run = old_board_run
 
 class Replay_Snake():
-
-    def __init__(self, board, snake, kernel, observation_function: object, test_amount: int = 5, max_step_without_food: int = 100):
+    
+    def __init__(self, board, snake, kernel, observation_function: object, test_amount: int = 5, max_step_without_food: int = 500, save_amount: int =100, gif_save_dir: str=''):
 
         self.board = board
         self.snake = snake
@@ -112,6 +112,8 @@ class Replay_Snake():
         self.observation_function = observation_function
         self.test_amount = test_amount
         self.max_step_without_food = max_step_without_food
+        self.save_amount = save_amount
+        self.gif_save_dir = gif_save_dir+'.gif'
 
         self.min_val: int = float('inf')
         self.average_val: int = 0
@@ -157,7 +159,6 @@ class Replay_Snake():
             self.snake.move(action, is_random)
 
             self.snake_state = self.observation_function() # observe what steps taken lead to
-
 
             # if snake has been the same length for max_step_without_food steps; break (it got stuck in a loop)
             self.time_without_food += 1
@@ -227,19 +228,27 @@ class Replay_Snake():
                                     'lightsteelblue', 'blue', 'firebrick', 'springgreen', 'moccasin', 'goldenrod', 'mediumorchid'])
         
         fig, ax = plt.subplots()
-
         plt.axis('off')
+        fig.set_size_inches(2.2, 2.2, True)
+        fig.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=None, hspace=None)
 
         mat = ax.matshow([[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0], [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 3.0, 0.0, 1.0], [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], [1.0, 
 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 13.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 
 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 4.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 5.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]], cmap=cmap)
 
-        plt.tight_layout()
+        # plt.tight_layout()
 
         print("start animation")
 
-        ani = animation.FuncAnimation(fig, 
-        replay_test_snake,
-        interval=50)
+        ani = animation.FuncAnimation(
+            fig, 
+            replay_test_snake, 
+            interval=5,
+            frames=self.save_amount,
+            # bbox_inches='tight'
+        )
 
-        plt.show()
+        if (self.gif_save_dir != '.gif'):
+            ani.save(self.gif_save_dir, writer='imagemagick', fps=30)
+        else:
+            plt.show()
