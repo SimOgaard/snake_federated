@@ -1,5 +1,4 @@
 # Repo imports
-from cgi import test
 from composed_functions.ui_helper import Replay_Snake
 from snake_env.snake_environment import *
 from snake_env.snake_agents.agents import *
@@ -11,15 +10,15 @@ if __name__ == "__main__":
     Tests saved specified model
     '''
     model_paths: list = [
-        'models/fednone_food/replay_fed_none_food_5x5+4_episode_20000.pth',
-        'models/fednone_food/replay_fed_none_food_5x5+4_episode_40000.pth',
-        'models/fednone_food/replay_fed_none_food_5x5+4_episode_60000.pth',
-        'models/fednone_food/replay_fed_none_food_5x5+4_episode_80000.pth',
-        'models/fednone_food/replay_fed_none_food_5x5+4_episode_100000.pth',
-        'models/fednone_food/replay_fed_none_food_5x5+4_episode_120000.pth',
-        'models/fednone_food/replay_fed_none_food_5x5+4_episode_140000.pth',
-        'models/fednone_food/replay_fed_none_food_5x5+4_episode_160000.pth',
-        'models/fednone_food/replay_fed_none_food_5x5+4_episode_180000.pth',
+        'models/fednone_food_red_mines/replay_fed_none_food_red_mine_5x5+4_episode_20000.pth',
+        'models/fednone_food_red_mines/replay_fed_none_food_red_mine_5x5+4_episode_40000.pth',
+        'models/fednone_food_red_mines/replay_fed_none_food_red_mine_5x5+4_episode_60000.pth',
+        'models/fednone_food_red_mines/replay_fed_none_food_red_mine_5x5+4_episode_80000.pth',
+        'models/fednone_food_red_mines/replay_fed_none_food_red_mine_5x5+4_episode_100000.pth',
+        'models/fednone_food_red_mines/replay_fed_none_food_red_mine_5x5+4_episode_120000.pth',
+        'models/fednone_food_red_mines/replay_fed_none_food_red_mine_5x5+4_episode_140000.pth',
+        'models/fednone_food_red_mines/replay_fed_none_food_red_mine_5x5+4_episode_160000.pth',
+        'models/fednone_food_red_mines/replay_fed_none_food_red_mine_5x5+4_episode_180000.pth',
     ]
     for model_path in model_paths:
 
@@ -54,7 +53,7 @@ if __name__ == "__main__":
                 "air_tile": AirTile(),
                 "wall_tile": WallTile(),
                 "food_tile": FoodTile(),
-                # "mine_tile": MineTile(),
+                "mine_tile": MineTile(),
                 # "_mine_tile": MineTile(visual=6)
             },
         )
