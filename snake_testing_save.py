@@ -10,15 +10,7 @@ if __name__ == "__main__":
     Tests saved specified model
     '''
     model_paths: list = [
-        'models/fednone_food_red_mines/replay_fed_none_food_red_mine_5x5+4_episode_20000.pth',
-        'models/fednone_food_red_mines/replay_fed_none_food_red_mine_5x5+4_episode_40000.pth',
-        'models/fednone_food_red_mines/replay_fed_none_food_red_mine_5x5+4_episode_60000.pth',
-        'models/fednone_food_red_mines/replay_fed_none_food_red_mine_5x5+4_episode_80000.pth',
-        'models/fednone_food_red_mines/replay_fed_none_food_red_mine_5x5+4_episode_100000.pth',
-        'models/fednone_food_red_mines/replay_fed_none_food_red_mine_5x5+4_episode_120000.pth',
-        'models/fednone_food_red_mines/replay_fed_none_food_red_mine_5x5+4_episode_140000.pth',
-        'models/fednone_food_red_mines/replay_fed_none_food_red_mine_5x5+4_episode_160000.pth',
-        'models/fednone_food_red_mines/replay_fed_none_food_red_mine_5x5+4_episode_180000.pth',
+        'models/fed_food_blue_mine/replay_fed_food_blue_mine_5x5+4_episode_150000.pth',
     ]
     for model_path in model_paths:
 
@@ -54,7 +46,7 @@ if __name__ == "__main__":
                 "wall_tile": WallTile(),
                 "food_tile": FoodTile(),
                 "mine_tile": MineTile(),
-                # "_mine_tile": MineTile(visual=6)
+                "_mine_tile": MineTile(visual=6)
             },
         )
 
@@ -75,7 +67,7 @@ if __name__ == "__main__":
             ),
             test_amount=1000000,
             save_amount=2000,
-            gif_save_dir=model_path[:-4]
+            gif_save_dir=model_path[:-7]
             #visualize=True
         )
 
