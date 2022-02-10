@@ -103,7 +103,7 @@ def test_snake(board, snake, observation_function: object, test_amount: int = 5,
         board.run = old_board_run
 
 class Replay_Snake():
-    
+
     def __init__(self, board, snake, kernel, observation_function: object, test_amount: int = 5, max_step_without_food: int = 500, save_amount: int =100, gif_save_dir: str=''):
 
         self.board = board

@@ -11,15 +11,15 @@ if __name__ == "__main__":
     Tests saved specified model
     '''
     model_paths: list = [
-        'models/drive-download-20220210T140237Z-001/replay_fed_none_food_5x5+4_episode_180000.pth',
-        'models/drive-download-20220210T140237Z-001/replay_fed_none_food_5x5+4_episode_160000.pth',
-        'models/drive-download-20220210T140237Z-001/replay_fed_none_food_5x5+4_episode_140000.pth',
-        'models/drive-download-20220210T140237Z-001/replay_fed_none_food_5x5+4_episode_120000.pth',
-        'models/drive-download-20220210T140237Z-001/replay_fed_none_food_5x5+4_episode_100000.pth',
-        'models/drive-download-20220210T140237Z-001/replay_fed_none_food_5x5+4_episode_80000.pth',
-        'models/drive-download-20220210T140237Z-001/replay_fed_none_food_5x5+4_episode_60000.pth',
-        'models/drive-download-20220210T140237Z-001/replay_fed_none_food_5x5+4_episode_40000.pth',
-        'models/drive-download-20220210T140237Z-001/replay_fed_none_food_5x5+4_episode_20000.pth',
+        'models/fednone_food/replay_fed_none_food_5x5+4_episode_20000.pth',
+        'models/fednone_food/replay_fed_none_food_5x5+4_episode_40000.pth',
+        'models/fednone_food/replay_fed_none_food_5x5+4_episode_60000.pth',
+        'models/fednone_food/replay_fed_none_food_5x5+4_episode_80000.pth',
+        'models/fednone_food/replay_fed_none_food_5x5+4_episode_100000.pth',
+        'models/fednone_food/replay_fed_none_food_5x5+4_episode_120000.pth',
+        'models/fednone_food/replay_fed_none_food_5x5+4_episode_140000.pth',
+        'models/fednone_food/replay_fed_none_food_5x5+4_episode_160000.pth',
+        'models/fednone_food/replay_fed_none_food_5x5+4_episode_180000.pth',
     ]
     for model_path in model_paths:
 
@@ -65,6 +65,7 @@ if __name__ == "__main__":
         test_snake: Replay_Snake = Replay_Snake(
             board=board,
             snake=dqn_snake,
+            kernel=state_size,
             observation_function = lambda: observation_cat(
                 observation_near(
                     board=board,
@@ -74,7 +75,7 @@ if __name__ == "__main__":
                 observation_to_bool(observation_food(dqn_snake))
             ),
             test_amount=1000000,
-            save_amount=1000,
+            save_amount=2000,
             gif_save_dir=model_path[:-4]
             #visualize=True
         )
