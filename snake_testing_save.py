@@ -11,15 +11,22 @@ if __name__ == "__main__":
     Tests saved specified model
     '''
     model_paths: list = [
-        'models/fednone_food/replay_fed_none_food_5x5+4_episode_20000.pth',
-        'models/fednone_food/replay_fed_none_food_5x5+4_episode_40000.pth',
-        'models/fednone_food/replay_fed_none_food_5x5+4_episode_60000.pth',
-        'models/fednone_food/replay_fed_none_food_5x5+4_episode_80000.pth',
-        'models/fednone_food/replay_fed_none_food_5x5+4_episode_100000.pth',
-        'models/fednone_food/replay_fed_none_food_5x5+4_episode_120000.pth',
-        'models/fednone_food/replay_fed_none_food_5x5+4_episode_140000.pth',
-        'models/fednone_food/replay_fed_none_food_5x5+4_episode_160000.pth',
-        'models/fednone_food/replay_fed_none_food_5x5+4_episode_180000.pth',
+        'models/fed_food_blue_and_red_mines/replay_fed_food_blue_and_red_mine_5x5+4_episode_10000.pth',
+        'models/fed_food_blue_and_red_mines/replay_fed_food_blue_and_red_mine_5x5+4_episode_20000.pth',
+        'models/fed_food_blue_and_red_mines/replay_fed_food_blue_and_red_mine_5x5+4_episode_30000.pth',
+        'models/fed_food_blue_and_red_mines/replay_fed_food_blue_and_red_mine_5x5+4_episode_40000.pth',
+        'models/fed_food_blue_and_red_mines/replay_fed_food_blue_and_red_mine_5x5+4_episode_50000.pth',
+        'models/fed_food_blue_and_red_mines/replay_fed_food_blue_and_red_mine_5x5+4_episode_60000.pth',
+        'models/fed_food_blue_and_red_mines/replay_fed_food_blue_and_red_mine_5x5+4_episode_70000.pth',
+        'models/fed_food_blue_and_red_mines/replay_fed_food_blue_and_red_mine_5x5+4_episode_80000.pth',
+        'models/fed_food_blue_and_red_mines/replay_fed_food_blue_and_red_mine_5x5+4_episode_90000.pth',
+        'models/fed_food_blue_and_red_mines/replay_fed_food_blue_and_red_mine_5x5+4_episode_100000.pth',
+        'models/fed_food_blue_and_red_mines/replay_fed_food_blue_and_red_mine_5x5+4_episode_110000.pth',
+        'models/fed_food_blue_and_red_mines/replay_fed_food_blue_and_red_mine_5x5+4_episode_120000.pth',
+        'models/fed_food_blue_and_red_mines/replay_fed_food_blue_and_red_mine_5x5+4_episode_130000.pth',
+        'models/fed_food_blue_and_red_mines/replay_fed_food_blue_and_red_mine_5x5+4_episode_140000.pth',
+
+        
     ]
     for model_path in model_paths:
 
