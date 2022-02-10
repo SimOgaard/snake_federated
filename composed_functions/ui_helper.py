@@ -104,10 +104,11 @@ def test_snake(board, snake, observation_function: object, test_amount: int = 5,
 
 class Replay_Snake():
 
-    def __init__(self, board, snake, observation_function: object, test_amount: int = 5, max_step_without_food: int = 100):
+    def __init__(self, board, snake, kernel, observation_function: object, test_amount: int = 5, max_step_without_food: int = 100):
 
         self.board = board
         self.snake = snake
+        self.kernel = kernel
         self.observation_function = observation_function
         self.test_amount = test_amount
         self.max_step_without_food = max_step_without_food
@@ -167,7 +168,39 @@ class Replay_Snake():
                 self.stuck_amount += 1
                 snake_stuck = True
 
-            mat.set_data(self.board.board.detach().clone().tolist())
+            def clamp_coord(val:int, min_val:int, max_val:int) -> int:
+                '''
+                Returns clamped val between min_val and max_val
+                '''
+                if (val < min_val):
+                    return min_val
+                if val > max_val:
+                    return max_val
+                return val
+
+            # get offset from snake head in all directions
+            x_y_offset = (self.kernel - array([1, 1])) // 2
+            snake_head: array = self.snake.snake_body[0]
+
+            # get x coordinates 
+            x_from: int = snake_head[0] - x_y_offset[0]
+            x_from_clamped: int = clamp_coord(x_from, 0, self.snake.board.max_board_shape[0] + 1)
+            x_to: int = snake_head[0] + x_y_offset[0] + 1
+            x_to_clamped: int = clamp_coord(x_to, 0, self.snake.board.max_board_shape[0] + 2)
+
+            # get y coordinates 
+            y_from: int = snake_head[1] - x_y_offset[1]
+            y_from_clamped: int = clamp_coord(y_from, 0, self.snake.board.max_board_shape[1] + 1)
+            y_to: int = snake_head[1] + x_y_offset[1] + 1
+            y_to_clamped: int = clamp_coord(y_to, 0, self.snake.board.max_board_shape[1] + 2)
+
+            visual_board = self.board.board.detach().clone().tolist()
+
+            for x in range(x_from_clamped, x_to_clamped):
+                for y in range(y_from_clamped, y_to_clamped):
+                    visual_board[x][y] += 7;
+
+            mat.set_data(visual_board)
 
             if not self.board.is_alive() or snake_stuck:
                 if (len(self.snake.snake_body) > self.max_val):
@@ -190,14 +223,15 @@ class Replay_Snake():
 
             return mat
 
-        cmap = colors.ListedColormap(['cornflowerblue', 'navy', 'darkred', 'limegreen', 'orange', 'yellow', 'darkviolet'])
+        cmap = colors.ListedColormap(['cornflowerblue', 'navy', 'darkred', 'limegreen', 'orange', 'goldenrod', 'darkviolet', 
+                                    'lightsteelblue', 'blue', 'firebrick', 'springgreen', 'moccasin', 'goldenrod', 'mediumorchid'])
         
         fig, ax = plt.subplots()
 
         plt.axis('off')
 
         mat = ax.matshow([[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0], [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 3.0, 0.0, 1.0], [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], [1.0, 
-0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 
+0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 13.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 
 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 4.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 5.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0], [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]], cmap=cmap)
 
         plt.tight_layout()
@@ -205,7 +239,7 @@ class Replay_Snake():
         print("start animation")
 
         ani = animation.FuncAnimation(fig, 
-        replay_test_snake, 
-        interval=10)
+        replay_test_snake,
+        interval=50)
 
         plt.show()
