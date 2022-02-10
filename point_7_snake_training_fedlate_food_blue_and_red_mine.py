@@ -17,11 +17,13 @@ if __name__ == "__main__":
     save_every: int = 50
     board_dim: int = 20
     state_size: int = 5
-    model_type: str = "fedlate_food_blue_and_red_mine"
+    model_type: str = "fed_late_food_blue_and_red_mine"
     model_type_1: str = "fed_none_food_red_mine"
     model_type_2: str = "fed_food_blue_mine"
-    model_id_1: str = "_{}_{}x{}+{}".format(model_type, state_size, state_size, 4)
-    model_id_2: str = "_{}_{}x{}+{}".format(model_type, state_size, state_size, 4)
+    model_id: str = "_{}_{}x{}+{}".format(model_type, state_size, state_size, 4)
+    model_id_1: str = "_{}_{}x{}+{}".format(model_type_1, state_size, state_size, 4)
+    model_id_2: str = "_{}_{}x{}+{}".format(model_type_2, state_size, state_size, 4)
+    model_path: str = 'models/checkpoint{}.pth'.format(model_id)
     model_path_1: str = 'models/checkpoint{}.pth'.format(model_id_1)
     model_path_2: str = 'models/checkpoint{}.pth'.format(model_id_2)
 
@@ -111,8 +113,7 @@ if __name__ == "__main__":
     checkpoint_2 = load_checkpoint(model_path_2)
     inital_episode: int = load_checkpoint_to_snake(dqn_snake_1, checkpoint_1) + 1
     board_1.run = load_checkpoint_to_snake(dqn_snake_2, checkpoint_2)
-    board_1.run = 0
-    board_2.run = 0
+    board_2.run = board_1.run
 
     for i in range(inital_episode, episode_amount):
         medians: list = []

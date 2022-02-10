@@ -27,8 +27,8 @@ if __name__ == "__main__":
         batch_size    = 128,
         gamma         = 0.999,
         epsilon       = Epsilon(0, 0, 1_000),
-        learning_rate = 1e-3,
-        tau           = 1e-3,
+        learning_rate = 5e-4,
+        tau           = 5e-4,
         update_every  = 32,
         buffer_size   = 100_000
     )
