@@ -17,7 +17,7 @@ if __name__ == "__main__":
     model_type: str = "fed_none"
     model_id: str = "_{}_{}x{}+{}".format(model_type, state_size, state_size, 4)
     #model_path: str = 'models/checkpoint{}.pth'.format(model_id)
-    model_path: str = 'models/checkpoint_fed_none_5x5+4.pth'
+    model_path: str = 'models/checkpoint_fed_food_blue_and_red_mine_5x5+4.pth'
 
     dqn_snake: DQNAgent = DQNAgent(
         state_size    = state_size**2 + 4,
@@ -41,7 +41,9 @@ if __name__ == "__main__":
         tiles_populated         = {
             "air_tile": AirTile(),
             "wall_tile": WallTile(),
-            "food_tile": FoodTile()
+            "food_tile": FoodTile(),
+            "mine_tile": MineTile(),
+            "_mine_tile": MineTile(visual=6)
         },
     )
 

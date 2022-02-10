@@ -44,7 +44,7 @@ def display_run(board, snake, board_dim, display_function: object, observation_f
 
 from snake_replay import Replay
 
-def test_snake(board, snake, observation_function: object, test_amount: int = 5, print_every: int = 5, max_step_without_food: int = 2_500, visualize: bool = False):
+def test_snake(board, snake, observation_function: object, test_amount: int = 5, print_every: int = 5, max_step_without_food: int = 500, visualize: bool = False):
     '''
     Tests snake multiple times and saves min, average, max
     '''    
@@ -104,7 +104,7 @@ def test_snake(board, snake, observation_function: object, test_amount: int = 5,
 
 class Replay_Snake():
 
-    def __init__(self, board, snake, observation_function: object, test_amount: int = 5, max_step_without_food: int = 100):
+    def __init__(self, board, snake, observation_function: object, test_amount: int = 5, max_step_without_food: int = 500):
 
         self.board = board
         self.snake = snake
