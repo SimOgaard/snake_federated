@@ -17,7 +17,7 @@ if __name__ == "__main__":
     model_type: str = "fed_none"
     model_id: str = "_{}_{}x{}+{}".format(model_type, state_size, state_size, 4)
     #model_path: str = 'models/checkpoint{}.pth'.format(model_id)
-    model_path: str = 'models/checkpoint_fed_food_blue_and_red_mine_5x5+4.pth'
+    model_path: str = 'models/replay_fed_food_blue_mine_5x5+4_episode_140000.pth'
 
     dqn_snake: DQNAgent = DQNAgent(
         state_size    = state_size**2 + 4,
@@ -42,7 +42,7 @@ if __name__ == "__main__":
             "air_tile": AirTile(),
             "wall_tile": WallTile(),
             "food_tile": FoodTile(),
-            "mine_tile": MineTile(),
+            # "mine_tile": MineTile(),
             "_mine_tile": MineTile(visual=6)
         },
     )
@@ -62,7 +62,7 @@ if __name__ == "__main__":
             observation_to_bool(observation_food(dqn_snake))
         ),
         test_amount=1000000,
-        #visualize=True
+        save_amount=1000
     )
 
     test_snake.show_replay_snake()

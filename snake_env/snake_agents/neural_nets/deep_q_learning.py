@@ -1,6 +1,5 @@
 # Math modules
 from random import sample
-from random import seed as random_seed
 from math import exp
 
 # Generic modules
@@ -47,7 +46,6 @@ class ReplayBuffer:
         self.memory = deque(maxlen=buffer_size)
         self.batch_size = batch_size
         self.experiences = namedtuple("Experience", field_names=["state", "action", "reward", "next_state", "done"])
-        self.seed = random_seed(seed)
         
     def add(self, state: FloatTensor, action: FloatTensor, reward: FloatTensor, next_state: FloatTensor, done: bool) -> None:
         '''
