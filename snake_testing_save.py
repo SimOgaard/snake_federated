@@ -69,7 +69,7 @@ if __name__ == "__main__":
             ),
             test_amount=1000000,
             save_amount=2000,
-            gif_save_dir=model_path[:-4]
+            gif_save_dir=model_path[:-7]
             #visualize=True
         )
 
