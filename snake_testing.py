@@ -17,7 +17,7 @@ if __name__ == "__main__":
     model_type: str = "fed_none"
     model_id: str = "_{}_{}x{}+{}".format(model_type, state_size, state_size, 4)
     #model_path: str = 'models/checkpoint{}.pth'.format(model_id)
-    model_path: str = 'models\drive-download-20220210T140237Z-001/replay_fed_none_food_5x5+4_episode_160000.pth'
+    model_path: str = 'models\checkpoint_fed_late_food_blue_and_red_mine_5x5+4.pth'
 
     dqn_snake: DQNAgent = DQNAgent(
         state_size    = state_size**2 + 4,
@@ -42,8 +42,8 @@ if __name__ == "__main__":
             "air_tile": AirTile(),
             "wall_tile": WallTile(),
             "food_tile": FoodTile(),
-            #"mine_tile": MineTile(),
-            #"_mine_tile": MineTile(visual=6),
+            "mine_tile": MineTile(),
+            "_mine_tile": MineTile(visual=6),
         },
     )
 
