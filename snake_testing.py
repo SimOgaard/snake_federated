@@ -8,7 +8,7 @@ from composed_functions.dqn_helper import load_checkpoint, load_checkpoint_to_sn
 
 if __name__ == "__main__":
     '''
-    Tests saved specified model
+    Tests specified model in model_path on specified board
     '''
 
     episode_amount: int = 1_000_000

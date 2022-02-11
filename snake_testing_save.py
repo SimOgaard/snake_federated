@@ -7,12 +7,11 @@ from composed_functions.dqn_helper import load_checkpoint, load_checkpoint_to_sn
 
 if __name__ == "__main__":
     '''
-    Tests saved specified model
+    Tests specified models in model_paths on specified board and saves it to gif
+    OBS! (Requires you to install imagemagick, see README)
     '''
     model_paths: list = [
         'models\checkpoint_fed_late_food_blue_and_red_mine_5x5+4.pth'
-
-        
     ]
     for model_path in model_paths:
 

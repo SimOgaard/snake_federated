@@ -8,7 +8,7 @@ from composed_functions.dqn_helper import load_checkpoint
 
 class Replay():
   '''
-  Snake game replay
+  Runs a saved board replay of a model
   '''
   def __init__(self, replay_list = [tensor([[0, 0], [0, 0]])]) -> None:
 
