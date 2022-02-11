@@ -8,6 +8,7 @@ from federated_learning.federated_average import agregate
 
 if __name__ == "__main__":
     '''
+    WORK IN PROGRESS
     Trains multiple seperated DQN-agents in the same environment that they compete in. (they can die from each other and wall each other in)
     '''
 
