@@ -1,3 +1,5 @@
+# This repository was moved to https://github.com/aidotse/ReinforcementFederatedLearning
+
 ## ReinforcementFederatedLearning
 
 Within this repository we combine Federated Learning with Reinforcement Learning on the game [Snake](https://g.co/kgs/PgHC17) with from scratch code to make updates on both sides as easy as possible to revise.
